@@ -1,0 +1,1091 @@
+<!-- =====================================================================
+     Topografie der Gefühle – Umsetzungsprozess (interaktiv, p5.js)
+     Einbau in WordPress: Block «Individuelles HTML», diesen ganzen Code einfügen.
+     BILDPFAD / KLANGPFAD unten in data-Attributen anpassen.
+====================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap" rel="stylesheet">
+
+<div id="tdg-prozess" data-bildpfad="https://www.charisarnold.ch/wp-content/uploads/2026/09/" data-klangpfad="https://www.charisarnold.ch/wp-content/uploads/2026/09/">
+<style>
+#tdg-prozess{
+  --grund:#f0f2ef; --papier:#fbfbf9; --tinte:#221f1f; --tinte2:#5b5f5c; --linie:#8a928a;
+  --gold:#ba9e00; --rose:#bc938e; --navy:#333f5b; --oliv:#62551f; --orange:#c1511d; --petrol:#394e56;
+  --serif:'Source Serif 4',Georgia,serif; --sans:'Source Sans 3','Helvetica Neue',Arial,sans-serif;
+  font-family:var(--sans); color:var(--tinte); background:var(--grund);
+  max-width:1120px; margin:0 auto; padding:clamp(20px,4vw,48px) clamp(16px,4vw,48px) 28px;
+  box-sizing:border-box; line-height:1.5; font-size:16px; -webkit-font-smoothing:antialiased;
+}
+#tdg-prozess *,#tdg-prozess *::before,#tdg-prozess *::after{box-sizing:border-box}
+#tdg-prozess h2,#tdg-prozess h3,#tdg-prozess h4,#tdg-prozess p,#tdg-prozess figure{margin:0;padding:0;border:0;text-transform:none;letter-spacing:normal}
+#tdg-prozess img{max-width:100%;height:auto;display:block;border:0;box-shadow:none}
+#tdg-prozess button{font-family:var(--sans);cursor:pointer;-webkit-appearance:none;appearance:none;text-transform:none;letter-spacing:normal;line-height:1.2;box-shadow:none}
+#tdg-prozess button:focus-visible,#tdg-prozess input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+.tdg-kicker{font:600 13px/1.2 var(--sans);letter-spacing:.08em!important;text-transform:uppercase!important;color:var(--tinte)}
+.tdg-kicker span{font-weight:300;color:var(--tinte2);letter-spacing:0!important;text-transform:none!important;margin-left:.4em}
+#tdg-prozess h2.tdg-titel{font:600 clamp(26px,3.6vw,38px)/1.1 var(--serif);margin:.35em 0 .1em;color:var(--tinte)}
+.tdg-unter{font:300 clamp(19px,2.2vw,24px)/1.25 var(--serif);color:var(--tinte)}
+.tdg-intro{max-width:44em;margin-top:18px!important;font:400 17px/1.55 var(--serif);color:var(--tinte)}
+.tdg-formel{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin-top:16px!important;font:600 13px/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--tinte2)}
+.tdg-formel b{color:var(--tinte);font-weight:600}
+.tdg-formel i{font-style:normal;color:var(--orange);font-weight:300;font-size:18px}
+
+.tdg-chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 10px}
+#tdg-prozess .tdg-chip{border:1px solid #c5cbc5;background:transparent;color:var(--tinte);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:400;transition:background .15s,border-color .15s}
+#tdg-prozess .tdg-chip:hover{border-color:var(--tinte)}
+#tdg-prozess .tdg-chip[aria-pressed="true"]{background:var(--tinte);border-color:var(--tinte);color:#fff}
+#tdg-prozess .tdg-chip small{font-size:12px;color:inherit;opacity:.7;margin-left:4px}
+
+.tdg-netz{position:relative;width:100%;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
+.tdg-netz canvas,.tdg-modul canvas{display:block}
+.tdg-hinweis{font-size:13px;color:var(--tinte2);margin-top:8px!important}
+
+.tdg-detail{margin-top:34px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px 40px;align-items:start}
+.tdg-personen{display:flex;flex-direction:column;gap:18px}
+.tdg-person{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start}
+.tdg-person img{width:96px;aspect-ratio:3/4;object-fit:cover;background:#dfe3de}
+.tdg-person .feld{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--tinte2)}
+.tdg-person .name{font:600 17px/1.25 var(--sans);margin-top:4px}
+.tdg-person .meta{font:300 15px/1.4 var(--sans);color:var(--tinte);margin-top:2px}
+.tdg-uebersetzung .pfeil{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}
+#tdg-prozess .tdg-uebersetzung h3{font:600 clamp(22px,2.6vw,28px)/1.15 var(--serif);margin:6px 0 2px}
+.tdg-uebersetzung .sub{font:300 16px/1.3 var(--sans);color:var(--tinte2)}
+.tdg-uebersetzung p.text{font:400 16.5px/1.6 var(--serif);margin-top:14px!important}
+
+.tdg-modulrahmen{grid-column:1/-1;background:var(--papier);border:1px solid #dde1dc;padding:clamp(14px,2.4vw,26px)}
+.tdg-modulkopf{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 20px;align-items:baseline;margin-bottom:10px}
+.tdg-modulkopf h4{font:600 13px/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.tdg-modulkopf .info{font:300 14px/1.4 var(--sans);color:var(--tinte2)}
+.tdg-modul{position:relative;width:100%;min-height:120px;touch-action:pan-y}
+.tdg-steuerung{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:12px}
+#tdg-prozess .tdg-knopf{border:1px solid var(--tinte);background:transparent;color:var(--tinte);padding:7px 14px;font-size:14px;border-radius:2px}
+#tdg-prozess .tdg-knopf.primaer{background:var(--tinte);color:#fff}
+#tdg-prozess .tdg-knopf:disabled{opacity:.35;cursor:default}
+.tdg-steuerung label{font-size:14px;color:var(--tinte2);display:flex;align-items:center;gap:10px;flex:1 1 260px}
+.tdg-steuerung input[type=range]{flex:1;accent-color:var(--orange);min-width:120px}
+.tdg-legende-text{font:400 15px/1.5 var(--serif);margin-top:12px!important;color:var(--tinte);min-height:3em}
+.tdg-zahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px 20px;margin:4px 0 16px}
+.tdg-zahl b{display:block;font:600 28px/1 var(--serif);color:var(--tinte)}
+.tdg-zahl span{font:300 13.5px/1.3 var(--sans);color:var(--tinte2)}
+.tdg-quelle{font:300 12.5px/1.4 var(--sans);color:var(--tinte2);margin-top:10px!important}
+
+.tdg-fuss{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;border-top:1px solid var(--tinte);margin-top:40px;padding-top:10px;font-size:13px;color:var(--tinte2)}
+.tdg-fuss b{color:var(--tinte);font-weight:600}
+.tdg-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (max-width:760px){
+  .tdg-detail{grid-template-columns:1fr;gap:22px}
+  .tdg-person{grid-template-columns:76px 1fr}
+  .tdg-person img{width:76px}
+}
+</style>
+
+  <header>
+    <p class="tdg-kicker">Topografie der Gefühle <span>Schauplatz Paris 1885</span></p>
+    <h2 class="tdg-titel">Umsetzungsprozess</h2>
+    <p class="tdg-unter">Wie aus Zeitgenossen ein Gestaltungssystem wird</p>
+    <p class="tdg-intro">Guy de Maupassants «Bel-Ami» spielt in einer Stadt, die gerade neu entsteht. Jede gestalterische Entscheidung dieses Projekts – Daten, Farbe, Karte, Klang, Form, Schrift und Bild – hat ein Vorbild im Paris jener Jahre. Die gestrichelten Linien verbinden die Zeitgenossen mit dem, was aus ihnen geworden ist. Alle Fäden laufen in einer Grafik zusammen: dem Kreis, der für jeden Ort zeigt, wie er sich anfühlt.</p>
+    <p class="tdg-formel"><b>Daten</b> <i>+</i> <b>Mensch</b> <i>+</i> <b>Kontext</b> <i>=</i> <b>Human Data</b></p>
+  </header>
+
+  <nav class="tdg-chips" aria-label="Verbindung wählen" id="tdg-chips"></nav>
+  <div class="tdg-netz" id="tdg-netz" role="img" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen"></div>
+  <p class="tdg-hinweis" id="tdg-hinweis">Tippe auf eine Person oder ein Element, um der Verbindung zu folgen.</p>
+
+  <section class="tdg-detail" id="tdg-detail" aria-live="polite">
+    <div class="tdg-personen" id="tdg-personen"></div>
+    <div class="tdg-uebersetzung" id="tdg-uebersetzung"></div>
+    <div class="tdg-modulrahmen">
+      <div class="tdg-modulkopf"><h4 id="tdg-modultitel"></h4><span class="info" id="tdg-modulinfo"></span></div>
+      <div id="tdg-modulvor"></div>
+      <div class="tdg-modul" id="tdg-modul"></div>
+      <div class="tdg-steuerung" id="tdg-steuerung"></div>
+      <p class="tdg-legende-text" id="tdg-legende"></p>
+      <p class="tdg-quelle" id="tdg-quelle"></p>
+    </div>
+  </section>
+
+  <footer class="tdg-fuss"><span><b>CAS Generative Data Design</b> Charis Arnold</span><span>September 2026</span></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script>
+(function(){
+'use strict';
+var WURZEL = document.getElementById('tdg-prozess');
+if (!WURZEL || WURZEL.dataset.bereit) return;
+WURZEL.dataset.bereit = '1';
+
+var BILD = WURZEL.dataset.bildpfad || '';
+var KLANG = WURZEL.dataset.klangpfad || BILD;
+var DATEN = {"kapitel":[[13,34,4,150],[23,15,4,118],[14,30,6,153],[23,25,2,140],[28,62,10,321],[44,57,13,252],[12,66,4,182],[15,45,5,193],[30,43,6,205],[21,35,2,150],[48,27,13,189],[10,20,8,119],[12,48,3,182],[3,19,6,67],[4,29,9,177],[5,5,4,116],[3,13,0,79],[24,9,1,109]],"orte":[{"n":"Redaktion La Vie Française","bc":[[3,2,2,78],[8,10,0,31],[8,7,0,91]],"fw":[1,6,30],"k":[1,3,4,5,6,7,9,10,11,12,13,16],"t":240},{"n":"Wohnung Forestier (17 Rue Fontaine)","bc":[[2,1,2,45],[19,25,8,29],[14,13,4,44]],"fw":[8,6,54],"k":[2,3,6,9],"t":206},{"n":"Georges Duroys Wohnung (Rue Boursault)","bc":[[6,0,1,45],[59,23,6,34],[21,4,0,28]],"fw":[19,17,62],"k":[3,4,5,6,7],"t":227},{"n":"Wohnung Clotilde (Rue de Verneuil)","bc":[[0,0,0,31],[12,11,4,22],[6,6,2,22]],"fw":[5,4,27],"k":[5,6,11,14],"t":116},{"n":"Rue Constantinople 127","bc":[[0,0,0,39],[37,12,2,21],[6,5,1,37]],"fw":[4,4,34],"k":[5,7,8,9,12,13,18],"t":160},{"n":"Boulevard Malesherbes (Walters Haus)","bc":[[0,0,0,24],[14,13,3,8],[5,2,1,39]],"fw":[3,6,27],"k":[6,7,11],"t":109},{"n":"Junggesellenwohnung Jacques Rival","bc":[[0,0,0,20],[16,13,7,2],[4,7,1,31]],"fw":[1,1,35],"k":[7,11],"t":101},{"n":"Cannes","bc":[[0,0,0,79],[41,11,5,24],[4,2,0,13]],"fw":[6,6,75],"k":[8],"t":179},{"n":"Fahrt über Rouen nach Canteleu und zurück nach Paris","bc":[[0,0,0,49],[15,16,2,11],[5,4,0,32]],"fw":[8,3,38],"k":[9],"t":134},{"n":"Wohnung Duroy/Madeleine (17 Rue Fontaine)","bc":[[0,0,0,48],[36,21,7,34],[17,7,7,87]],"fw":[3,16,47],"k":[10,11,12,13,14,15,16],"t":264},{"n":"Palais Walter, Faubourg Saint-Honoré","bc":[[0,0,0,41],[7,5,3,19],[18,3,3,43]],"fw":[0,4,32],"k":[15,16,17],"t":142},{"n":"Église de la Madeleine","bc":[[0,0,0,24],[3,15,1,2],[1,9,0,34]],"fw":[5,9,24],"k":[18],"t":89}],"boegen":[[0,1,4],[1,2,3],[0,2,4],[2,3,1],[0,3,2],[0,4,2],[2,4,1],[0,5,1],[3,5,2],[2,5,1],[5,6,2],[4,6,1],[4,7,2],[1,4,1],[0,8,2],[0,9,6],[3,9,3],[0,6,1],[4,9,3],[9,10,2],[0,10,1],[4,10,1],[4,11,1]],"routen":[[1349,793,-1,1,1,-1,19,-3,1,-1,0,-1,2,-1,3,-2,0,-2,1,0,1,0,4,-4,1,0,10,-10,1,0,1,0,1,-2,2,0,0,-1,5,-5,1,0,1,-1,2,-1,1,-1,-1,0,5,-6,1,0,1,-1,-1,0,2,-2,1,0,0,-1,9,-6,1,-1,1,-1,6,-8,1,-1,-1,-1,1,-1,0,-2,17,-2,1,0,10,-2,2,0,4,-1,-4,1,0,-1,-2,0,-3,-10,-2,0,-18,3,-4,1,-1,0,-2,0,-1,0,-2,1,-8,1,-16,3,-1,0,-2,0,-1,0,-4,1,0,-1,0,-1,-2,0,-3,0,0,-1,-3,0,-3,-1,-2,0,-2,0,-5,-1,-2,-1,-1,0,-1,0,-2,0,-2,-1,-7,-1,-1,0,-10,-2,-1,0,-1,0,-5,-1,-2,0,-13,-3,-1,1,-3,0,-1,-1,-1,0,-2,-1,-1,0,-15,-3,-1,0,-4,-1,-1,0,-6,-1,-9,-1,-1,0,-2,0,-1,0,-2,-1,-1,1,-9,-2,0,-1,-2,0,-4,-1,-2,0,-3,-1,-2,0,-1,0,-1,0,-3,-2,-4,-1,1,1,-5,0,2,3,-2,-3,5,0,-1,-1,4,1,3,2,1,0,1,0,2,0,3,1,2,0,4,1,2,0,0,1,9,2,1,-1,2,1,1,0,2,0,1,0,9,1,6,1,1,0,4,1,1,0,15,3,1,0,-13,8,1,1,2,1,0,1,-1,1,1,-1,0,-1,8,-4,1,-1,3,-2,1,1,1,-2,3,0,1,-1,13,3,2,0,5,1,1,0,1,0,10,2,1,0,7,1,2,1,2,0,1,0,1,0,2,1,5,1,2,0,2,0,3,1,3,0,0,1,3,0,2,0,0,1,0,1,4,-1,1,0,2,0,1,0,16,-3,8,-1,2,-1,1,0,2,0,1,0,4,-1,18,-3,2,0,3,10,2,0,0,1,4,-1,-4,0,-5,-10,-20,3,20,-2,-17,2,-16,2,-17,3,-16,-3,-17,-3,-17,-3,-18,-3,-13,-2,-11,0,11,0,14,2,14,3,15,2,14,3,14,2,7,11,1,6,1,5,1,5,1,5,8,2,7,2,7,2,7,1],[1342,815],[1265,833,-77,19,47,13,-139,-69,123,9,123,10,32,-28,32,-28,16,-13,44,-24],[1188,852,181,-26,191,-19,-10,-7,-84,-78,-59,-2,-127,-21,-202,-1,-128,40,119,57,119,57,154,-37,-154,37,278,-130,-29,35,-119,39,-130,56,278,-130,-278,130],[1188,852,104,-272,-104,272,196,-136,-37,-54,-55,-82,-47,120,-57,152,104,-272,174,142,-278,130,51,-68,-51,68,4,-48,245,-47,-7,53,-54,27,19,8,-95,-10,166,-113,-111,52,-167,78,70,-32,208,-98,-278,130,249,-95,-128,33],[1188,852,154,-37,-42,-25,-112,62,249,-95,-249,95,278,-130,-124,93,129,-184,-247,82,242,9,-242,-9,213,44,29,-35,-229,71,-49,59,36,-139,0,-57,-10,-19,-36,-74,-204,169,-24,6,342,-158,50,235],[1466,722,-36,148,36,-148,-278,130,242,-102,-242,102,36,-139,121,-203,10,5,111,207,-278,130,-288,-22,-300,20,800,-140,-212,142,4,-48,274,-82],[1192,804,542,-361,32,-21],[1192,804,150,11,-150,-11,150,11,-75,-6,-75,-5,274,-82,-124,93,53,-85,-148,27,-46,0],[1466,722,-84,48,-8,15,-32,30,124,-93,-124,93,124,-93,-124,93,-264,-117,-320,15,-63,-16,-110,-69,11,18,66,24,96,43,192,25,128,-40,210,5,84,13],[1466,722,-124,93,-50,-235,-79,76,11,57,121,-203,13,118,-16,187,-118,-102,76,-1,42,103,-47,-47,-71,-55,118,102,-42,-170],[1323,757,-3,13,3,-13,143,-35,-124,93,-253,-19,51,6,52,2],[1342,815,-167,-200,291,107,-211,63,-63,19,-70,-3,70,3,78,-104,126,30,-73,8,19,77,124,-93,-124,93],[1320,770,22,45,313,-260,-313,260,313,-260,-185,95,-200,50,45,9,-23,-129,23,129,27,106],[1342,815,-182,-103,-12,-32,12,32,182,103,-182,-103],[1160,712,182,103,43,-53,-43,53,95,-53,-107,27,65,-59,-2,66,73,-74],[1160,712,-310,-22,-250,30,560,-8,32,92,20,-148,-262,-46,-150,-75],[1192,804,53,-103]],"orteK":[[["Lokal in der Nähe der Rue Notre-Dame de Lorette",1349,793,6,0,3],["Lokal mit festen Preisen nahe Rue Notre-Dame de Lorette",1381,780,1,0,0],["Straße nahe Rue Notre-Dame de Lorette",1381,780,1,0,1],["Boulevard",1381,780,2,0,2],["Rue Notre-Dame de Lorette",1375,783,6,1,0],["Rue Notre-Dame de Lorette / Paris",1381,780,1,0,0],["Rue La Fayette",1411,751,4,0,0],["Boulevard Poissonnière",1457,712,2,1,0],["Boulevard des Italiens",1370,715,17,1,4],["Place de la Madeleine",1242,697,17,0,11],["Boulevard des Capucines",1280,699,5,0,2],["Café Américain",1315,706,10,1,4],["Place de l'Opéra",1309,717,9,1,1],["Redaktion La Vie Française",1466,722,13,1,2],["Café Napolitain",1339,708,7,1,2],["Bal Musard",1387,733,1,0,0],["Rue du Faubourg-Montmartre",1423,742,1,0,0],["Folies Bergère",1437,757,50,6,5]],[["Wohnung Forestier (17 Rue Fontaine)",1342,815,118,23,15]],[["Heimweg vom Diner bei Forestier",1265,833,2,1,1],["Georges Duroys Wohnung (Rue Boursault)",1188,852,51,4,14],["Boulevard des Batignolles",1235,865,3,0,1],["Parc Monceau",1096,796,5,2,0],["Unterwegs zu Forestier",1219,805,1,0,0],["Wohnung Forestier (17 Rue Fontaine)",1342,815,38,4,9],["Unterwegs (nach dem Besuch bei Forestier)",1374,787,6,0,4],["Bouillon Duval",1406,759,1,0,0],["Boulevard (Richtung Redaktion)",1422,746,1,0,0],["Redaktion La Vie Française",1466,722,45,3,1]],[["Georges Duroys Wohnung (Rue Boursault)",1188,852,12,3,6],["Unterwegs zum Bahnhof",1369,826,3,0,0],["Bahnhofsviertel Gare du Nord",1560,807,17,8,3],["Bureau Chemins de fer du Nord (bei Gare du Nord)",1550,800,21,5,0],["Redaktion La Vie Française",1466,722,39,3,5],["Café am Boulevard (Näherung Boulevard Poissonière)",1407,720,18,0,1],["Boulevard des Capucines",1280,699,2,0,0],["Avenue des Champs-Élysées",1078,698,2,0,1],["Arc de Triomphe de l'Étoile, Umgebung",950,738,1,0,0],["Unterwegs nach Hause (von Arc de Triomphe)",1069,795,1,0,0],["Arbeitszimmer bei Forestier",1342,815,10,2,4],["Folies Bergère",1437,757,10,1,3],["Unterwegs nach Hause (von Folies Bergère)",1318,796,4,1,2]],[["Georges Duroys Wohnung (Rue Boursault)",1188,852,80,10,23],["Wohnung Clotilde (Rue de Verneuil)",1292,580,74,11,7],["Café Riche, Boulevard des Italiens",1384,716,40,3,1],["Fahrende Droschke (nach dem Diner)",1347,662,9,0,4],["Heimweg nach der ersten Nacht",1245,700,5,0,0],["Redaktion La Vie Française",1466,722,14,0,2],["Rue de Rome",1239,784,3,0,0],["Rue Constantinople 127",1192,804,15,2,4],["Folies Bergère",1437,757,20,0,1],["Unterwegs (auf der Suche nach einem Lokal)",1430,810,7,1,1],["Weinstube, äußere Boulevards",1376,837,12,0,6],["Ballokal 'Weiße Königin'",1395,845,6,0,1],["Verdächtige Lokale an den äusseren Boulevards",1300,835,20,1,3],["Garküche (unterwegs)",1355,774,1,0,0],["Brauerei (unterwegs)",1258,820,4,0,2],["Fahrende Droschke",1309,790,11,0,7]],[["Georges Duroys Wohnung (Rue Boursault)",1188,852,19,8,7],["Wohnung Forestier (17 Rue Fontaine)",1342,815,28,9,7],["Unterwegs (Geldsuche bei Bekannten)",1300,790,2,0,0],["Folies Bergère",1437,757,4,0,0],["Redaktion La Vie Française",1466,722,40,5,2],["Les Halles",1471,631,1,0,0],["Boulevard Malesherbes (Walters Haus)",1224,713,87,9,16],["Rue de Londres",1237,793,5,1,3],["Place de la Concorde, Paris (unterwegs)",1224,656,10,0,3],["Pont de la Concorde / Palais Bourbon",1214,637,1,0,0],["Rue Bourgogne",1178,563,8,1,3],["Promenade des Champs-Élysées, Paris (unterwegs)",974,732,1,1,0],["Avenue du Bois de Boulogne",950,738,19,5,6],["Wohnung Clotilde (Rue de Verneuil)",1292,580,27,5,10]],[["Redaktion La Vie Française",1466,722,24,1,1],["Rue de l'Écureuil 18, Montmartre",1430,870,6,0,1],["Georges Duroys Wohnung (Rue Boursault)",1188,852,65,2,36],["Unterwegs (Zeitungskiosk)",1430,750,7,1,2],["Boulevard Malesherbes (Walters Haus)",1224,713,2,0,0],["Junggesellenwohnung Jacques Rival",1345,510,16,1,6],["Restaurant bei Jacques Rival",1355,515,2,0,1],["Fahrt zum Duell, Paris (unterwegs)",900,830,19,0,8],["Bois du Vésinet",600,850,24,3,9],["Boulevard-Cafés (unterwegs)",1400,710,6,1,1],["Rue Constantinople 127",1192,804,11,3,1]],[["Rue Constantinople 127",1192,804,13,2,0],["Bahnhof Paris (Gare de Lyon, Abfahrt nach Cannes)",1734,443,1,0,0],["Cannes",1766,422,179,13,45]],[["Rue Constantinople 127",1192,804,36,5,17],["Wohnung Forestier (17 Rue Fontaine)",1342,815,22,3,4],["Unterwegs (nach dem Verlöbnis)",1267,809,4,2,0],["Redaktion La Vie Française",1466,722,2,0,0],["Standesamt (Mairie du 9e, Rue Drouot)",1395,730,4,0,1],["Bahnhof Paris (Gare Saint-Lazare, Abfahrt nach Rouen)",1247,757,3,0,1],["Fahrt über Rouen nach Canteleu und zurück nach Paris",1201,757,134,20,20]],[["Redaktion La Vie Française",1466,722,22,2,4],["Unterwegs zur Wohnung, Rue Notre-Dame de Lorette",1382,770,2,0,0],["Blumenladen, Rue Notre-Dame de Lorette",1374,785,2,0,0],["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,65,10,17],["Avenue des Champs-Élysées",1078,698,15,4,2],["Stadtbefestigungen (Porte Dauphine)",758,713,6,0,0],["Bois de Boulogne",695,697,1,0,0],["Weg um die Seen, Bois de Boulogne",585,628,14,4,9],["See im Bois de Boulogne",596,646,2,0,0],["Rückfahrt durch den Bois de Boulogne",662,670,13,0,2],["Arc de Triomphe, Place de l'Étoile",950,738,2,0,1],["Café-Chantant am Boulevard des Capucines",1288,703,4,1,0],["Café Tortoni, Boulevard des Italiens",1372,716,2,0,0]],[["Redaktion La Vie Française",1466,722,4,1,0],["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,50,15,8],["Wohnung Clotilde (Rue de Verneuil)",1292,580,14,1,1],["Unterwegs, Schaufenster eines Photographen",1213,656,4,1,0],["Boulevard Malesherbes (Walters Haus)",1224,713,20,6,3],["Junggesellenwohnung Jacques Rival",1345,510,85,19,14],["Heimfahrt im Landauer",1358,628,4,2,0],["Telegraphenbüro",1300,712,1,0,0],["Fahrt im Wagen mit Frau Walter",1295,768,5,3,1],["Fahrt im Wagen mit Clotilde",1300,645,2,0,0]],[["Platz vor der Trinité-Kirche",1323,757,13,0,0],["Église de la Trinité (Innenraum)",1320,770,65,4,17],["Redaktion La Vie Française",1466,722,12,3,1],["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,8,2,0],["Parc Monceau",1089,796,7,0,0],["Fahrt in der Droschke",1140,802,4,1,0],["Rue Constantinople 127",1192,804,10,0,2]],[["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,42,1,10],["Wohnung Laroche-Mathieu (Quai d'Orsay)",1175,615,12,0,0],["Redaktion La Vie Française",1466,722,6,0,0],["Unterwegs zur Junggesellenwohnung",1255,785,50,3,23],["Rue Constantinople 127",1192,804,55,5,14],["Kuchenbäckerei am Boulevard Malesherbes",1122,801,5,0,0],["Juwelierladen am Boulevard des Capucines",1270,700,5,2,0],["Rue Drouot",1396,730,3,0,0],["Wohnhaus Graf de Vaudrec, Chaussée d'Antin",1323,738,4,1,1]],[["Trauerfeier für Vaudrec (Église de la Trinité)",1320,770,2,0,0],["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,37,0,17],["Notariat Lamaneur, 17 Rue des Vosges",1655,555,11,1,2],["Spaziergang nach der Schenkung",1470,650,4,1,0],["Juwelierladen am Boulevard des Capucines",1270,700,9,0,0],["Théâtre du Vaudeville, Boulevard des Capucines",1315,709,3,1,0],["Wohnung Clotilde (Rue de Verneuil)",1292,580,1,0,0]],[["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,50,0,1],["Palais Walter, Faubourg Saint-Honoré",1160,712,109,4,22],["Garten des Palais Walter",1148,680,18,0,6]],[["Palais Walter, Faubourg Saint-Honoré",1160,712,26,4,2],["Wohnung Duroy/Madeleine (17 Rue Fontaine)",1342,815,12,0,0],["Place Notre-Dame-de-Lorette",1385,762,1,0,0],["Restaurant Coq-Faisan, Rue Lafayette",1437,762,3,0,0],["Wohnung des Polizeikommissars, Rue La Rochefoucauld",1330,789,8,0,1],["Polizeiwache (Mairie du 9e, Rue Drouot)",1395,730,1,0,0],["Rue des Martyrs (möblierte Wohnung)",1393,796,46,1,1],["Redaktion La Vie Française",1466,722,19,0,1]],[["Palais Walter, Faubourg Saint-Honoré",1160,712,7,0,1],["Fahrt über die Champs-Élysées und durch das Bois",850,690,3,1,0],["Fahrt über die Seine nach Saint-Germain und zurück",600,720,30,0,1],["Wohnung Du Roy (Rue Constantinople 127)",1192,804,6,0,0],["Place de la Concorde (Droschke vor dem Marineministerium)",1212,656,9,1,6],["Fahrt aus Paris Richtung Sèvres",950,610,11,1,5],["La Roche-Guyon an der Seine",800,535,13,0,0]],[["Rue Constantinople 127",1192,804,20,0,5],["Église de la Madeleine",1245,701,89,24,4]]],"fotos":[["PLACE DE LA MADELEINE",1246,701,"Place de la Madeleine. Église de la Madeleine. Façade. Paris (VIIIème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 24 avril 1918. Département Histoire de l'Architecture et Archéologie de Paris."],["PLACE DE L OPERA",1319,720,"Place de l'Opéra. Façade. Paris (VIIIème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 24 avril 1918. Département Histoire de l'Architecture et Archéologie de Paris."],["FOLIES BERGÈRE",1437,757,"Folies Bergère. Façades et vue perspective de la rue. Paris (IXème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 26 février 1921. Département Histoire de l'Architecture et Archéologie de Paris."],["BOULEVARD DES CAPUCINES",1311,705,"Théâtre du Vaudeville. Façade. Paris (IXème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 27 novembre 1919. Département Histoire de l'Architecture et Archéologie de Paris."],["GARE DU NORD",1572,793,"Immeubles parisiens. Place Napoléon III. Gare du Nord. Vue perspective du boulevard de Denain vers la gare, prise à l'intersection de la rue Lafayette. Paris (Xème). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 17 août 1920."],["GARE DU L'EST",1587,760,"Immeubles parisiens. Place du 11 novembre 1918. Gare de l'Est. Façade. Paris (Xème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 20 juillet 1920. Département Histoire de l'Architecture et Archéologie de Paris."],["GARE DU L'EST",1582,777,"Immeubles parisiens. Place du 11 novembre 1918. Gare de l'Est. Vue d'ensemble des voies. Paris (Xème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 26 juillet 1920. Département Histoire de l'Architecture et Archéologie de Paris"],["GARE SAINT-LAZARE",1257,757,"Immeubles parisiens. Gare Saint-Lazare. Cour du Havre. Paris (VIIIème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 02 septembre 1919. Département Histoire de l'Architecture et Archéologie de Paris."],["PARC MONCEAU",1109,803,"Immeubles parisiens. Parc Monceau. Pièce d'eau et colonnade. Paris (VIIIème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 12 août 1919. Département Histoire de l'Architecture et Archéologie de Paris."],["PLACE DE L'ÉTOILE",944,738,"Immeubles parisiens. Place de l'Étoile. Vue panoramique prise du haut de l'Arc de Triomphe. Paris (VIIIème arr.), Paris (XVIème arr.), Paris (XVIIème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 24 septembre 1920."],["JARDIN DES TUILERIES",1321,636,"Jardin des Tuileries et façades des immeubles de la rue de Rivoli. Paris (Ier arr.). Photographie d'Edouard Desprez. Plaque de verre, 1926-1927. Département Histoire de l'Architecture et Archéologie de Paris."],["ÉGLISE DE LA TRINITÉ",1323,763,"Immeubles parisiens. Place d'Estienne d'Orves. Église de la Trinité. Façade principale avec le square au premier plan. Paris (IXème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 23 septembre 1919. Département Histoire de l'Architecture et Archéologie de Paris."],["PORTE SAINT-DENIS",1527,698,"Immeubles parisiens. Porte Saint-Denis. Vue de face vers la rue du Faubourg Saint-Denis. Paris (Xème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 24 juin 1920. Département Histoire de l'Architecture et Archéologie de Paris."],["GARE DE LYON",1734,437,"4-8 place Louis Armand. Gare de Lyon. Façade. Paris (XIIème arr.). Photographie de Charles Lansiaux (1855-1939). Plaque de verre, 28 juin 1921. Département Histoire de l'Architecture et Archéologie de Paris."],["MUSÉE D'ORSAY",1263,602,"7-9 quai Anatole France, 60-62 rue de Lille. Musée d'Orsay. Façade sur le quai. Paris (VIIème arr.). Plaque de verre. Photographie de Charles Lansiaux (1855-1939), 15 février 1918. Département Histoire de l'Architecture et Archéologie de Paris."],["BOURSE DU COMMERCE ET COLONNE MÉDICIS",1431,631,"Bourse du Commerce et Colonne Médicis. 21 rue de Viarmes. Paris (Ier arr.). Photographie d'Édouard Desprez. Plaque de verre, 1934. Département Histoire de l'Architecture et Archéologie de Paris."],["CIMETIÈRE MONTMARTRE",1308,860,"Cimetière Montmartre ; 20 avenue Rachel. Vue d'ensemble. Paris (XVIIIème arr.). 1991. Département Histoire de l'Architecture et Archéologie de Paris."]],"basis":{"seine":[[2094,166,-18,8,-85,29,-27,12,-61,42],[2090,94,12,45,-1,18,-7,9],[305,679,22,13,14,17,10,9],[424,227,-24,-1,-20,4,-25,9,-57,29,-15,9,-20,29],[424,227,-35,-11,-21,-2,-23,5,-21,9,-19,12,-15,12,-11,11,-14,20,-4,12,2,11],[887,572,-4,-17,-86,-60,-24,-12],[887,572,-91,-66,-15,-13,-8,-10,-11,-7,-79,-82,-74,-74,-22,-13,-66,-47,-20,-10,-46,-16,-31,-7],[1903,257,-27,18,-101,83,-46,42,-115,85],[1614,485,-46,18,-29,9,-7,6,-10,29],[1220,627,-30,8,-17,3,-69,0,-89,-3],[1209,631,52,-16],[609,320,-7,-20,-5,-26,-4,-5,-18,-13,-27,-16,-36,-16,-43,-13,-26,-5,-41,-1,-20,4,-14,5],[229,388,1,8,22,61,3,14,-1,25,-11,34,-2,20,4,12,6,21,21,41,11,28,22,27],[358,728,75,51,95,79,17,20,24,14,65,57,18,11,57,23,42,14,56,12],[263,306,-5,21,-23,33,-4,8,-2,8,0,12],[351,718,7,10],[1385,582,-34,7],[1426,576,-25,5,-16,1],[901,584,-14,-12],[943,616,-25,-16,-17,-16],[1014,635,-19,-2,-26,-6,-26,-11],[1015,635,-1,0],[1522,547,-16,8,-48,14],[1458,569,-32,7],[1351,589,-49,10,-41,15],[1246,619,-26,8],[1250,618,-4,1],[1261,614,-11,4],[1240,618,14,-4]],"kanal":[],"strassen":[[1929,480,-23,-2],[1714,277,15,8],[1573,262,20,0],[1691,216,-20,11],[1344,734,29,7],[1495,839,-25,-3],[648,575,11,18],[1979,829,25,-7,-3,-15],[1329,692,8,-17],[1327,646,15,17],[1755,177,13,4,11,-11],[1816,176,28,13],[1870,264,-35,-8],[1112,581,-13,-8],[892,539,14,-14],[609,584,26,-7],[1789,924,-15,-12],[994,784,36,7],[1780,460,21,-10],[1656,670,21,-4],[879,639,21,29],[1770,721,-34,31],[1655,475,-15,20,-18,16],[1191,912,21,5],[1598,903,-19,0],[1495,836,17,1],[1412,316,25,-7],[1911,638,-25,-6],[1479,707,-22,3],[1151,404,48,15],[1106,882,-35,-4],[1227,382,-7,18],[1504,514,-22,9],[907,573,-12,-20],[862,701,69,29],[1825,337,20,11],[1131,600,3,25],[1468,531,-25,7],[2020,448,-18,-48],[1177,372,-9,-1,-14,-12],[942,786,13,27],[1297,420,-9,31],[1279,481,-6,20],[943,654,11,19],[941,647,58,3],[1140,678,-37,11],[1027,645,-19,-3],[989,639,-50,-14],[1203,640,16,-5],[1654,467,13,-12],[1623,511,-14,10],[361,640,16,-9],[470,761,26,-6],[950,840,-33,-18],[855,818,36,22],[890,841,-16,-10],[1052,873,16,1],[1218,795,-52,18],[1242,830,-39,-8],[988,847,39,-4],[428,783,19,17],[414,772,12,9],[528,871,32,-11],[623,841,25,-8],[942,786,7,-42],[772,770,-17,-1],[624,842,-54,18],[568,858,34,-10],[983,873,20,9],[1205,749,24,2],[1525,124,-26,-18],[602,208,9,-2,21,6],[602,208,-58,-18],[728,240,-48,-14],[792,269,-36,-19],[789,311,14,8],[792,269,13,-10],[592,158,13,11],[610,212,12,18],[613,212,10,14,4,14],[861,632,-85,9],[1446,193,34,9],[1257,133,-41,9],[1154,355,-39,-28],[1208,425,10,-26],[1689,441,13,-7],[243,596,-18,2],[451,868,18,-16],[215,856,-33,2],[742,716,-18,-5],[2103,345,-25,-9],[2078,336,-22,-12],[2079,334,27,10],[2124,362,11,36],[1937,278,-17,-2],[1843,246,28,12],[1835,326,25,-20],[2151,520,-8,14],[2137,617,4,-27,-2,-23],[2130,538,10,-3,7,6],[2142,569,-2,43],[2139,567,-1,-19],[2150,517,-2,-27],[2138,622,-4,45],[2132,688,0,-15],[2112,651,-22,-5],[2132,673,2,-39],[2135,682,-4,36],[2229,760,-30,-28],[2098,762,-19,30],[2079,792,-15,11,-22,7],[2077,792,19,-30],[2096,762,13,-19],[2109,743,19,-25],[2128,718,4,-30],[2131,718,-20,26],[662,385,66,67],[1813,760,13,-10],[223,232,-11,19,18,11],[241,267,12,12],[292,413,16,12],[289,408,24,6],[370,417,90,17],[1705,784,-1,31],[1668,841,16,-1],[1706,775,36,-31],[1901,582,40,-17],[2023,452,-32,23],[1764,387,20,11],[1853,394,16,-2],[1210,423,19,15],[906,638,31,8],[936,647,-31,-8],[1328,703,40,-8],[1061,196,-17,19],[877,323,-23,-15],[929,279,12,10],[1268,514,-50,-23],[2143,463,-4,-21],[2139,469,-25,2],[2141,442,4,20],[2119,357,-16,-12],[1968,841,-3,15],[752,441,-30,-34],[709,403,-15,-14],[753,441,14,11],[724,406,29,35],[1565,841,18,2],[1599,800,18,5],[925,255,-2,15],[853,220,45,-13],[909,203,24,-7],[984,222,18,16],[918,208,20,12],[850,307,-52,21],[857,302,50,-22],[712,352,24,-3],[669,645,-23,-22],[743,728,-16,-18],[702,583,-31,-11],[1708,429,16,-12],[729,709,16,18],[711,696,-42,-51],[346,309,-21,-6],[781,360,-10,-19],[1016,624,-40,-7],[917,609,-12,-9],[959,471,55,7],[1047,246,38,-8],[1048,247,-40,9],[991,260,-60,14],[1086,239,-38,8],[1085,238,28,-6],[1991,287,20,7],[1884,285,-27,-13],[1801,324,20,11],[772,364,-56,16],[695,388,-23,11],[899,200,-15,-5],[2058,324,21,10],[2036,311,22,13],[2036,313,-15,-9],[2056,324,-20,-11],[878,142,56,-21],[500,211,-5,-29],[433,336,-19,-6],[765,490,56,42],[1431,715,-27,4],[1037,937,-23,-12],[1038,935,-45,-26],[671,644,25,33],[664,642,-19,-16],[1220,399,-11,26],[1227,382,-7,17],[1218,399,8,-18],[1092,625,-63,-1],[606,352,-27,6],[712,354,-47,-5],[664,347,48,5],[541,404,2,23,5,10],[549,455,-10,-35,-1,-16],[546,470,-10,12],[533,482,11,-13],[933,887,-32,-15],[939,887,37,11],[995,908,43,25],[975,899,-42,-12],[915,878,18,7],[884,859,31,19],[882,859,-22,-13],[901,872,-19,-13],[229,273,-34,-6],[253,279,31,10],[1530,603,-16,-28],[222,353,-6,32,2,15],[228,309,-5,23],[237,466,-9,-30],[221,348,1,-23,6,-18],[201,459,9,-31],[182,491,6,-31],[1853,739,27,-1],[289,283,15,-9],[260,346,14,-21],[276,324,-33,44],[247,413,-22,2],[2665,703,15,4],[2435,606,31,12],[785,513,17,11],[300,912,27,1],[939,625,52,14],[675,280,-1,17],[1483,587,19,32],[2271,456,-37,3],[1228,420,15,14],[2102,443,-42,3],[730,126,-18,-9],[1280,577,13,19],[2485,469,24,-4],[2396,714,30,-47],[2452,860,-41,-16],[1570,495,19,6],[222,231,0,-7,-5,-4,-31,-12],[181,199,10,11,30,11,2,11],[2455,734,-5,-10,-6,-3],[2477,745,-20,-6],[1769,209,-41,-14],[1839,246,-50,-29],[1458,150,-4,-7,3,-2,21,9],[1476,145,-29,-15],[1498,142,20,6,14,8],[1536,175,19,-13],[1531,124,16,10,18,21],[1531,180,-23,-1,-42,-15],[1298,415,8,-21],[2466,618,-29,5],[2234,597,-30,7],[2468,682,-32,-28],[2494,696,22,12],[2485,532,-30,30],[2264,489,-66,4],[2435,606,2,17],[2384,718,35,1],[2494,696,-26,-14],[745,727,16,18],[1740,375,18,9],[1397,200,19,-3],[2671,173,-20,-12],[1376,207,-29,6],[1141,874,17,-9,27,-25],[867,567,12,9],[836,545,-26,-16],[587,453,10,25],[594,478,-10,-25],[654,407,-17,8],[584,453,9,-17,23,-13],[538,404,3,-15],[1443,925,18,-3],[1979,755,-27,-3],[1751,922,16,-15],[2198,234,-30,-10],[2196,186,2,22],[794,357,45,-14],[1688,215,-41,-13],[1595,189,32,6],[2021,231,-21,-10],[1733,937,18,-15],[506,480,-36,0],[1410,751,17,4],[1800,578,-32,20],[1250,270,-33,-14],[774,640,89,-10],[716,639,-25,-8],[671,934,-21,-11],[1652,339,22,7],[1634,335,-55,-18],[1861,307,-13,10],[1762,384,14,-13],[1703,435,-12,10],[1689,441,13,-8],[838,831,-23,-32],[841,832,15,10],[547,842,-11,-13],[1730,194,41,14],[1728,195,-29,-9],[440,480,30,0],[536,482,-11,14,-3,16],[1205,641,14,-6],[1027,644,40,3],[1008,641,19,3],[1066,750,21,0],[1640,150,-31,-4],[1734,178,-46,-18],[1310,765,-41,14],[1019,477,42,-12],[978,492,-26,9],[978,490,34,-11],[1011,482,-30,9],[926,509,-19,18],[923,507,27,-8],[977,616,39,7],[1620,403,13,17],[1193,148,-17,5],[1496,916,-30,37],[1791,923,26,20],[2094,782,-10,15],[1593,366,13,17],[491,944,-36,-15],[1149,224,22,-6],[1142,226,-31,7],[1951,936,18,-69,12,-19],[1983,848,-10,16,-7,24],[1981,848,28,-23],[500,217,-15,-6],[704,114,-2,23],[730,126,15,8],[2557,667,-24,-19],[1371,761,20,-2],[905,599,13,10],[918,609,21,16],[905,600,-20,-17],[928,588,-14,-10],[629,205,-35,-12],[430,904,-21,2,-21,-6],[2361,726,23,-8],[226,413,21,-1],[316,404,-27,3],[634,554,10,15],[689,635,15,17],[1466,835,-62,-12],[1397,819,71,13],[1994,190,12,13],[1997,217,-16,-20],[1087,840,-15,12],[522,447,25,5],[628,396,-51,-16],[520,512,2,-15,11,-15],[522,512,5,15,15,14],[707,655,10,12],[641,367,17,16],[1744,459,16,2],[1293,190,31,-7],[1324,183,25,-16],[1638,449,-62,42],[497,874,7,6,1,10],[787,331,16,-7],[767,341,-32,10],[546,480,19,0],[189,754,22,-12],[650,342,-27,-27],[1969,864,2,8,-4,17],[1969,866,1,6,-13,46,-5,6],[1949,925,6,-20],[1952,922,11,-33,-3,-9],[1809,574,44,-27],[434,873,23,2],[2433,956,15,-37],[2411,926,37,-7],[2502,909,26,-8],[2529,902,-27,7],[2600,882,18,-1],[389,899,24,4,33,-9],[2064,918,34,6],[1609,143,5,-15],[2122,767,16,-3],[2120,768,-20,4],[2050,917,-24,-5],[2650,246,3,-17],[2131,440,15,-1],[2174,437,-21,1],[2126,338,36,1,36,11],[1954,167,25,14],[1801,352,-19,16],[1665,173,36,12],[2041,809,21,-7,15,-10],[2021,818,-38,30],[2202,344,2,-42],[2648,274,62,54],[2670,203,-8,16],[2287,756,-27,7],[2297,725,12,-15],[2571,398,-72,19],[1599,161,35,0,31,12],[1642,165,-24,-4,-59,6],[1897,269,-21,-7],[1555,148,-17,-17],[1240,205,-25,5],[1287,193,16,-3],[1531,176,-19,0,-42,-16,-10,0],[2317,848,45,6],[2450,919,-6,14],[2454,908,9,-22],[953,721,4,-42],[1120,208,17,11],[677,278,34,0],[2017,299,19,12],[2009,295,-19,-7],[1782,400,-21,-11],[743,785,-35,4],[581,799,-15,-29],[680,792,-64,8],[291,616,-25,-49,-2,-33],[378,503,22,-6,17,-15],[1690,351,18,8],[1680,420,22,11],[1342,710,-17,-3],[589,584,-21,0],[509,677,40,60],[646,623,-9,-14],[648,623,23,21],[612,586,-57,-34],[614,585,18,13],[1459,306,-49,14],[612,340,-11,-12],[548,317,24,-6],[438,336,18,6],[511,263,-21,-10],[477,249,-26,-9],[1269,779,-23,7],[1141,648,23,1],[1098,647,43,1],[2651,161,-15,-9],[639,608,9,15],[1888,251,33,-23],[1731,228,39,13],[2269,832,42,15],[603,505,16,25],[1260,560,45,-15],[1219,635,31,-10],[1959,543,23,-30],[1945,566,-47,19],[1944,486,-94,14],[1717,628,-16,10],[1761,513,40,-8],[289,676,14,13],[1985,513,-24,31],[1583,845,-17,-1],[1579,903,-16,1],[1558,904,-42,8],[1239,577,15,-13],[955,606,-19,-12],[758,656,53,23],[717,454,16,16],[617,424,-22,13,-8,16],[1694,215,22,8],[1791,249,-20,-6],[1770,241,32,10],[1538,660,18,-4],[1359,532,29,-7],[1218,397,8,-16],[1276,360,-36,12],[1306,394,16,-44],[1244,436,122,-40],[1506,369,-20,3],[2345,675,-16,17],[2311,711,-14,14],[2349,661,17,-32,5,-28],[555,552,-15,-10],[540,542,-15,-15,-5,-15],[542,541,14,9],[556,550,58,35],[249,158,-15,-5,-18,0],[195,145,-42,-20],[619,951,-26,-25],[559,899,-12,-10],[543,389,-2,15],[545,379,12,-11],[579,358,-21,11],[578,357,27,-6],[558,369,-10,11],[557,368,21,-11],[2486,796,-14,16],[792,770,-15,-9],[778,759,17,10],[817,799,16,25],[242,398,-2,-21],[1564,308,72,25],[2526,476,19,9],[2325,486,-32,1],[2639,488,-23,1],[1129,809,20,2],[1205,820,38,8],[2165,172,23,1],[2673,202,-18,-1,-21,-7],[2656,229,-4,16],[1989,473,31,-22],[2021,785,43,-11],[1099,805,21,3],[1714,831,20,5],[1204,450,24,-8],[2176,437,0,-36],[1189,757,-49,40],[1168,139,8,14],[1211,208,27,-6],[2150,761,26,-1],[463,434,21,5],[268,458,5,17],[268,458,-11,-31],[258,427,10,31],[1398,267,18,-2],[2406,845,-27,8,-12,-1],[2367,852,41,-14],[201,599,-29,-1],[2256,828,-26,-9],[1988,321,33,12],[2257,763,-23,-1],[2285,735,-23,26],[2401,574,-16,4],[2371,483,-25,1],[1807,691,-36,29],[1888,207,15,7],[1844,189,44,18],[1702,131,-37,-11],[729,895,-24,12],[832,868,-38,6],[459,242,20,6],[2204,604,-18,5,-21,12],[2374,933,37,-7],[1774,463,-49,23],[1752,651,28,-5],[1761,239,-31,-10],[1624,692,-41,46],[1326,345,17,18],[1471,833,24,3],[1438,668,-7,-15],[960,751,17,24],[998,652,-57,-3],[999,650,15,-5],[412,900,-15,3],[519,910,16,12],[2170,148,32,5],[2153,145,17,3],[2194,281,6,-39],[1806,132,-30,24],[1963,312,-15,-4],[1994,217,-31,15],[1561,322,32,44],[740,279,46,30],[2003,397,21,51],[1979,181,17,-15],[2504,597,-17,-12],[1756,386,-17,-10],[1177,444,21,6],[1443,164,26,0,52,15],[1367,168,-16,3,-24,14],[537,214,19,-2],[537,214,-25,-2],[505,210,32,4],[559,238,25,17],[1681,490,12,28],[1720,443,20,14],[1028,354,-24,7],[1606,761,16,26],[514,906,-12,-10],[462,763,-14,6],[411,921,7,-14,28,-13],[467,892,-38,15],[491,252,24,13],[327,913,16,-6],[2564,496,16,-3],[2558,499,-51,21],[973,237,16,7],[989,244,-16,-7],[644,212,30,6,6,6],[2676,527,-20,-2],[2654,525,-23,-1],[2608,526,-28,4],[2564,519,3,-16],[2580,493,16,-2],[2616,295,21,-16],[1794,852,52,13],[1847,866,-53,-14],[687,426,28,26],[1003,575,21,-13],[1062,647,-35,-2],[676,826,-26,8],[721,810,39,-12],[713,814,-37,12],[785,151,20,16,12,4],[1009,512,-25,-18],[1740,883,29,23],[1701,815,0,-31],[2021,591,18,-15],[2064,505,2,-15],[1997,633,10,-28,14,-14],[1976,649,-21,1],[964,829,8,16],[955,813,9,16],[937,854,20,-2],[1055,547,-12,24],[715,378,54,-15],[1014,286,-55,13],[874,331,-21,9],[1265,564,15,13],[1829,674,-22,17],[812,490,-23,-16],[1241,434,-26,-22],[1425,585,29,-8],[900,808,53,29],[884,800,16,8],[1544,312,-18,-6],[1743,784,-2,-9,4,-7,9,-4,15,0],[1550,322,-28,40],[1072,272,35,-8],[1526,212,-21,0],[1417,198,-20,4],[1331,217,-27,5],[1087,270,-16,4],[1259,696,19,3],[1856,275,-38,31],[1576,726,-19,-33],[1888,602,-11,25],[2312,746,25,-10],[1557,652,-14,-25],[1793,465,24,3],[2022,372,19,-7],[1112,627,22,1],[1712,363,-23,-10],[1680,525,-14,-32],[1440,261,-18,3],[1552,261,-45,-3],[1609,521,5,-13],[1542,626,-7,-14],[1554,686,-16,-26],[1149,403,16,-13],[1450,350,-34,-2],[1665,270,20,3],[1571,652,26,-5],[1595,191,-16,2,-20,14,-14,4],[254,160,17,6],[1360,331,36,-10],[1355,375,11,12],[799,447,-20,10],[920,393,-41,18],[946,381,-26,12],[879,411,-23,11],[836,369,-18,-8],[283,290,-30,-10],[2140,548,2,21],[2142,531,8,-14],[2531,358,24,-22,56,-38],[2671,128,-34,18],[1942,565,17,-22],[2092,145,-19,0],[2092,145,20,0],[190,798,46,30],[1330,536,-11,-11],[1773,533,-12,-20],[1669,825,17,14],[1513,778,28,7],[1378,417,12,22],[1602,652,18,15],[2592,173,21,10],[1170,466,22,-11],[1432,514,6,14],[1756,153,26,-27],[1163,752,34,-4],[1299,503,-12,-13],[429,726,-31,-20,-48,-23],[1077,647,21,0],[1581,796,18,4],[1239,742,-36,5],[1199,619,28,-29],[1366,398,-123,39],[1321,706,-21,-3],[1441,127,-50,-18],[1383,722,-50,7],[1302,734,-25,3],[1185,663,-45,15],[2646,197,24,-22],[2647,219,-5,-16,2,-3],[2588,172,-34,1],[1806,132,-10,-8,8,-15],[2631,148,39,-21],[1495,669,31,-7],[995,742,36,4],[257,427,-8,-13],[991,639,17,2],[1008,642,-19,-3],[890,586,15,13],[540,284,22,15],[1939,250,-17,16],[913,609,6,16],[730,645,28,11],[757,586,54,16],[1043,404,36,11],[809,463,22,1],[789,474,-13,-9],[762,454,-10,-13],[1304,222,-38,8],[1149,407,-15,16],[1030,283,-16,3],[1353,578,-20,5],[1311,516,-12,-13],[1027,426,-25,-7],[1127,538,18,-1],[1159,629,20,0],[886,384,-35,-10],[1128,430,16,5],[496,755,27,-7],[1734,375,-15,-8],[1221,717,-21,29],[1240,202,15,-3],[1480,202,25,7],[1564,201,16,-10],[1506,210,-60,-15],[1600,262,30,4],[1052,347,-24,7],[901,338,16,10],[1399,564,-18,11],[1183,247,32,-6],[1235,362,10,-24],[954,547,-35,22],[1269,517,-10,43],[1390,439,10,19],[1024,562,28,-18],[935,590,15,11],[1272,500,6,-21],[696,677,16,17],[713,695,16,14],[2092,606,6,-31],[2087,633,4,-19],[745,470,20,20],[625,352,13,12],[536,368,-19,-6],[1008,255,39,-9],[2510,482,-48,-3],[1909,295,22,7],[2108,535,-5,24],[2643,198,28,3],[1477,137,21,5],[1920,274,22,3],[1919,265,19,-16],[1918,275,-16,-5],[1903,269,16,5],[954,160,14,-13],[678,252,-2,25],[672,315,-1,21],[623,315,-12,-15],[678,252,33,14],[2612,184,-16,-8],[573,312,-25,5],[324,356,8,-18],[522,934,12,-11],[446,894,22,-5],[1009,512,-51,33],[497,388,-22,2],[1396,822,-17,2],[818,248,5,-14],[844,301,-18,-12],[818,248,27,-22],[750,166,-17,-13],[750,166,22,-13],[2235,103,-21,34],[2042,647,-29,1],[1999,665,12,14],[1630,793,17,14],[1107,450,-42,-12],[677,933,27,-26],[308,425,8,-19],[358,940,-16,-15],[2246,140,36,-15],[447,769,14,-7],[1949,336,24,-15],[1754,506,-26,-18],[523,748,24,-6],[485,905,-25,15],[862,845,22,14],[1012,869,-37,-16],[1455,508,26,-6],[1816,401,-18,3],[1938,249,24,-17],[2073,473,25,-2],[2062,475,-70,7],[1334,601,64,-11],[1690,540,-5,18],[2078,364,9,25],[231,263,-16,-6,-5,-6,2,-7,10,-13],[237,685,-18,-7],[1706,435,-15,12],[233,568,4,16],[265,528,113,-25],[347,308,20,6],[413,350,21,-13],[409,490,-14,10,-17,3],[531,321,17,-4],[2083,349,16,-6],[228,431,7,15],[1962,232,15,-9],[518,183,-19,-5],[561,425,3,-25,6,-14],[2283,124,45,-24],[241,371,2,-7,14,-14],[743,191,-6,-18],[680,226,-67,-14],[811,212,-22,-17],[789,195,-30,-22],[815,283,-23,-14],[347,145,19,-21],[2676,475,-15,7],[2188,364,10,-14],[1874,626,20,-42],[1861,642,-27,28],[1054,796,29,7],[1191,627,10,13],[1259,544,8,-27],[482,180,-16,3],[1372,826,-29,8],[2598,125,26,15],[1256,176,1,18],[605,278,-4,-8,-13,-11],[1257,198,36,-8],[227,433,-8,-17],[226,416,5,15],[224,418,6,16],[315,662,-19,-33],[533,165,4,-5,16,-3],[594,193,-22,-10],[291,858,35,15],[1614,128,6,-23],[1615,128,-7,20],[1597,143,-17,-22],[1768,598,-39,23],[1893,751,-40,-12],[1893,878,34,9],[1769,906,22,17],[1364,936,79,-11],[1730,229,-39,-13],[1573,262,-21,-1],[272,215,17,-12],[2453,479,-24,-1],[1009,818,10,15],[2044,343,-25,-9],[2017,292,23,-15],[1557,541,21,-8],[1598,526,-20,7],[2081,645,-34,2],[811,602,23,8],[1048,838,25,-5],[1600,262,19,-25],[1780,646,32,-6],[1900,734,30,-23],[1814,504,28,-2],[730,729,-17,15],[2618,881,25,-5],[2643,876,-25,5],[2626,692,37,10],[1685,273,24,3],[889,323,33,-14],[330,675,-13,-10],[366,189,26,-1],[1786,168,30,8],[1880,287,-10,11],[2147,472,5,22],[2152,494,2,13,-3,13],[2148,490,-3,-17],[1850,471,15,2],[1943,306,-19,-4],[2663,634,-26,1],[2575,674,-18,-7],[2625,635,-69,-10],[2634,634,27,-4],[2477,745,16,23],[2468,733,9,12],[1419,685,17,-3],[1893,390,46,4],[1455,304,42,-10,48,15],[277,316,4,-21],[1604,682,-44,7],[1520,809,-10,11],[939,625,-22,-16],[1496,896,0,18],[1255,233,-23,5],[349,682,-19,-7],[478,777,-12,-13],[1993,488,-4,16],[2231,460,-47,4],[231,231,13,2,10,-6],[2087,706,2,-27],[1369,167,55,-2],[1878,260,18,6],[1869,259,-26,-10],[758,746,-15,-18],[633,602,-21,-16],[931,273,38,-9],[740,348,26,-8],[2449,564,-48,10],[1368,695,19,-3],[661,596,13,19],[1276,601,-23,7],[446,334,72,-10],[397,470,15,7],[370,459,15,6],[381,320,-20,-6],[409,328,25,7],[456,342,28,9],[352,401,-36,3],[498,442,24,5],[1431,653,-7,-14],[1596,843,19,0],[1734,836,60,16],[1065,878,-15,-2],[820,954,27,-30],[1765,906,-26,-21],[1694,468,-18,-10],[1223,180,18,-2],[1240,612,-24,7],[1315,605,19,-4],[650,834,-26,8],[771,794,22,-7],[648,833,73,-23],[1457,710,-26,5],[1436,682,17,-4],[1627,195,20,6],[1705,824,27,-11],[1530,506,-17,5],[1416,197,30,-4],[838,775,-26,8],[1263,858,-7,17],[307,273,-18,15],[1227,590,12,-13],[1128,752,16,0],[1579,317,-15,-5],[1496,876,0,20],[1436,682,-9,20],[1437,758,76,20],[192,266,-33,-11],[2571,883,-42,19],[1023,254,11,11],[1504,109,24,14],[2629,772,22,-3],[2600,683,19,7],[1439,512,16,-4],[1305,545,22,-5],[1388,525,43,-11],[1494,499,50,-5],[1550,706,18,32],[1015,866,28,5],[985,854,30,12],[1622,194,-19,-2],[1646,268,19,2],[2346,484,-21,2],[178,627,7,5,7,18,20,19],[1680,162,-35,-11],[544,190,-15,-4],[1962,906,-4,14,-6,5],[902,206,-49,14],[1188,187,-26,4],[1614,845,-20,0],[421,487,-6,48],[342,380,23,-11],[322,385,2,-29],[418,540,31,46],[481,634,9,14],[1669,843,-21,2],[1516,912,-20,4],[2528,483,-18,-1],[271,166,23,9],[920,127,-36,14],[576,150,3,-20],[241,712,-16,4],[219,677,13,6],[451,873,18,-2],[823,234,-5,-17],[257,225,15,-10],[1797,763,16,-3],[332,657,-15,6],[376,637,-18,6],[219,152,27,4],[1992,480,72,-6],[2114,469,25,-2],[2159,466,16,-2],[711,278,26,1],[1074,139,18,10],[1127,161,35,-4],[870,572,-34,-27],[786,462,18,1],[1013,396,30,8],[923,310,-33,14],[974,377,27,14],[989,415,-32,-10],[957,297,31,-6],[2293,487,-29,2],[2108,184,17,-3],[2658,796,-49,4],[2287,123,-40,18],[1075,875,36,3],[1306,718,-6,-15],[638,243,30,7],[1787,557,-14,-24],[201,246,6,-12,13,-4],[492,837,-23,-17],[1073,833,26,-6],[253,280,-13,-13],[1855,272,-28,-12],[2085,389,-9,-25],[2093,410,9,27],[2600,165,26,-13],[331,874,18,7],[2435,606,-4,-19],[540,387,-22,0],[325,301,17,5],[2062,771,-37,-11],[2090,645,23,5],[2089,646,1,18],[1490,567,17,-6],[763,798,-41,13],[1199,420,-48,-13],[651,923,21,11],[570,874,12,10],[616,800,-25,3],[536,829,-28,-28],[2285,586,-39,8],[1586,390,-54,-17],[1591,273,-20,25],[839,343,25,-9],[722,271,15,7],[1416,348,-34,-1],[889,467,70,4],[2488,424,-17,13,-44,5],[944,119,24,-4],[538,921,22,-18],[1945,647,-29,-7],[728,280,-17,-1],[1576,251,6,-19],[1519,410,4,28],[728,894,27,-14],[789,874,42,-7],[875,862,-19,2],[644,725,-42,-15],[705,747,-61,-22],[512,856,-12,-11],[2109,471,-37,3],[1304,221,39,-9],[1254,624,38,-12],[2505,396,15,-21],[2373,604,-4,21],[1269,756,37,5],[1208,815,10,-20],[1218,795,8,-14],[1097,571,-21,-14],[511,875,17,-4],[346,897,5,-16],[351,881,14,-10,36,-3],[586,918,33,31],[322,709,-11,-11],[459,812,-30,-25],[325,873,-35,-14],[173,786,16,11],[1826,750,12,-8,15,-3],[2119,802,-8,16,4,14],[2450,919,32,-7],[1966,888,-13,48],[2053,269,16,-10],[1853,242,17,3],[202,267,23,5],[947,172,0,21],[1734,94,-23,29],[1061,196,29,4],[2108,117,-6,-19],[459,344,-22,-6],[495,354,21,7],[479,350,-18,-5],[312,698,14,13],[331,716,22,16],[363,737,27,20],[1702,131,32,-41],[1051,664,-16,-8],[1089,684,-26,-14],[1522,805,-27,-8],[952,501,-26,8],[950,499,28,-9],[1220,667,13,17],[773,341,10,19],[803,324,54,-22],[908,281,-58,26],[1559,167,-20,11],[2068,772,-8,7,-40,9],[1214,209,25,-5],[1169,220,-19,5],[1113,232,29,-7],[1111,233,-25,6],[411,188,15,2],[990,792,17,24],[512,294,12,17],[782,142,69,12],[745,134,15,4],[975,709,14,-24],[781,720,65,7],[1721,365,16,8],[1704,184,26,9],[1979,396,16,0],[236,828,27,17],[272,934,4,-11,11,-8],[1614,508,2,-13,32,-22],[1274,930,9,28],[782,142,15,-14],[864,906,16,-17],[1755,356,33,-26],[496,271,14,20],[2530,900,34,-16],[526,225,-15,-4],[1637,515,18,6],[968,147,-14,13],[556,583,-59,-5,-48,8],[566,697,-39,-14],[527,683,39,14],[509,677,-96,-35],[1074,182,-13,14],[1674,346,16,5],[973,143,14,-14],[1055,160,-20,-15],[1608,397,-22,-7],[585,704,-19,-7],[561,760,-8,-16],[621,350,43,-3],[1987,384,28,-10],[270,262,-12,12],[629,579,-16,4],[1790,215,53,31],[605,351,16,-1],[623,351,-17,1],[665,349,-42,2],[663,196,39,-5,17,-7],[483,829,11,10],[309,665,-23,6],[834,610,17,6],[1964,202,-23,12],[413,350,-17,7],[396,357,17,-7],[553,157,-15,3,-4,5],[1203,822,-36,-7],[1166,813,39,7],[2288,455,58,-5],[809,322,29,20],[890,757,15,-5],[722,583,-16,1],[1392,718,-50,-8],[1035,900,-15,-8],[1243,828,25,5],[751,642,23,-2],[1087,924,-21,-10],[1891,524,56,-33],[2138,438,-4,-36],[2136,402,4,36],[2024,815,17,-6],[2042,810,-17,6],[1523,438,-6,26],[860,466,29,1],[2036,163,9,-17],[497,874,8,6,4,18],[1709,660,38,-8],[2199,732,-24,-24],[2041,365,15,-6],[1398,590,27,-5],[1325,764,46,-3],[1530,551,19,-7],[1087,924,-19,-8],[1971,491,15,12],[1677,652,24,-14],[1986,503,5,-14],[1915,370,12,-17,22,-17],[1545,211,-19,1],[1261,297,-7,18],[1116,824,33,-7],[1496,703,-17,4],[2208,178,28,0],[1319,763,13,-31],[1224,435,-14,-11],[304,177,38,-28],[2329,101,-42,22],[1370,346,-31,-1],[2573,779,-11,-15],[1362,166,-40,4],[1436,159,-33,5],[1460,160,-17,0],[1045,193,16,3],[1068,913,21,10],[1068,913,21,10],[1089,923,29,13],[1660,205,22,7],[900,669,15,20],[2045,146,-21,-1],[2507,598,26,14],[2533,612,20,11],[862,526,-25,-18],[1990,288,-41,-9],[1231,772,7,-14],[916,690,25,34],[2175,708,-13,-12],[2115,491,-3,19],[2036,163,-19,17],[1996,166,22,-18],[2006,184,-24,11],[2466,476,19,-7],[1115,327,-27,-16],[1175,310,-34,8],[931,396,-37,-10],[2459,573,18,7],[1069,541,26,-1],[1666,493,-11,-18],[1461,922,26,-5],[765,718,16,2],[599,348,21,-1],[571,358,14,-5],[2089,679,-3,-32],[2089,706,-1,15],[2084,728,3,-22],[2079,747,5,-19],[2086,729,-13,34],[1873,632,-12,10],[2149,794,-19,-4],[1040,120,20,11],[1448,496,-12,-22],[1678,161,21,-26],[986,586,15,-9],[1035,588,-11,24],[1012,610,-10,-31],[1924,540,-24,40],[460,812,35,27],[1646,115,-18,-14],[2544,487,-16,-4],[2106,344,13,10],[2133,398,-9,-29],[273,488,-9,30],[727,710,-16,-14],[548,437,3,18],[1699,186,-36,-12],[1701,185,29,9],[969,264,26,-6],[2338,584,-18,1],[933,305,22,-7],[1079,415,45,14],[1823,439,14,-7],[2696,365,-93,25],[2151,182,13,-9],[2174,179,-17,1],[1116,937,-25,-11],[1671,227,-32,15],[868,188,-22,-6],[1821,257,24,-13],[1828,259,28,12],[987,726,18,-5],[1466,164,-22,1],[857,768,33,-11],[602,208,-46,4],[1646,202,-24,-8],[1736,752,-28,24],[2605,799,-21,-8],[2629,772,-53,8],[2561,763,-34,-45],[2556,783,16,-2],[2354,579,-97,-17],[996,881,-20,-8],[971,731,16,-5],[1009,719,26,-8],[1035,711,18,-6],[830,538,50,40],[693,630,26,8],[776,641,-24,3],[1708,398,-19,14],[1727,384,-13,10],[1027,843,21,-5],[1034,852,12,18],[1726,418,-16,12],[1803,350,17,-12],[1761,384,15,-13],[1739,885,-48,-39],[1692,844,48,39],[1942,277,49,10],[1484,300,-25,6],[1461,375,-56,12],[957,198,15,15],[1782,126,11,-12],[1619,668,-17,-4],[1255,283,-28,10],[1004,361,-58,20],[856,422,-21,9],[1150,226,18,8],[2317,585,-23,1],[1088,311,-12,-10],[831,464,21,1],[1325,278,23,-3],[1363,273,16,-3],[917,348,41,21],[1262,123,-5,43],[1278,835,17,9],[1777,712,50,-39],[1829,669,41,-37],[1184,249,-73,16],[2101,891,2,-19],[2123,930,-26,-5],[2098,924,25,5],[1602,664,-28,-6],[1704,131,-21,27],[214,673,-23,-22,-6,-18,-8,-6],[1646,843,22,-2],[1202,451,35,10],[1269,469,-13,-13],[1851,867,41,11],[2025,760,-46,-5],[1227,920,21,5],[527,683,-18,-6],[1625,250,-23,11],[1549,500,-19,6],[2488,631,-22,-13],[1305,320,11,13],[2603,390,-32,8],[2230,819,-14,-5],[320,434,16,9],[1061,465,24,-7],[1418,488,8,15],[1903,214,20,9],[385,900,-24,-10],[369,114,-7,-22],[2026,912,24,4],[917,578,18,12],[2312,746,-25,10],[905,639,-24,-6],[882,631,24,7],[1326,836,44,-13],[1376,822,21,-3],[433,235,-16,-2],[576,454,-15,-29],[1933,156,21,11],[1502,619,13,25],[1706,498,-7,16],[1933,709,13,-10,38,-49],[2190,807,-20,-7],[1782,368,-18,17],[327,190,20,-2],[674,297,-2,18],[2019,334,-20,-7],[2025,334,31,14],[1126,877,15,-3],[1202,195,8,12],[1208,183,15,-3],[1564,121,-16,1],[1599,126,16,2],[1107,161,-37,1],[2038,94,-7,22],[1953,494,-8,13],[1242,462,24,8],[907,527,-12,12],[1064,437,-37,-11],[1952,752,-46,2,-13,-3],[1526,662,17,31],[1515,644,11,18],[1043,571,-7,14],[607,584,-18,0],[830,687,21,9],[723,674,10,13],[1286,451,6,-21],[1776,371,27,-21],[336,331,6,-15],[682,369,9,12],[694,389,-19,-24],[1409,320,-41,12],[1084,461,-21,5],[1059,468,-24,7],[1509,156,-15,-4],[1559,307,7,-23],[2651,769,23,-6],[1162,157,14,-4],[1094,151,16,9],[2614,487,28,-8],[1663,817,26,7],[1187,476,-19,-7],[2444,721,-18,-3],[2229,557,-54,-10],[2257,562,-28,-5],[2176,760,25,1],[365,369,15,-6],[1486,794,-36,-11,-28,-13],[1544,840,21,1],[1542,842,-47,-3],[560,898,26,20],[2134,667,1,15],[2134,634,3,-17],[517,362,-16,-4],[516,361,16,5],[711,279,-27,0],[362,738,-27,-17],[410,772,-19,-14],[917,822,-20,-11],[189,462,-1,23,-6,6],[1628,225,10,-13],[884,195,-16,-7],[938,220,30,15],[1126,260,42,-9],[924,229,-12,-16],[822,172,14,6],[2052,557,5,-17],[1834,636,22,-4],[2109,510,3,-19],[623,180,12,9],[244,853,-16,1],[182,858,28,-3],[1259,249,6,20],[492,651,17,26],[1854,424,16,-7],[323,221,33,-12],[367,207,-36,12],[415,201,-22,1],[913,750,17,-6],[2328,691,11,-12],[1256,875,12,38],[1265,728,-13,-18],[728,452,17,18],[841,344,-30,10],[1344,212,37,-8],[2078,88,-24,38],[1621,107,-6,21],[2026,697,14,15],[987,129,15,-14],[1090,336,-38,11],[540,230,-14,-5],[968,115,25,-5],[1984,916,-4,18],[893,841,15,9],[811,354,-15,4],[876,730,52,6],[1724,417,13,-11],[1737,406,16,-14],[2139,196,12,-14],[1036,530,-21,-14],[1397,389,-18,5],[1486,372,-25,3],[1774,463,19,2],[1255,559,4,-15],[417,233,-29,2],[1214,242,-17,4],[1215,241,17,-4],[1232,238,-18,4],[263,845,10,-2,11,3],[2099,908,2,-17],[1522,305,-22,-7],[2482,912,20,-3],[2097,925,-33,-6],[585,918,-22,-17],[1098,751,30,1],[1085,464,-47,30],[1542,210,-15,0],[976,617,-20,-10],[956,605,21,11],[1576,160,19,-1],[1591,160,-22,2],[1703,533,17,-9,41,-11],[957,405,-26,-9],[449,586,-25,10,-35,23],[449,586,32,48],[1906,478,-16,-2],[2087,389,5,15],[1072,852,-21,18],[1051,905,17,8],[1135,219,-15,-11],[1821,339,-20,13],[1754,392,-13,13],[715,187,-20,6,-32,3],[776,738,-13,-11],[2214,762,17,0],[800,768,23,27],[823,796,-24,-28],[839,809,-16,-13],[823,795,19,14],[1963,232,-20,15],[1789,217,-14,-6],[1776,209,14,6],[1258,739,-19,3],[582,255,-23,-17],[2106,186,-81,20],[2013,209,94,-24],[1149,554,-4,-35],[1255,172,7,-52],[1741,405,-15,13],[1067,701,25,-8],[1750,737,17,-16],[2057,447,-25,2],[854,728,22,2],[1670,347,-22,-7],[1433,165,-25,2],[1403,164,-33,2],[1162,191,-33,6],[2520,375,11,-16],[2497,409,8,-13],[2204,302,-9,-16],[1714,480,-20,-12],[1931,888,18,5],[1913,406,15,-3],[730,641,17,1],[2088,247,38,-25],[1534,168,-16,-10],[810,781,26,-8],[1267,835,-25,-5],[1193,833,10,-11],[1668,464,12,24],[1265,278,-15,-8],[2031,116,-9,28],[1136,320,-19,7],[1207,211,-38,9],[1278,197,-19,4],[1171,218,35,-7],[1259,199,28,-6],[1551,788,20,5],[1343,834,-15,5],[935,122,-15,5],[2711,330,-65,-56],[1837,432,17,-8],[851,154,20,-8],[1107,449,17,-20],[1154,464,-15,-4],[1327,185,-49,12],[1303,190,26,-6,29,-16],[1408,167,-34,1],[1549,172,17,-8,33,-3],[1961,544,-16,22],[2102,98,5,15],[2008,212,-14,5],[374,893,15,6],[1510,820,-11,11],[837,508,-15,-10],[1853,547,38,-23],[1038,494,-29,18],[1216,411,12,9],[785,875,-29,6],[1402,759,29,-2],[1105,199,-15,1],[1872,127,19,9],[2362,642,-9,13],[1940,179,-17,-6],[1107,264,16,-3],[1945,507,-17,26],[1030,791,20,4],[1121,812,-14,12],[1248,925,19,3],[452,186,-25,4],[2176,401,4,-25],[2176,456,0,-19],[1002,238,-18,-16],[972,213,12,9],[1002,238,19,11],[1514,837,18,2],[1677,175,27,9],[347,188,19,1],[1381,575,-19,4],[2533,648,-35,-13],[534,165,20,7],[548,171,-15,-6],[553,157,15,-2],[216,398,-2,-13,7,-34],[1455,678,40,-9],[429,907,-17,15],[446,899,-16,5],[705,907,-16,16],[756,881,-25,13],[755,880,31,-6],[885,549,-14,14],[395,188,16,0],[976,898,19,10],[993,909,-18,-10],[1043,875,-31,-6],[966,848,-16,-8],[953,837,16,9],[1266,228,36,-7],[708,789,-28,3],[777,780,-34,5],[959,299,-36,11],[561,862,-29,10],[2449,822,-14,5],[2466,815,-17,7],[447,741,-17,-14],[392,899,-27,-11],[401,868,27,3],[602,848,21,-7],[494,355,-15,-5]]},"kap1":[["Lokal in der Nähe der Rue Notre-Dame de Lorette",[[1,0,0,1],[2,0,0,2],[0,0,0,0]],[0,1,0]],["Lokal mit festen Preisen nahe Rue Notre-Dame de Lorette",[[0,0,0,0],[0,0,0,1],[0,0,0,0]],[0,0,0]],["Straße nahe Rue Notre-Dame de Lorette",[[1,0,0,0],[0,0,0,0],[0,0,0,0]],[0,0,1]],["Boulevard",[[0,0,0,0],[2,0,0,0],[0,0,0,0]],[0,0,2]],["Rue Notre-Dame de Lorette",[[0,0,0,4],[0,1,0,1],[0,0,0,0]],[0,2,0]],["Rue Notre-Dame de Lorette / Paris",[[0,0,0,0],[0,0,0,1],[0,0,0,0]],[0,1,0]],["Rue La Fayette",[[0,0,0,4],[0,0,0,0],[0,0,0,0]],[0,0,1]],["Boulevard Poissonnière",[[0,1,0,1],[0,0,0,0],[0,0,0,0]],[0,0,1]],["Boulevard des Italiens",[[0,0,0,6],[4,1,0,4],[0,0,0,2]],[1,0,5]],["Place de la Madeleine",[[3,0,0,5],[7,0,0,1],[1,0,0,0]],[1,4,9]],["Boulevard des Capucines",[[1,0,0,2],[1,0,0,1],[0,0,0,0]],[1,1,1]],["Café Américain",[[3,0,0,4],[1,1,0,1],[0,0,0,0]],[2,0,4]],["Place de l'Opéra",[[0,0,0,5],[1,1,0,1],[0,0,0,1]],[0,0,1]],["Redaktion La Vie Française",[[2,1,1,8],[0,0,0,1],[0,0,0,0]],[0,0,3]],["Café Napolitain",[[0,1,0,3],[2,0,0,0],[0,0,0,1]],[0,0,3]],["Bal Musard",[[0,0,0,1],[0,0,0,0],[0,0,0,0]],[0,0,0]],["Rue du Faubourg-Montmartre",[[0,0,0,1],[0,0,0,0],[0,0,0,0]],[0,0,0]],["Folies Bergère",[[4,2,2,24],[0,4,1,8],[1,0,0,4]],[2,2,13]]]};
+
+/* ---------- Farben & Schrift ---------- */
+var F = {
+  grund:'#f0f2ef', papier:'#fbfbf9', tinte:'#221f1f', tinte2:'#5b5f5c', linie:'#8a928a', hell:'#c5cbc5',
+  gold:'#ba9e00', rose:'#bc938e', navy:'#333f5b', oliv:'#62551f', orange:'#c1511d', petrol:'#394e56',
+  grau:'#8a928a', sand:'#ccc4b1', dunkel:'#2d3b3f', nebel:'#cfd4cf', creme:'#e8e5de', eis:'#c7d1d6'
+};
+// Kategorienfarben wie in der Web-App (kreisgrafik.js / KREIS_KATEGORIEN)
+var KAT = [
+  {key:'raum', name:'Raum und Umwelt', farbe:[198,162,43], instr:'marimba', instrName:'Marimba'},
+  {key:'stimmung', name:'Stimmung und Emotion', farbe:[188,148,143], instr:'harfe', instrName:'Harfe'},
+  {key:'gesellschaft', name:'Gesellschaft und Soziales', farbe:[52,64,92], instr:'klavier', instrName:'Klavier'}
+];
+var FWERT = [ // Punktgrösse wie FWERT_PUNKT_DURCHMESSER
+  {name:'Der Körper spürt', d:10, klang:'Vibraphon (Grundton)', stufe:0},
+  {name:'Die Emotion beeinflusst die Raumwahrnehmung', d:7.5, klang:'Vibraphon (Terz)', stufe:3},
+  {name:'Der Raum löst Emotion aus', d:5, klang:'Vibraphon (Quinte)', stufe:7}
+];
+var SANS = "'Source Sans 3','Helvetica Neue',Arial,sans-serif";
+var SERIF = "'Source Serif 4',Georgia,serif";
+function rgba(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+(a==null?1:a)+')'; }
+function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]; }
+function schrift(ctx, groesse, gewicht, familie){ ctx.font = (gewicht||400)+' '+groesse+'px '+(familie||SANS); }
+function text(ctx, t, x, y, o){
+  o=o||{}; ctx.save(); schrift(ctx,o.g||13,o.w||400,o.f); ctx.fillStyle=o.c||F.tinte;
+  ctx.textAlign=o.a||'left'; ctx.textBaseline=o.b||'middle';
+  if (o.sperr) { try{ ctx.letterSpacing = o.sperr+'px'; }catch(e){} }
+  ctx.fillText(t,x,y); ctx.restore();
+}
+function umbruch(ctx, t, maxB){
+  var w=t.split(' '), z=[], a='';
+  w.forEach(function(x){ var p=a?a+' '+x:x; if (ctx.measureText(p).width>maxB && a){ z.push(a); a=x; } else a=p; });
+  if (a) z.push(a); return z;
+}
+
+/* ---------- Kreisgrafik (nach kreisgrafik.js) ---------- */
+function kreisRadius(n,s){ return n>0 ? (6+15.5*Math.sqrt(n))*(s||1) : 0; }
+function summe(a){ return a.reduce(function(x,y){return x+y;},0); }
+// bc: [[neg,pos,neutral,unrated] x 3 Kategorien]
+function kreisFormen(cx,cy,bc,s,opt){
+  opt=opt||{}; var f=[];
+  bc.forEach(function(b,i){
+    if (opt.kats && !opt.kats[i]) return;
+    var r=kreisRadius(summe(b),s); if (r>0) f.push({art:'schraffur',r:r,i:i});
+    if (opt.haelften!==false){
+      var rn=kreisRadius(b[0],s), rp=kreisRadius(b[1],s);
+      if (rn>0) f.push({art:'unten',r:rn,i:i});
+      if (rp>0) f.push({art:'oben',r:rp,i:i});
+    }
+  });
+  var gl={}; f.forEach(function(x){ var k=x.art+'|'+x.r.toFixed(3); var n=gl[k]||0; gl[k]=n+1; x.r+=n*3*Math.max(.5,Math.min(1,s)); });
+  return f.sort(function(a,b){return b.r-a.r;});
+}
+function zeichneKreis(ctx,cx,cy,bc,s,opt){
+  opt=opt||{}; var al=opt.alpha==null?1:opt.alpha, sp=opt.schraffur||3;
+  kreisFormen(cx,cy,bc,s,opt).forEach(function(x){
+    var c=KAT[x.i].farbe; ctx.save();
+    if (x.art==='schraffur'){
+      ctx.beginPath(); ctx.arc(cx,cy,x.r,0,Math.PI*2); ctx.clip();
+      ctx.strokeStyle=rgba(c,.55*al); ctx.lineWidth=Math.max(.8,sp*.6);
+      for (var y=Math.ceil((cy-x.r)/sp)*sp; y<=cy+x.r; y+=sp){ ctx.beginPath(); ctx.moveTo(cx-x.r,y); ctx.lineTo(cx+x.r,y); ctx.stroke(); }
+    } else {
+      ctx.fillStyle=rgba(c,al); ctx.beginPath(); ctx.moveTo(cx,cy);
+      if (x.art==='oben') ctx.arc(cx,cy,x.r,Math.PI,Math.PI*2); else ctx.arc(cx,cy,x.r,0,Math.PI);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  });
+  if (opt.punkt!==false){ ctx.save(); ctx.fillStyle='rgba(0,0,0,'+al+')'; ctx.beginPath(); ctx.arc(cx,cy,opt.punktR||4,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+}
+function groessterRadius(bc,s){ return Math.max.apply(null, bc.map(function(b){return kreisRadius(summe(b),s);})); }
+// F-Wert-Punkte: je Valenzgruppe ein 100°-Bogen (neutral rechts, pos oben links, neg unten links)
+var GRUPPE_WINKEL = {neutral:0, pos:-Math.PI*120/180, neg:Math.PI*120/180};
+function zeichneFwertPunkte(ctx,cx,cy,R,gruppen,al,skala){
+  skala=skala||1; al=al==null?1:al;
+  Object.keys(gruppen).forEach(function(g){
+    var pts=gruppen[g]; if (!pts.length) return;
+    var r=R+6*skala+5*skala, lu=2*skala;
+    var ds=pts.map(function(t){return FWERT[t].d*skala;});
+    var ges=summe(ds)+lu*(ds.length-1), w0=GRUPPE_WINKEL[g]-(ges/2)/r, acc=0;
+    ds.forEach(function(d,k){
+      var w=w0+(acc+d/2)/r; acc+=d+lu;
+      ctx.save(); ctx.fillStyle=rgba(hex2rgb('#C2511C'),al); ctx.beginPath(); ctx.arc(cx+Math.cos(w)*r,cy+Math.sin(w)*r,d/2,0,Math.PI*2); ctx.fill(); ctx.restore();
+    });
+  });
+}
+
+/* ---------- Klang (Samples aus VCSL, wie in der Strudel-Sonifikation) ---------- */
+var AUDIO = {ctx:null, bus:null, puffer:{}, laden:{}};
+var INSTR = {
+  marimba:{datei:'marimba-f3.m4a', wurzel:53, pegel:1.0},
+  harfe:{datei:'harfe-f4.m4a', wurzel:65, pegel:1.0},
+  klavier:{datei:'klavier-d5.m4a', wurzel:74, pegel:1.5},
+  vibraphon:{datei:'vibraphon-a4.m4a', wurzel:69, pegel:.6}
+};
+// g-Moll wie die «Danse macabre»; Oktaven wie in sonifikation.js
+var MOLL=[0,2,3,5,7,8,10];
+var GRUND={marimba:55, harfe:67, klavier:79, vibraphon:67};
+function stufe2midi(instr,st){ var o=Math.floor(st/7); return GRUND[instr]+12*o+MOLL[((st%7)+7)%7]; }
+function audioStart(){
+  if (!AUDIO.ctx){
+    var AC=window.AudioContext||window.webkitAudioContext; if (!AC) return null;
+    AUDIO.ctx=new AC(); var k=AUDIO.ctx.createDynamicsCompressor(); k.threshold.value=-14; k.ratio.value=4;
+    AUDIO.bus=AUDIO.ctx.createGain(); AUDIO.bus.gain.value=.8; AUDIO.bus.connect(k); k.connect(AUDIO.ctx.destination);
+  }
+  if (AUDIO.ctx.state==='suspended') AUDIO.ctx.resume();
+  return AUDIO.ctx;
+}
+function ladeInstr(n){
+  if (AUDIO.laden[n]) return AUDIO.laden[n];
+  AUDIO.laden[n]=fetch(KLANG+INSTR[n].datei).then(function(r){return r.arrayBuffer();})
+    .then(function(b){ return new Promise(function(ok,err){ AUDIO.ctx.decodeAudioData(b,ok,err); }); })
+    .then(function(p){ AUDIO.puffer[n]=p; return p; })
+    .catch(function(){ AUDIO.laden[n]=null; });
+  return AUDIO.laden[n];
+}
+function spiele(instr,midi,wann,laut){
+  var c=audioStart(); if (!c) return;
+  ladeInstr(instr).then(function(p){
+    if (!p) return;
+    var q=c.createBufferSource(), g=c.createGain(), t=Math.max(c.currentTime, c.currentTime+(wann||0));
+    q.buffer=p; q.playbackRate.value=Math.pow(2,(midi-INSTR[instr].wurzel)/12);
+    g.gain.value=(laut==null?1:laut)*INSTR[instr].pegel*.9;
+    g.gain.setTargetAtTime(0,t+2.2,.4);
+    q.connect(g); g.connect(AUDIO.bus); q.start(t); q.stop(t+3.5);
+  });
+}
+function vorladen(liste){ if (!audioStart()) return; liste.forEach(ladeInstr); }
+
+/* ---------- Inhalte ---------- */
+var KETTEN = [
+  { id:'literatur', feld:'Literatur', kurz:'Daten',
+    personen:[{bild:'maupassant', name:'Guy de Maupassant', voll:'Henry René Albert Guy de Maupassant', jahre:'1850 – 1893', rolle:'Schriftsteller und Journalist · Zeitzeuge', werk:'«Bel-Ami», 1885'}],
+    titel:'Daten & Analyse', sub:'Roman «Bel-Ami» · Erhebung mit Python', mini:'balken',
+    text:'Maupassant kannte das Paris, das er beschreibt, aus eigener Anschauung – als Journalist und Kritiker seiner Zeit. Sein Roman wird hier zur Datengrundlage: 18 Kapitel aus Projekt Gutenberg (Übersetzung Fürst N. Obolensky), mit der Claude API Textstelle für Textstelle annotiert, nach Valenz (−1/0/+1) und Intensität (1–3) quantifiziert, mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
+    modul:'analyse' },
+  { id:'kunst', feld:'Kunst', kurz:'Farbe',
+    personen:[{bild:'pissarro', name:'Camille Pissarro', jahre:'1830 – 1903', rolle:'Maler', werk:'«Avenue de l’Opéra», 1898', quer:true}],
+    titel:'Farbkonzept', sub:'Die Farben der Stadt', mini:'farben',
+    text:'Pissarro malte die neuen Boulevards aus dem Fenster: Ocker, Rosé, das Blaugrau von Dächern und Himmel. Aus diesen Farben der Stadt stammt die Palette des Projekts. Die drei kräftigsten Töne tragen die drei Gefühlskategorien, das Orange zeigt, wie Körper und Raum aufeinander wirken, die hellen und dunklen Grautöne bilden den Grund der Karten.',
+    modul:'farbe' },
+  { id:'stadt', feld:'Stadtplanung', kurz:'Karte',
+    personen:[{bild:'haussmann', name:'Georges-Eugène Haussmann', jahre:'1809 – 1891', rolle:'Präfekt und Stadtplaner', werk:'Plan de Paris, 1878', quer:true}],
+    titel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
+    text:'Haussmann hat Paris in den Jahrzehnten vor «Bel-Ami» umgebaut: breite Boulevards, neue Achsen, neue Plätze. Duroy geht durch genau diese Stadt. Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
+    modul:'karte' },
+  { id:'musik', feld:'Musik', kurz:'Klang',
+    personen:[{bild:'saint-saens', name:'Camille Saint-Saëns', jahre:'1835 – 1921', rolle:'Komponist', werk:'«Danse macabre», op. 40, 1874'}],
+    titel:'Klangkonzept', sub:'Sonifikation mit Strudel', mini:'klang',
+    text:'Die «Danse macabre» steht in g-Moll – und in g-Moll klingt auch «Topografie der Gefühle». Jede Gefühlskategorie hat ein eigenes Instrument, die Tonhöhe folgt der Kreisgrösse. Wie Körper und Raum aufeinander wirken, spielt das Vibraphon: Grundton, Terz und Quinte des g-Moll-Dreiklangs.',
+    modul:'klang' },
+  { id:'architektur', feld:'Architektur', kurz:'Form',
+    personen:[{bild:'eiffel', name:'Alexandre Gustave Eiffel', jahre:'1832 – 1923', rolle:'Ingenieur', werk:'Tour Eiffel, 1889'},
+              {bild:'orsay', name:'Victor Laloux', jahre:'1850 – 1937', rolle:'Architekt', werk:'Gare d’Orsay, 1900 – heute Musée d’Orsay'}],
+    titel:'Formkonzept', sub:'Bögen und Schraffuren', mini:'boegen',
+    text:'Eisen und Glas prägen das Paris des ausgehenden 19. Jahrhunderts: die Bögen des Eiffelturms, die Hallen der Bahnhöfe. Daraus leitet sich die Formsprache ab. Bögen verbinden die Orte, zwischen denen Duroy wechselt, und die waagrechten Schraffuren der Kreise nehmen die Streben der Glasdächer auf.',
+    modul:'form' },
+  { id:'typo', feld:'Typografie', kurz:'Schrift',
+    personen:[{bild:'fournier', name:'Pierre Simon Fournier', jahre:'1712 – 1768', rolle:'Typograf und Schriftgiesser', werk:'Typografisches Punktsystem, 1737'}],
+    titel:'Schrift', sub:'Source Serif 4 · Source Sans 3', mini:'schrift',
+    text:'Fournier führte das typografische Punktsystem ein und schnitt Schriften, die den Übergang zu klaren, kontrastreichen Formen einleiteten. Die Source Serif knüpft ausdrücklich an diese Schriften an. Sie setzt Titel und Lesetexte, die Source Sans übernimmt Beschriftungen und Legenden – jeweils in Semibold und Light, beide frei als Google Fonts.',
+    modul:'schrift' },
+  { id:'foto', feld:'Fotografie', kurz:'Bild',
+    personen:[{bild:'dhaap-oper', name:'Commission du Vieux Paris', kurz:'Vieux Paris', jahre:'gegründet 1897', rolle:'Fotografien u. a. von Charles Lansiaux (1855 – 1939)', werk:'DHAAP – Département Histoire de l’Architecture et Archéologie de Paris', quer:true}],
+    titel:'Fotografie', sub:'Fotomarker auf der Karte', mini:'foto',
+    text:'Die Commission du Vieux Paris dokumentierte die Stadt, bevor sie sich weiter veränderte. Auf ihren Glasplatten sind viele Schauplätze des Romans festgehalten: Plätze, Fassaden, Bahnhöfe, Kirchen. In der Web-App führen Fotomarker direkt zu diesen Aufnahmen.',
+    modul:'foto' }
+];
+var SYNTHESE = { id:'kreis', feld:'Synthese', kurz:'Kreis', titel:'Grafik – Kreisgrösse', sub:'Anzahl Gefühlsäusserungen an einem Ort', modul:'kreis',
+  text:'Hier laufen alle Fäden zusammen: Maupassants Text liefert die Zahlen, Pissarros Farben unterscheiden die Kategorien, die Tonart der «Danse macabre» lässt sie klingen, und die Formsprache von Eisen und Glas fasst sie zusammen. Pro Ort ein Kreis – er wächst mit jedem geäusserten Gefühl.' };
+var ALLE = KETTEN.concat([SYNTHESE]);
+function kette(id){ return ALLE.filter(function(k){return k.id===id;})[0]; }
+
+/* ---------- Zustand ---------- */
+var zustand = { gewaehlt:'literatur', hover:null };
+var beobachter = [];
+function waehle(id, scrollen){
+  if (zustand.gewaehlt===id) return;
+  zustand.gewaehlt=id; beobachter.forEach(function(f){f(id);});
+  if (scrollen){ var d=document.getElementById('tdg-detail'); if (d && d.getBoundingClientRect().top>window.innerHeight*.7) d.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+
+/* ---------- Chips ---------- */
+(function(){
+  var nav=document.getElementById('tdg-chips');
+  ALLE.forEach(function(k){
+    var b=document.createElement('button'); b.type='button'; b.className='tdg-chip'; b.dataset.id=k.id;
+    b.innerHTML=k.feld+'<small>→ '+k.kurz+'</small>';
+    b.addEventListener('click',function(){ waehle(k.id,false); });
+    nav.appendChild(b);
+  });
+  function sync(id){ [].forEach.call(nav.children,function(b){ b.setAttribute('aria-pressed', b.dataset.id===id?'true':'false'); }); }
+  beobachter.push(sync); sync(zustand.gewaehlt);
+})();
+
+/* ---------- gemeinsame Helfer für p5-Instanzen ---------- */
+function breiteVon(el){ return Math.max(280, Math.floor(el.getBoundingClientRect().width)); }
+function beiGroesse(el, fn){
+  var letzte=0, t;
+  var ro=new ResizeObserver(function(){ var w=breiteVon(el); if (Math.abs(w-letzte)<2) return; letzte=w; clearTimeout(t); t=setTimeout(function(){fn(w);},60); });
+  ro.observe(el); return ro;
+}
+function bildCover(p, ctx, img, x, y, w, h){
+  if (!img || !img.width) { ctx.fillStyle='#dfe3de'; ctx.fillRect(x,y,w,h); return; }
+  var s=Math.max(w/img.width,h/img.height), iw=img.width*s, ih=img.height*s;
+  p.image(img, x+(w-iw)/2, y+(h-ih)/2, iw, ih);
+}
+function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fn); }
+
+/* ======================================================================
+   1) NETZ – Zeitzeugen → Umsetzung → Synthese
+====================================================================== */
+new p5(function(p){
+  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null;
+  var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
+  p.preload=function(){
+    ['maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
+      bilder[n]=p.loadImage(BILD+n+'.jpg', function(){}, function(){ bilder[n]=null; });
+    });
+  };
+  function layout(){
+    knoten=[]; schmal = W<720;
+    var n=KETTEN.length;
+    if (!schmal){
+      var pad=18, sp=(W-2*pad)/n, rP=Math.min(34, sp*.3), rE=Math.min(30, sp*.27);
+      var yP=92, yE=292; H=600;
+      KETTEN.forEach(function(k,i){
+        var x=pad+sp*(i+.5);
+        k.personen.forEach(function(pe,j){
+          var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
+          knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r});
+        });
+        knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
+      });
+      synth={x:W/2, y:486, r:44};
+    } else {
+      var zeile=94, top=62, xP=38, xE=Math.min(W*.56, W-150);
+      KETTEN.forEach(function(k,i){
+        var y=top+zeile*i;
+        k.personen.forEach(function(pe,j){
+          var m=k.personen.length;
+          knoten.push({typ:'person', k:k, pe:pe, x:xP+(m>1?j*20:0), y:y+(m>1?(j?8:-8):0), r:m>1?20:26});
+        });
+        knoten.push({typ:'element', k:k, x:xE, y:y, r:22});
+      });
+      H=top+zeile*n+170; synth={x:W/2, y:H-92, r:40};
+    }
+    p.resizeCanvas(W,H);
+  }
+  p.setup=function(){
+    W=breiteVon(el); var c=p.createCanvas(W,H); c.parent(el); p.frameRate(30); layout();
+    beiGroesse(el,function(w){ W=w; layout(); });
+    schriftenBereit(function(){ p.redraw(); });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function(e){ e[0].isIntersecting?p.loop():p.noLoop(); }).observe(el);
+    beobachter.push(function(){ p.redraw(); });
+  };
+  function aktivId(){ return zustand.hover || zustand.gewaehlt; }
+  function stark(k){ var a=aktivId(); return a===k.id || a==='kreis'; }
+  function strichel(ctx, an, farbe, breite){
+    ctx.setLineDash(an?[5,4]:[3,4]); ctx.lineDashOffset=an?-marsch:0;
+    ctx.strokeStyle=farbe; ctx.lineWidth=breite;
+  }
+  function elementKnoten(k){ return knoten.filter(function(n){return n.typ==='element'&&n.k===k;})[0]; }
+  p.draw=function(){
+    var ctx=p.drawingContext; marsch=(marsch+.6)%90;
+    p.clear(); ctx.fillStyle=F.grund; ctx.fillRect(0,0,W,H);
+    var a=aktivId();
+    // Bänder
+    if (!schmal){
+      ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(0,196,W,190);
+      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.lineWidth=1;
+      [196,386].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
+      text(ctx,'ZEITZEUGEN · PARIS 1885',16,18,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'UMSETZUNG',16,212,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'SYNTHESE',16,402,{g:11,w:600,c:F.tinte2,sperr:1});
+    } else {
+      text(ctx,'ZEITZEUGE',16,22,{g:11,w:600,c:F.tinte2,sperr:1});
+      var xE0=elementKnoten(KETTEN[0]).x;
+      text(ctx,'UMSETZUNG',xE0-22,22,{g:11,w:600,c:F.tinte2,sperr:1});
+    }
+    // Verbindungen Person → Element
+    KETTEN.forEach(function(k){
+      var e=elementKnoten(k), an=stark(k);
+      knoten.filter(function(n){return n.typ==='person'&&n.k===k;}).forEach(function(n){
+        ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1);
+        ctx.beginPath();
+        if (!schmal){ ctx.moveTo(n.x,n.y+n.r+26); ctx.bezierCurveTo(n.x,e.y-60,e.x,e.y-70,e.x,e.y-e.r-6); }
+        else { var x0=Math.max(n.x+n.r+4,(k._textEnde||0)+6); if (x0<e.x-e.r-10){ ctx.moveTo(x0,n.y+5); ctx.lineTo(e.x-e.r-6,e.y+5); } }
+        ctx.stroke(); ctx.restore();
+      });
+      // Element → Synthese
+      var anS = schmal ? (a==='kreis') : (a==='kreis' || a===k.id);
+      ctx.save(); strichel(ctx,anS,anS?F.orange:'rgba(34,31,31,.22)',anS?1.4:1);
+      ctx.beginPath();
+      if (!schmal){ ctx.moveTo(e.x,e.y+e.r+42); ctx.bezierCurveTo(e.x,synth.y-40,synth.x+(e.x-synth.x)*.25,synth.y-70,synth.x+(e.x-synth.x)*.12,synth.y-synth.r-6); }
+      else if (k===KETTEN[KETTEN.length-1]) { ctx.moveTo(e.x,e.y+e.r+26); ctx.bezierCurveTo(e.x,e.y+80,synth.x,synth.y-90,synth.x,synth.y-synth.r-8); }
+      ctx.stroke(); ctx.restore();
+    });
+    // Knoten
+    knoten.forEach(function(n){
+      var an=stark(n.k), al = a && !an ? .45 : 1;
+      ctx.save(); ctx.globalAlpha=al;
+      if (n.typ==='person'){
+        ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
+        bildCover(p,ctx,bilder[n.pe.bild],n.x-n.r,n.y-n.r,2*n.r,2*n.r); ctx.restore();
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
+        if (!schmal){
+          var erst = n.k.personen[0]===n.pe;
+          if (erst) text(ctx,n.k.feld.toUpperCase(),n.k.personen.length>1?(n.x+knoten.filter(function(m){return m.k===n.k&&m.typ==='person';})[1].x)/2:n.x,n.y-n.r-(n.k.personen.length>1?8:14),{g:11,w:600,a:'center',sperr:.8,c:F.tinte2});
+          if (n.k.personen.length===1){
+            var nm=n.pe.name.split(' '), zeile2=nm.pop();
+            text(ctx,nm.join(' '),n.x,n.y+n.r+14,{g:12.5,w:600,a:'center'});
+            text(ctx,zeile2,n.x,n.y+n.r+29,{g:12.5,w:600,a:'center'});
+          } else if (!erst){
+            text(ctx,'Eiffel · Laloux',(n.x+knoten.filter(function(m){return m.k===n.k&&m.typ==='person';})[0].x)/2,n.y+n.r+12,{g:12.5,w:600,a:'center'});
+          }
+        } else if (n.k.personen[0]===n.pe){
+          var tx=38+30+ (n.k.personen.length>1?20:0);
+          text(ctx,n.k.feld.toUpperCase(),tx,n.y-9,{g:10.5,w:600,c:F.tinte2,sperr:.6});
+          var nm=n.k.personen.map(function(x){return x.kurz||x.name.split(' ').pop();}).join(' · '); text(ctx,nm,tx,n.y+8,{g:13,w:600}); schrift(ctx,13,600); n.k._textEnde=tx+Math.max(ctx.measureText(nm).width,40);
+        }
+      } else {
+        miniIkon(ctx,n,an);
+        if (!schmal){
+          text(ctx,n.k.titel,n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
+          text(ctx,n.k.sub.split(' · ')[0],n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
+        } else {
+          text(ctx,n.k.titel,n.x+n.r+10,n.y-7,{g:13,w:600});
+          schrift(ctx,12,300); var sub=n.k.sub.split(' · ')[0];
+          text(ctx,sub,n.x+n.r+10,n.y+9,{g:12,w:300,c:F.tinte2});
+        }
+      }
+      ctx.restore();
+    });
+    // Synthese
+    var anK = !a || a==='kreis' || true;
+    ctx.save(); ctx.globalAlpha = (a && a!=='kreis') ? .85 : 1;
+    var s=synth.r/ (6+15.5*4) ;
+    ctx.beginPath(); ctx.arc(synth.x,synth.y,synth.r+10,0,Math.PI*2); ctx.fillStyle=F.grund; ctx.fill();
+    zeichneKreis(ctx,synth.x,synth.y,DEMO_BC,s,{schraffur:3,punktR:3});
+    zeichneFwertPunkte(ctx,synth.x,synth.y,synth.r*1.0,{pos:[2,2,1],neg:[1,2],neutral:[0]},1,.7);
+    if (a==='kreis'){ ctx.beginPath(); ctx.arc(synth.x,synth.y,synth.r+18,0,Math.PI*2); ctx.setLineDash([5,4]); ctx.lineDashOffset=-marsch; ctx.strokeStyle=F.orange; ctx.lineWidth=1.4; ctx.stroke(); }
+    ctx.restore();
+    text(ctx,'Grafik – Kreisgrösse',synth.x,synth.y+synth.r+28,{g:14,w:600,a:'center'});
+    text(ctx,'Alle Elemente in einer Form',synth.x,synth.y+synth.r+44,{g:12,w:300,a:'center',c:F.tinte2});
+  };
+  function miniIkon(ctx,n,an){
+    var x=n.x,y=n.y,r=n.r;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); ctx.fillStyle=an?'#fff':'rgba(255,255,255,.7)'; ctx.fill();
+    ctx.setLineDash([]); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.45)'; ctx.lineWidth=an?2:1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.clip();
+    var t=p.millis()/1000;
+    switch(n.k.mini){
+      case 'balken':
+        var v=DATEN.kapitel.map(function(k){return (k[0]-k[1])/(k[0]+k[1]+k[2]);}), bw=2*r/ (v.length+2);
+        v.forEach(function(q,i){ var h=q*r*1.1; ctx.fillStyle=q>0?F.gold:F.oliv; ctx.fillRect(x-r+bw*(i+1),y,bw*.7,-h); });
+        ctx.fillStyle=F.tinte; ctx.fillRect(x-r,y,2*r,.8); break;
+      case 'farben':
+        var pal=[F.gold,F.rose,F.navy,F.oliv,F.orange,F.petrol,F.grau,F.sand,F.dunkel], c=2*r/3.4;
+        pal.forEach(function(f,i){ ctx.fillStyle=f; ctx.fillRect(x-1.5*c+(i%3)*c*1.02,y-1.5*c+Math.floor(i/3)*c*1.02,c*.95,c*.95); }); break;
+      case 'karte':
+        bildCover(p,ctx,bilder['qgis-dunkel'],x-r,y-r,2*r,2*r); break;
+      case 'klang':
+        for (var i=0;i<4;i++){ var ph=((t*.6+i/4)%1); ctx.beginPath(); ctx.arc(x,y,ph*r,0,Math.PI*2); ctx.strokeStyle=rgba(KAT[i%3].farbe,1-ph); ctx.lineWidth=2; ctx.stroke(); }
+        ctx.fillStyle=F.orange; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); break;
+      case 'boegen':
+        ctx.strokeStyle=F.oliv; ctx.lineWidth=1.2; var b=y+r*.45;
+        [[-.8,.8],[-.8,.1],[-.3,.5],[.1,.8],[-.6,-.2]].forEach(function(q){ var a1=x+q[0]*r,a2=x+q[1]*r; ctx.beginPath(); ctx.arc((a1+a2)/2,b,(a2-a1)/2,Math.PI,0); ctx.stroke(); });
+        ctx.fillStyle=F.tinte; ctx.fillRect(x-r,b,2*r,1); break;
+      case 'schrift':
+        text(ctx,'Aa',x,y+2,{g:r*1.05,w:600,f:SERIF,a:'center'}); break;
+      case 'foto':
+        bildCover(p,ctx,bilder['dhaap-oper'],x-r,y-r,2*r,2*r); break;
+    }
+    ctx.restore();
+  }
+  function treffer(mx,my){
+    var best=null;
+    knoten.forEach(function(n){ if (p.dist(mx,my,n.x,n.y)<n.r+8) best=n.k.id; });
+    if (schmal) knoten.forEach(function(n){ if (!best && Math.abs(my-n.y)<34 && mx>n.x-n.r) best=n.k.id; });
+    if (!best && p.dist(mx,my,synth.x,synth.y)<synth.r+24) best='kreis';
+    return best;
+  }
+  p.mouseMoved=function(){
+    if (p.mouseX<0||p.mouseY<0||p.mouseX>W||p.mouseY>H){ if (zustand.hover){ zustand.hover=null; p.cursor('default'); } return; }
+    var t=treffer(p.mouseX,p.mouseY); zustand.hover=t; p.cursor(t?'pointer':'default');
+  };
+  p.mouseClicked=function(){
+    if (p.mouseX<0||p.mouseY<0||p.mouseX>W||p.mouseY>H) return;
+    var t=treffer(p.mouseX,p.mouseY); if (t) waehle(t,true);
+  };
+  p.touchEnded=function(){ zustand.hover=null; };
+}, document.getElementById('tdg-netz'));
+
+/* ======================================================================
+   2) DETAIL – HTML-Teil + wechselndes p5-Modul
+====================================================================== */
+var modulInstanz=null;
+function zeigeDetail(id){
+  var k=kette(id), per=document.getElementById('tdg-personen'), ueb=document.getElementById('tdg-uebersetzung');
+  per.innerHTML='';
+  if (k.personen){
+    k.personen.forEach(function(pe){
+      var d=document.createElement('div'); d.className='tdg-person';
+      d.innerHTML='<img alt="" loading="lazy" src="'+BILD+pe.bild+'.jpg"'+(pe.quer?' style="aspect-ratio:1/1"':'')+'>'+
+        '<div><div class="feld">'+k.feld+'</div><div class="name">'+(pe.voll||pe.name)+'</div><div class="meta">'+pe.jahre+'<br>'+pe.rolle+'<br><em>'+pe.werk+'</em></div></div>';
+      per.appendChild(d);
+    });
+  } else {
+    per.innerHTML='<div class="tdg-person"><img alt="" src="'+BILD+'formkonzept.jpg" style="aspect-ratio:1/1"><div><div class="feld">Synthese</div><div class="name">Alle Zeitgenossen</div><div class="meta">Daten · Farbe · Klang · Form<br><em>Topografie der Gefühle, 2026</em></div></div></div>';
+  }
+  ueb.innerHTML='<div class="pfeil">'+(k.personen?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3><div class="sub">'+k.sub+'</div><p class="text">'+k.text+'</p>';
+  ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ document.getElementById(x).innerHTML=''; });
+  if (modulInstanz){ modulInstanz.remove(); modulInstanz=null; }
+  var el=document.getElementById('tdg-modul'); el.innerHTML='';
+  modulInstanz = new p5(MODULE[k.modul], el);
+}
+function setze(id, html){ document.getElementById(id).innerHTML=html; }
+function knopf(label, fn, primaer){
+  var b=document.createElement('button'); b.type='button'; b.className='tdg-knopf'+(primaer?' primaer':''); b.textContent=label; b.addEventListener('click',fn);
+  document.getElementById('tdg-steuerung').appendChild(b); return b;
+}
+function modulGrund(p, el, hoeheFn){
+  var W=breiteVon(el), H=hoeheFn(W);
+  var c=p.createCanvas(W,H); c.parent(el);
+  var ro=beiGroesse(el,function(w){ W=w; H=hoeheFn(w); p.resizeCanvas(W,H); if (p._neuLayout) p._neuLayout(W,H); p.redraw(); });
+  var alt=p.remove.bind(p); p.remove=function(){ ro.disconnect(); alt(); };
+  return {W:function(){return W;}, H:function(){return H;}};
+}
+function projektion(W,H,pad,bb){
+  // bb: [x0,y0,x1,y1] in (lon-2.2)*1e4 / (lat-48.8)*1e4
+  var kx=Math.cos(48.86*Math.PI/180), bw=(bb[2]-bb[0])*kx, bh=bb[3]-bb[1];
+  var s=Math.min((W-2*pad)/bw,(H-2*pad)/bh), ox=(W-bw*s)/2, oy=(H-bh*s)/2;
+  return function(x,y){ return [ox+(x-bb[0])*kx*s, H-oy-(y-bb[1])*s]; };
+}
+function dekodiere(a){ var o=[],x=0,y=0; for (var i=0;i<a.length;i+=2){ x+=a[i]; y+=a[i+1]; o.push([x,y]); } return o; }
+var BASIS=null;
+function basis(){ if (!BASIS) BASIS={seine:DATEN.basis.seine.map(dekodiere),kanal:DATEN.basis.kanal.map(dekodiere),strassen:DATEN.basis.strassen.map(dekodiere),routen:DATEN.routen.map(dekodiere)}; return BASIS; }
+function zeichneBasis(ctx,pr,farben){
+  var B=basis();
+  ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.strokeStyle=farben.strasse; ctx.lineWidth=farben.strBreite||1;
+  B.strassen.forEach(function(l){ ctx.beginPath(); l.forEach(function(q,i){ var s=pr(q[0],q[1]); i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]); }); ctx.stroke(); });
+  ctx.strokeStyle=farben.wasser; ctx.lineWidth=farben.wBreite||7;
+  B.seine.concat(B.kanal).forEach(function(l){ ctx.beginPath(); l.forEach(function(q,i){ var s=pr(q[0],q[1]); i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]); }); ctx.stroke(); });
+  ctx.restore();
+}
+function nahe(p,list,r){ var best=null,bd=r; list.forEach(function(o){ var d=p.dist(p.mouseX,p.mouseY,o.sx,o.sy); if (d<Math.max(bd,o.rr||0)) { bd=d; best=o; } }); return best; }
+function imCanvas(p){ return p.mouseX>=0&&p.mouseY>=0&&p.mouseX<=p.width&&p.mouseY<=p.height; }
+
+var MODULE = {};
+
+/* ---- Analyse: Saldo je Kapitel ---- */
+MODULE.analyse=function(p){
+  var el=p._userNode, g, hov=-1, anim=0;
+  var K=DATEN.kapitel, pos=0,neg=0,neu=0; K.forEach(function(k){pos+=k[0];neg+=k[1];neu+=k[2];});
+  p.setup=function(){
+    setze('tdg-modultitel','Analyse');
+    setze('tdg-modulinfo','Duroys Weg vom mittellosen Angestellten zum Schwiegersohn des Pressebarons');
+    setze('tdg-modulvor','<div class="tdg-zahlen">'+
+      '<div class="tdg-zahl"><b>2902</b><span>Annotationen</span></div>'+
+      '<div class="tdg-zahl"><b>957</b><span>Textstellen mit Wirkungsrichtung</span></div>'+
+      '<div class="tdg-zahl"><b>'+Math.round(100*neg/(pos+neg))+'&thinsp;%</b><span>der emotionalen Momente negativ gefärbt</span></div>'+
+      '<div class="tdg-zahl"><b>3 von 18</b><span>Kapiteln überwiegend positiv</span></div></div>');
+    setze('tdg-legende','Der Aufstieg fühlt sich nicht wie einer an. Kapitel für Kapitel steigt Duroy auf – doch fast zwei Drittel aller emotionalen Momente sind negativ gefärbt. Fahre über einen Balken für die Zahlen.');
+    setze('tdg-quelle','Balken: Anteil positiver minus Anteil negativer Textstellen je Kapitel (Valenz +1 / −1, bezogen auf alle bewerteten Stellen).');
+    g=modulGrund(p,el,function(w){return w<600?300:340;});
+  };
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(); anim=Math.min(1,anim+.04);
+    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    var l=W<600?40:52, r=W<600?8:150, o=24, u=46, mitte=o+(H-o-u)/2, sk=(H-o-u)/2/75;
+    // Raster
+    [-75,-50,-25,0,25,50,75].forEach(function(v){
+      var y=mitte-v*sk; ctx.save(); ctx.strokeStyle=v===0?F.tinte:'rgba(34,31,31,.18)'; ctx.lineWidth=v===0?1:1; if (v) ctx.setLineDash([1.5,2.5]);
+      ctx.beginPath(); ctx.moveTo(l,y); ctx.lineTo(W-r,y); ctx.stroke(); ctx.restore();
+      text(ctx,Math.abs(v)+' %',l-8,y,{g:11,w:300,a:'right',c:F.tinte2});
+    });
+    var n=K.length, bw=(W-l-r)/n;
+    K.forEach(function(k,i){
+      var q=(k[0]-k[1])/(k[0]+k[1]+k[2])*100*anim, x=l+bw*i+bw*.22, w=bw*.56, y=mitte-q*sk;
+      ctx.fillStyle=q>0?F.gold:F.oliv; if (hov>=0 && hov!==i) ctx.globalAlpha=.4;
+      ctx.fillRect(x,Math.min(y,mitte),w,Math.max(1.5,Math.abs(mitte-y))); ctx.globalAlpha=1;
+      text(ctx,String(i+1),x+w/2,H-u+18,{g:11.5,w:hov===i?600:400,a:'center'});
+    });
+    text(ctx,'Kapitel',l,H-10,{g:11.5,w:300,c:F.tinte2});
+    if (W>=600){
+      text(ctx,'überwiegend positiv',W-r+14,mitte-40*sk,{g:12,w:300,c:F.tinte2});
+      text(ctx,'wahrgenommen',W-r+14,mitte-40*sk+15,{g:12,w:300,c:F.tinte2});
+      text(ctx,'überwiegend negativ',W-r+14,mitte+40*sk,{g:12,w:300,c:F.tinte2});
+      text(ctx,'wahrgenommen',W-r+14,mitte+40*sk+15,{g:12,w:300,c:F.tinte2});
+    }
+    if (hov>=0){
+      var k=K[hov], q=Math.round((k[0]-k[1])/(k[0]+k[1]+k[2])*100), x=l+bw*hov+bw/2;
+      var zeilen=['Kapitel '+(hov+1)+' · Saldo '+(q>0?'+':'')+q+' %', k[0]+' positiv · '+k[1]+' negativ · '+k[2]+' neutral', k[3]+' Annotationen'];
+      schrift(ctx,12.5,400); var bx=Math.max.apply(null,zeilen.map(function(z){return ctx.measureText(z).width;}))+20, bh=64;
+      var tx=Math.min(Math.max(x-bx/2,4),W-bx-4), ty= q>0 ? mitte+10 : o+4;
+      ctx.fillStyle='rgba(34,31,31,.92)'; ctx.fillRect(tx,ty,bx,bh);
+      zeilen.forEach(function(z,i){ text(ctx,z,tx+10,ty+14+i*18,{g:12.5,w:i?300:600,c:'#fff'}); });
+    }
+    if (anim>=1 && !p._maus) p.noLoop();
+  };
+  p.mouseMoved=function(){
+    var W=g.W(), l=W<600?40:52, r=W<600?8:150, bw=(W-l-r)/K.length, i=Math.floor((p.mouseX-l)/bw);
+    var neu = imCanvas(p) && i>=0 && i<K.length ? i : -1;
+    if (neu!==hov){ hov=neu; p.redraw(); }
+  };
+  p.mousePressed=p.mouseMoved;
+};
+
+/* ---- Farbe: Pissarro, nachgezeichnet mit der Palette ---- */
+MODULE.farbe=function(p){
+  var el=p._userNode, g, img=null, punkte=[], hov=-1, fest=-1, t0=0, original=false;
+  var PAL=[
+    {h:F.gold,n:'Raum und Umwelt'},{h:F.rose,n:'Stimmung und Emotion'},{h:F.navy,n:'Gesellschaft und Soziales'},
+    {h:F.oliv,n:'Analyse, negativ'},{h:F.orange,n:'Körper und Raum'},{h:F.petrol,n:'Beschriftung'},
+    {h:F.grau,n:'Karte'},{h:F.sand,n:'Karte'},{h:F.dunkel,n:'Karte, dunkel'},
+    {h:F.nebel,n:'Grund'},{h:F.creme,n:'Grund'},{h:F.eis,n:'Wasser'}
+  ].map(function(x){ x.rgb=hex2rgb(x.h); x.anteil=0; return x; });
+  var bildBox, palBox;
+  p.preload=function(){ img=p.loadImage(BILD+'pissarro.jpg',function(){},function(){img=null;}); };
+  function lay(W,H){
+    var schmal=W<640, iw=schmal?W:W*.62, ih=img?iw*img.height/img.width:iw*.8;
+    bildBox={x:0,y:0,w:iw,h:ih};
+    palBox= schmal ? {x:0,y:ih+18,w:W,sp:3} : {x:iw+28,y:0,w:W-iw-28,sp:3};
+  }
+  function hoehe(W){ var schmal=W<640, iw=schmal?W:W*.62, ih=img?iw*img.height/img.width:iw*.8; return schmal? ih+18+4*52 : Math.max(ih, 4*56+30); }
+  function rastern(){
+    punkte=[]; PAL.forEach(function(x){x.anteil=0;});
+    if (!img) return;
+    try { img.loadPixels(); } catch(e){ return; }
+    if (!img.pixels || !img.pixels.length) return;
+    var st=Math.max(5, bildBox.w/70), sx=img.width/bildBox.w, n=0;
+    for (var y=st/2; y<bildBox.h; y+=st) for (var x=st/2; x<bildBox.w; x+=st){
+      var ix=Math.floor((x+(Math.random()-.5)*st)*sx), iy=Math.floor((y+(Math.random()-.5)*st)*sx);
+      ix=Math.max(0,Math.min(img.width-1,ix)); iy=Math.max(0,Math.min(img.height-1,iy));
+      var o=4*(iy*img.width+ix), c=[img.pixels[o],img.pixels[o+1],img.pixels[o+2]], bi=0, bd=1e9;
+      PAL.forEach(function(q,i){ var d=Math.pow(c[0]-q.rgb[0],2)*.9+Math.pow(c[1]-q.rgb[1],2)*1.2+Math.pow(c[2]-q.rgb[2],2)*.8; if (d<bd){bd=d;bi=i;} });
+      PAL[bi].anteil++; n++;
+      punkte.push({x:x+(Math.random()-.5)*st*.5,y:y+(Math.random()-.5)*st*.5,r:st*(.42+Math.random()*.2),i:bi,t:Math.random()});
+    }
+    PAL.forEach(function(q){ q.anteil/=Math.max(1,n); });
+  }
+  p._neuLayout=function(W,H){ lay(W,H); rastern(); t0=p.millis(); p.loop(); };
+  p.setup=function(){
+    setze('tdg-modultitel','Farbkonzept');
+    setze('tdg-modulinfo','Camille Pissarro, «Avenue de l’Opéra» (1898), in der Palette des Projekts');
+    g=modulGrund(p,el,hoehe); lay(g.W(),g.H()); rastern(); t0=p.millis();
+    setze('tdg-legende','Jeder Punkt nimmt die Farbe der Palette an, die dem Gemälde an dieser Stelle am nächsten liegt. Fahre über ein Farbfeld, um zu sehen, wo die Farbe im Bild steckt.');
+    var b=knopf('Original zeigen',function(){ original=!original; b.textContent=original?'Palette zeigen':'Original zeigen'; p.loop(); });
+  };
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/1600), aktiv=hov>=0?hov:fest;
+    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    if (original || !punkte.length){ if (img) p.image(img,bildBox.x,bildBox.y,bildBox.w,bildBox.h); if (!punkte.length && !original) text(ctx,'Bild wird geladen …',10,20,{g:13,c:F.tinte2}); }
+    else {
+      ctx.fillStyle=F.creme; ctx.fillRect(bildBox.x,bildBox.y,bildBox.w,bildBox.h);
+      punkte.forEach(function(q){
+        if (q.t>f) return; var a = aktiv>=0 ? (q.i===aktiv?1:.12) : 1;
+        ctx.fillStyle=rgba(PAL[q.i].rgb,a); ctx.beginPath(); ctx.arc(q.x,q.y,q.r*(aktiv===q.i?1.15:1),0,Math.PI*2); ctx.fill();
+      });
+    }
+    // Palette
+    var schmal=W<640, cols=3, cw=schmal? (W-2*12)/cols : (palBox.w-2*10)/cols, chh=schmal?34:40, gap=schmal?18:16;
+    PAL.forEach(function(q,i){
+      var cx=palBox.x+(i%cols)*(cw+(schmal?12:10)), cy=palBox.y+Math.floor(i/cols)*(chh+gap);
+      q.box=[cx,cy,cw,chh];
+      ctx.globalAlpha = aktiv>=0 && aktiv!==i ? .45 : 1;
+      ctx.fillStyle=q.h; ctx.fillRect(cx,cy,cw,chh);
+      if (aktiv===i){ ctx.strokeStyle=F.tinte; ctx.lineWidth=2; ctx.strokeRect(cx-3,cy-3,cw+6,chh+6); }
+      ctx.globalAlpha=1;
+      text(ctx,q.h.toUpperCase(),cx,cy+chh+8,{g:11,w:aktiv===i?600:300,c:F.tinte2});
+    });
+    if (!schmal){
+      var ly=palBox.y+4*(chh+gap)+6;
+      text(ctx, aktiv>=0 ? PAL[aktiv].n : 'Zeile 1: die drei Gefühlskategorien', palBox.x, ly, {g:13,w:600});
+    }
+    if (f>=1 && hov<0) p.noLoop();
+  };
+  p.mouseMoved=function(){
+    var n=-1; PAL.forEach(function(q,i){ if (q.box && p.mouseX>=q.box[0]&&p.mouseX<=q.box[0]+q.box[2]&&p.mouseY>=q.box[1]&&p.mouseY<=q.box[1]+q.box[3]) n=i; });
+    if (n<0 && imCanvas(p) && !original && punkte.length && p.mouseX<bildBox.w && p.mouseY<bildBox.h){
+      var bd=1e9; punkte.forEach(function(q){ var d=Math.abs(q.x-p.mouseX)+Math.abs(q.y-p.mouseY); if (d<bd){bd=d;n=q.i;} });
+    }
+    if (n!==hov){ hov=n; p.cursor(n>=0?'pointer':'default'); if (n>=0) setze('tdg-modulinfo',PAL[n].h.toUpperCase()+' · '+PAL[n].n); p.loop(); }
+  };
+  p.mousePressed=function(){ if (!imCanvas(p)) return; p.mouseMoved(); fest = hov; p.loop(); };
+};
+
+/* ---- Karte: Duroys Wege, Kapitel für Kapitel ---- */
+MODULE.karte=function(p){
+  var el=p._userNode, g, kap=0, t0=0, pr, orte=[], hov=null, bb;
+  function grenzen(){
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    basis().routen.forEach(function(l){ l.forEach(function(q){ x0=Math.min(x0,q[0]);y0=Math.min(y0,q[1]);x1=Math.max(x1,q[0]);y1=Math.max(y1,q[1]); }); });
+    DATEN.orteK.forEach(function(l){ l.forEach(function(o){ x0=Math.min(x0,o[1]);y0=Math.min(y0,o[2]);x1=Math.max(x1,o[1]);y1=Math.max(y1,o[2]); }); });
+    return [x0-40,y0-30,x1+40,y1+30];
+  }
+  p._neuLayout=function(W,H){ pr=projektion(W,H,10,bb); };
+  p.setup=function(){
+    setze('tdg-modultitel','Kartografie');
+    bb=grenzen(); g=modulGrund(p,el,function(w){return Math.round(Math.min(560,Math.max(320,w*.62)));}); pr=projektion(g.W(),g.H(),10,bb);
+    var st=document.getElementById('tdg-steuerung');
+    var lab=document.createElement('label'); lab.innerHTML='<span id="tdg-kaplabel" style="min-width:92px;color:#221f1f;font-weight:600">Alle Kapitel</span>';
+    var r=document.createElement('input'); r.type='range'; r.min=0; r.max=18; r.value=0; r.setAttribute('aria-label','Kapitel wählen');
+    r.addEventListener('input',function(){ kap=+r.value; document.getElementById('tdg-kaplabel').textContent=kap?'Kapitel '+kap:'Alle Kapitel'; t0=p.millis(); p.loop(); });
+    lab.appendChild(r); st.appendChild(lab);
+    setze('tdg-legende','Goldene Linien: berechnete Fusswege zwischen den Schauplätzen. Kreise: Anzahl Gefühlsäusserungen an einem Ort. Wähle ein Kapitel und fahre über die Kreise.');
+    setze('tdg-quelle','Grundkarte: Seine und Hauptstrassen aus OpenStreetMap (vereinfacht). Wege: OSMnx. Orte ausserhalb von Paris (z.&nbsp;B. Cannes, Rouen) sind nicht dargestellt.');
+    t0=p.millis();
+  };
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/1400);
+    p.clear(); ctx.fillStyle='#26343a'; ctx.fillRect(0,0,W,H);
+    zeichneBasis(ctx,pr,{strasse:'rgba(207,212,207,.16)',wasser:'#4f6f7a',wBreite:Math.max(4,W/150)});
+    var B=basis(), liste = kap ? [kap-1] : B.routen.map(function(_,i){return i;});
+    ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round';
+    liste.forEach(function(i){
+      var l=B.routen[i], m=Math.floor(l.length*(kap?f:1));
+      ctx.strokeStyle= kap ? F.gold : 'rgba(186,158,0,.55)'; ctx.lineWidth= kap?2.4:1.4;
+      ctx.beginPath(); for (var j=0;j<m;j++){ var s=pr(l[j][0],l[j][1]); j?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]); } ctx.stroke();
+    });
+    ctx.restore();
+    // Orte (je Kapitel oder aggregiert)
+    var agg={};
+    liste.forEach(function(i){ DATEN.orteK[i].forEach(function(o){ var k=o[0]; if(!agg[k]) agg[k]={n:k,x:o[1],y:o[2],t:0,p:0,ne:0,kap:[]}; agg[k].t+=o[3]; agg[k].p+=o[4]; agg[k].ne+=o[5]; agg[k].kap.push(i+1); }); });
+    orte=Object.keys(agg).map(function(k){ var o=agg[k], s=pr(o.x,o.y); o.sx=s[0]; o.sy=s[1]; return o; }).sort(function(a,b){return b.t-a.t;});
+    var sk = kap ? .55 : .2, a = kap ? f : 1;
+    orte.forEach(function(o){
+      var r=kreisRadius(o.t,sk)*Math.min(1,W/700+.2); o.rr=r;
+      ctx.save(); ctx.globalAlpha=a*(hov&&hov!==o?.35:1);
+      ctx.beginPath(); ctx.arc(o.sx,o.sy,r,0,Math.PI*2); ctx.clip();
+      ctx.strokeStyle='rgba(232,229,222,.55)'; ctx.lineWidth=1.2;
+      for (var y=Math.ceil((o.sy-r)/3)*3; y<o.sy+r; y+=3){ ctx.beginPath(); ctx.moveTo(o.sx-r,y); ctx.lineTo(o.sx+r,y); ctx.stroke(); }
+      ctx.restore();
+      ctx.save(); ctx.globalAlpha=a*(hov&&hov!==o?.35:1);
+      var rp=kreisRadius(o.p,sk)*Math.min(1,W/700+.2), rn=kreisRadius(o.ne,sk)*Math.min(1,W/700+.2);
+      ctx.fillStyle=F.gold; if (rp){ ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.arc(o.sx,o.sy,rp,Math.PI,Math.PI*2); ctx.fill(); }
+      ctx.fillStyle=F.rose; if (rn){ ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.arc(o.sx,o.sy,rn,0,Math.PI); ctx.fill(); }
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(o.sx,o.sy,2,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+    if (hov){
+      var z=[hov.n, hov.t+' Nennungen · '+hov.p+' positiv · '+hov.ne+' negativ', 'Kapitel '+hov.kap.join(', ')];
+      schrift(ctx,12.5,400); var bw=Math.min(W-8,Math.max.apply(null,z.map(function(s){return ctx.measureText(s).width;}))+20);
+      var tx=Math.min(Math.max(hov.sx+14,4),W-bw-4), ty=Math.min(hov.sy+10,H-64);
+      ctx.fillStyle='rgba(251,251,249,.96)'; ctx.fillRect(tx,ty,bw,58);
+      z.forEach(function(s,i){ text(ctx,s,tx+10,ty+14+i*16,{g:12.5,w:i?300:600}); });
+    }
+    var seine=pr(1505,535); text(ctx,'Seine',seine[0],seine[1]+16,{g:11,w:300,c:'rgba(207,212,207,.6)',f:SERIF});
+    if (f>=1 && !hov) p.noLoop();
+  };
+  p.mouseMoved=function(){ var n=imCanvas(p)?nahe(p,orte,10):null; if (n!==hov){ hov=n; p.cursor(n?'pointer':'default'); p.loop(); } };
+  p.mousePressed=p.mouseMoved;
+};
+
+/* ---- Klang: die Legende zum Anhören ---- */
+MODULE.klang=function(p){
+  var el=p._userNode, g, zeilen=[], wellen=[], hov=-1, abspiel=null;
+  p.setup=function(){
+    setze('tdg-modultitel','Klangkonzept');
+    setze('tdg-modulinfo','g-Moll · Samples der VCSL-Bibliothek, wie in Strudel');
+    zeilen=KAT.map(function(k,i){ return {art:'kat',i:i,titel:k.name,klang:k.instrName,farbe:k.farbe}; })
+      .concat(FWERT.map(function(f,i){ return {art:'fw',i:i,titel:f.name,klang:f.klang,d:f.d}; }));
+    g=modulGrund(p,el,function(w){return 6*56+40;});
+    knopf('▶ Kapitel 1 anhören',function(){ spieleKapitel1(); },true);
+    setze('tdg-legende','Tippe auf eine Zeile. Die Kategorien spielen eine kleine Phrase, die wie ein wachsender Kreis ansteigt; die drei Wirkungsrichtungen erklingen als Töne des g-Moll-Dreiklangs.');
+    setze('tdg-quelle','«Kapitel 1 anhören»: alle 18 Orte des ersten Kapitels nacheinander. Pro Nennung ein Ton im Instrument ihrer Kategorie, pro Wirkungsrichtung ein Vibraphon-Anschlag.');
+  };
+  function spieleZeile(z){
+    audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
+    if (z.art==='kat'){ var ins=KAT[z.i].instr; [0,1,2,4].forEach(function(s,j){ spiele(ins,stufe2midi(ins,s),j*.18,.9); }); }
+    else spiele('vibraphon',stufe2midi('vibraphon',[0,2,4][z.i]),0,1);
+    wellen.push({z:z,t:p.millis()}); p.loop();
+  }
+  function spieleKapitel1(){
+    audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
+    var t=.35, seq=DATEN.kap1; abspiel={start:p.millis()+350, orte:[]};
+    seq.forEach(function(o){
+      var start=t; var stufen=[0,0,0];
+      o[1].forEach(function(b,i){
+        var n=Math.min(8,summe(b)), ins=KAT[i].instr;
+        for (var j=0;j<n;j++){ stufen[i]=Math.floor(Math.sqrt(j+1)*2)-1; spiele(ins,stufe2midi(ins,stufen[i]),t+j*.11+i*.035,.55); }
+      });
+      o[2].forEach(function(c,i){ if (c) spiele('vibraphon',stufe2midi('vibraphon',[0,2,4][i]),t+.05+i*.08,Math.min(1,.4+c*.08)); });
+      var d=Math.max(.5,Math.min(1.6,.25+Math.sqrt(summe(o[1].map(summe)))*.28));
+      abspiel.orte.push({n:o[0],t0:start,t1:start+d,bc:o[1]}); t+=d;
+    });
+    abspiel.ende=t; p.loop();
+  }
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), jetzt=p.millis();
+    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    var zh=52, x0=6, spalteText=W<520?56:70;
+    text(ctx,'GEFÜHLSKATEGORIEN',x0,12,{g:11,w:600,c:F.tinte2,sperr:.8});
+    zeilen.forEach(function(z,k){
+      var y=34+k*zh+(k>=3?20:0)+zh/2; z.y=y;
+      if (k===3) text(ctx,'KÖRPER UND RAUM',x0,y-zh/2-8,{g:11,w:600,c:F.tinte2,sperr:.8});
+      if (hov===k){ ctx.fillStyle='rgba(193,81,29,.07)'; ctx.fillRect(0,y-zh/2+3,W,zh-6); }
+      var ix=x0+20, iy=y;
+      // Lautsprecher
+      ctx.save(); ctx.fillStyle=F.tinte; ctx.beginPath(); ctx.moveTo(ix-9,iy-3); ctx.lineTo(ix-5,iy-3); ctx.lineTo(ix,iy-7); ctx.lineTo(ix,iy+7); ctx.lineTo(ix-5,iy+3); ctx.lineTo(ix-9,iy+3); ctx.closePath(); ctx.fill(); ctx.restore();
+      var mx=x0+44;
+      if (z.art==='kat'){
+        ctx.save(); ctx.beginPath(); ctx.arc(mx,y,9,0,Math.PI*2); ctx.clip(); ctx.strokeStyle=rgba(z.farbe,.7); ctx.lineWidth=1.6;
+        for (var yy=y-9; yy<y+9; yy+=3){ ctx.beginPath(); ctx.moveTo(mx-9,yy); ctx.lineTo(mx+9,yy); ctx.stroke(); } ctx.restore();
+        ctx.fillStyle=rgba(z.farbe); ctx.beginPath(); ctx.arc(mx+22,y,9,0,Math.PI*2); ctx.fill();
+      } else { ctx.fillStyle='#C2511C'; ctx.beginPath(); ctx.arc(mx+11,y,z.d/2+1,0,Math.PI*2); ctx.fill(); }
+      var tx=mx+spalteText-22+22;
+      schrift(ctx,14,600); var tl=umbruch(ctx,z.titel,W-tx-10);
+      if (tl.length===1 && W>=560){ text(ctx,z.titel,tx,y,{g:14,w:600}); schrift(ctx,14,600); text(ctx,z.klang,tx+ctx.measureText(z.titel).width+10,y,{g:14,w:300,c:F.tinte2}); }
+      else { text(ctx,tl.join(' '),tx,y-8,{g:13.5,w:600}); text(ctx,z.klang,tx,y+10,{g:13,w:300,c:F.tinte2}); }
+    });
+    // Wellen
+    wellen=wellen.filter(function(w){ return jetzt-w.t<1600; });
+    wellen.forEach(function(w){
+      var ph=(jetzt-w.t)/1600, cx=x0+44+(w.z.art==='kat'?11:11), c=w.z.art==='kat'?w.z.farbe:[194,81,28];
+      for (var i=0;i<3;i++){ var q=ph-i*.12; if (q<0) continue; ctx.beginPath(); ctx.arc(cx,w.z.y,10+q*60,0,Math.PI*2); ctx.strokeStyle=rgba(c,Math.max(0,.8-q)); ctx.lineWidth=1.5; ctx.stroke(); }
+    });
+    // Kapitel-1-Wiedergabe
+    if (abspiel){
+      var ts=(jetzt-abspiel.start)/1000, akt=abspiel.orte.filter(function(o){return ts>=o.t0&&ts<o.t1;})[0];
+      var bx=W-(W<560?0:0);
+      if (akt){ setze('tdg-modulinfo','Kapitel 1 · '+akt.n); }
+      var fort=Math.max(0,Math.min(1,ts/abspiel.ende));
+      ctx.fillStyle=F.orange; ctx.fillRect(0,H-4,W*fort,3);
+      if (ts>abspiel.ende+1.5){ abspiel=null; setze('tdg-modulinfo','g-Moll · Samples der VCSL-Bibliothek, wie in Strudel'); }
+    }
+    if (!wellen.length && !abspiel) p.noLoop();
+  };
+  function zeileBei(){ var n=-1; zeilen.forEach(function(z,k){ if (Math.abs(p.mouseY-z.y)<24) n=k; }); return imCanvas(p)?n:-1; }
+  p.mouseMoved=function(){ var n=zeileBei(); if (n!==hov){ hov=n; p.cursor(n>=0?'pointer':'default'); p.redraw(); } };
+  p.mousePressed=function(){ var n=zeileBei(); if (n>=0) spieleZeile(zeilen[n]); };
+};
+
+/* ---- Form: Bögen zwischen den zwölf wichtigsten Orten ---- */
+MODULE.form=function(p){
+  var el=p._userNode, g, O=DATEN.orte, B=DATEN.boegen, hov=-1, fest=-1, t0=0, pos=[];
+  p.setup=function(){
+    setze('tdg-modultitel','Formkonzept');
+    setze('tdg-modulinfo','Die zwölf meistgenannten Orte, in der Reihenfolge ihres ersten Auftretens');
+    g=modulGrund(p,el,function(w){ return w<600? Math.round(Math.min(380,(w-44)/2+120)) : 470; });
+    setze('tdg-legende','Jeder Bogen ist ein Wechsel zwischen zwei Orten – je öfter Duroy zwischen ihnen hin und her geht, desto kräftiger der Bogen. Die Kreise folgen derselben Logik wie auf der Karte. Fahre über einen Ort.');
+    setze('tdg-quelle','Zusammengefasst über alle 18 Kapitel. Kreisgrösse: Anzahl Gefühlsäusserungen am Ort.');
+    t0=p.millis();
+  };
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/1400), schmal=W<600;
+    var e=1-Math.pow(1-f,3);
+    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    var pad=schmal?22:40, basisY=schmal?H-70:H-140, sp=(W-pad-(schmal?pad:110))/(O.length-1);
+    var maxT=Math.max.apply(null,O.map(function(o){return o.t;})), s=Math.min(sp*.46, schmal?20:34)/kreisRadius(maxT,1);
+    var maxH=basisY-30, maxN=Math.max.apply(null,B.map(function(b){return b[2];}));
+    var aktiv=hov>=0?hov:fest;
+    pos=O.map(function(o,i){ return {x:pad+sp*i,y:basisY}; });
+    // Bögen
+    B.forEach(function(b){
+      var a=pos[b[0]], c=pos[b[1]], rx=(c.x-a.x)/2, ry=Math.min(rx, maxH)*e, beteiligt=aktiv<0||b[0]===aktiv||b[1]===aktiv;
+      ctx.save(); ctx.strokeStyle= aktiv>=0 && beteiligt ? F.orange : 'rgba(98,85,31,'+(beteiligt?.75:.12)+')';
+      ctx.lineWidth=.8+2.4*b[2]/maxN; ctx.beginPath(); ctx.ellipse(a.x+rx,basisY,rx,ry,0,Math.PI,Math.PI*2); ctx.stroke(); ctx.restore();
+    });
+    ctx.fillStyle=F.tinte; ctx.fillRect(pad-10,basisY,W-2*pad+20,1);
+    // Kreise
+    O.forEach(function(o,i){
+      ctx.save(); ctx.globalAlpha= aktiv>=0 && aktiv!==i && !B.some(function(b){return (b[0]===aktiv&&b[1]===i)||(b[1]===aktiv&&b[0]===i);}) ? .35 : 1;
+      zeichneKreis(ctx,pos[i].x,basisY,o.bc,s*e+.001,{schraffur:schmal?2.5:3,punktR:schmal?2.5:3.5}); ctx.restore();
+    });
+    // Beschriftungen
+    if (!schmal){
+      O.forEach(function(o,i){
+        var rk=groessterRadius(o.bc,s); ctx.save(); ctx.translate(pos[i].x+Math.cos(Math.PI/5)*(rk+6),basisY+Math.sin(Math.PI/5)*(rk+6)+4); ctx.rotate(Math.PI/5);
+        var n=o.n.length>28?o.n.slice(0,27)+'…':o.n;
+        text(ctx,n,0,0,{g:11.5,w:aktiv===i?600:300,c:aktiv===i?F.tinte:F.tinte2}); ctx.restore();
+      });
+    }
+    if (aktiv>=0){
+      var o=O[aktiv], pp=0,nn=0; o.bc.forEach(function(b){nn+=b[0];pp+=b[1];});
+      setze('tdg-modulinfo','<b style="color:#221f1f;font-weight:600">'+o.n+'</b> · '+o.t+' Nennungen · '+pp+' positiv · '+nn+' negativ · Kapitel '+o.k.join(', '));
+    }
+    if (f>=1) p.noLoop();
+  };
+  function bei(){ if (!imCanvas(p)) return -1; var n=-1,bd=1e9; pos.forEach(function(q,i){ var d=Math.abs(p.mouseX-q.x); if (d<bd && Math.abs(p.mouseY-q.y)<120){bd=d;n=i;} }); return bd<40?n:-1; }
+  p.mouseMoved=function(){ var n=bei(); if (n!==hov){ hov=n; p.cursor(n>=0?'pointer':'default'); if (n<0 && fest<0) setze('tdg-modulinfo','Die zwölf meistgenannten Orte, in der Reihenfolge ihres ersten Auftretens'); p.redraw(); } };
+  p.mousePressed=function(){ var n=bei(); if (imCanvas(p)){ fest=n; p.redraw(); } };
+};
+
+/* ---- Schrift ---- */
+MODULE.schrift=function(p){
+  var el=p._userNode, g, groesse=40, wahl=0;
+  var STILE=[{f:SERIF,w:600,n:'Source Serif 4 Semibold'},{f:SERIF,w:300,n:'Source Serif 4 Light'},{f:SANS,w:600,n:'Source Sans 3 Semibold'},{f:SANS,w:300,n:'Source Sans 3 Light'}];
+  p.setup=function(){
+    setze('tdg-modultitel','Schrift');
+    g=modulGrund(p,el,function(w){ var gr=Math.min(96,w/7); return Math.round(24+gr*2.45+12+30+80); });
+    var st=document.getElementById('tdg-steuerung');
+    STILE.forEach(function(s,i){ var b=knopf(s.n,function(){ wahl=i; [].forEach.call(st.querySelectorAll('.tdg-knopf'),function(x,j){ x.classList.toggle('primaer',j===i); }); p.redraw(); },i===0); });
+    var lab=document.createElement('label'); lab.innerHTML='<span>Grösse</span>';
+    var r=document.createElement('input'); r.type='range'; r.min=12; r.max=96; r.value=groesse; r.setAttribute('aria-label','Schriftgrösse in Punkt');
+    r.addEventListener('input',function(){ groesse=+r.value; p.redraw(); }); lab.appendChild(r); st.appendChild(lab);
+    setze('tdg-legende','Fourniers Punkt machte Schriftgrössen vergleichbar. Das Lineal misst die Zeile in typografischen Punkten.');
+    schriftenBereit(function(){ p.redraw(); });
+    p.noLoop();
+  };
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), s=STILE[wahl], gr=Math.min(groesse, W/7);
+    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    setze('tdg-modulinfo',s.n+' · '+groesse+' Punkt');
+    text(ctx,'Topografie',8,24+gr*.55,{g:gr,w:s.w,f:s.f,b:'middle'});
+    text(ctx,'der Gefühle',8,24+gr*1.6,{g:gr,w:s.w,f:s.f});
+    var y2=24+gr*2.45+12;
+    text(ctx,'Lesendes Gehen als generative Zeichnung städtischen Raums',8,y2,{g:Math.max(14,Math.min(20,W/34)),w:300,f:SERIF,c:F.tinte2});
+    text(ctx,'ABCDEFGHIJKLMNOPQRSTUVWXYZ  abcdefghijkl  0123456789 &',8,y2+30,{g:14,w:s.w,f:s.f,c:F.tinte});
+    // Lineal in Punkt
+    var ly=H-34, px=96/72;
+    ctx.fillStyle=F.tinte; ctx.fillRect(8,ly,W-16,1);
+    for (var pt=0; 8+pt*px<W-8; pt+=6){
+      var lang = pt%72===0 ? 12 : (pt%12===0 ? 7 : 4), x=8+pt*px;
+      ctx.fillRect(x,ly,1,lang);
+      if (pt%72===0) text(ctx,pt+' pt',x+3,ly+20,{g:11,w:300,c:F.tinte2});
+    }
+    ctx.fillStyle='rgba(193,81,29,.8)'; ctx.fillRect(8,ly-6,groesse*px,4);
+    text(ctx,'Kegel '+groesse+' pt',8+groesse*px+6,ly-4,{g:11,w:600,c:F.orange});
+  };
+};
+
+/* ---- Fotografie: Fotomarker ---- */
+MODULE.foto=function(p){
+  var el=p._userNode, g, pr, marker=[], hov=null, fest=null, bb, t0=0;
+  p._neuLayout=function(W,H){ pr=projektion(W,H,16,bb); };
+  p.setup=function(){
+    setze('tdg-modultitel','Fotografie');
+    setze('tdg-modulinfo','17 Fotomarker · Glasplatten der Commission du Vieux Paris');
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; DATEN.fotos.forEach(function(f){ x0=Math.min(x0,f[1]);y0=Math.min(y0,f[2]);x1=Math.max(x1,f[1]);y1=Math.max(y1,f[2]); });
+    bb=[x0-60,y0-40,x1+60,y1+40];
+    g=modulGrund(p,el,function(w){return Math.round(Math.min(480,Math.max(300,w*.55)));}); pr=projektion(g.W(),g.H(),16,bb);
+    setze('tdg-legende','Fahre über einen Marker oder tippe ihn an.');
+    setze('tdg-quelle','Fotos: DHAAP – Photographies de la Commission du Vieux Paris. Beschreibungen aus den Metadaten der Sammlung.');
+    t0=p.millis();
+  };
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/900);
+    p.clear(); ctx.fillStyle='#e2e6e1'; ctx.fillRect(0,0,W,H);
+    zeichneBasis(ctx,pr,{strasse:'rgba(58,80,88,.18)',wasser:'#b9c6cb',wBreite:Math.max(5,W/120)});
+    var akt=hov||fest;
+    marker=DATEN.fotos.map(function(fo,i){ var s=pr(fo[1],fo[2]); return {fo:fo,sx:s[0],sy:s[1],i:i,rr:14}; });
+    marker.forEach(function(m){
+      var r=(m===akt||(akt&&akt.fo===m.fo)?11:8)*Math.min(1,f*1.3-m.i*.02+.2);
+      if (r<=0) return;
+      ctx.fillStyle='#3A5058'; ctx.beginPath(); ctx.arc(m.sx,m.sy,r,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#E2E6E1'; ctx.beginPath(); ctx.arc(m.sx,m.sy,r*.45,0,Math.PI*2); ctx.fill();
+    });
+    if (akt){
+      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.tinte; ctx.beginPath(); ctx.moveTo(akt.sx,akt.sy); ctx.lineTo(akt.sx,akt.sy-26); ctx.stroke(); ctx.restore();
+      var t=akt.fo[0]; schrift(ctx,12,600); var bw=ctx.measureText(t).width+16, tx=Math.min(Math.max(akt.sx-bw/2,4),W-bw-4);
+      ctx.fillStyle=F.tinte; ctx.fillRect(tx,akt.sy-48,bw,22); text(ctx,t,tx+8,akt.sy-37,{g:12,w:600,c:'#fff'});
+    }
+    if (f>=1) p.noLoop();
+  };
+  function zeige(m){ setze('tdg-legende', m ? '<b>'+m.fo[0]+'</b> – '+m.fo[3] : 'Fahre über einen Marker oder tippe ihn an.'); }
+  p.mouseMoved=function(){ var n=imCanvas(p)?nahe(p,marker,14):null; if (n!==hov){ hov=n; p.cursor(n?'pointer':'default'); zeige(n||fest); p.redraw(); } };
+  p.mousePressed=function(){ if (!imCanvas(p)) return; fest=nahe(p,marker,16); zeige(fest); p.redraw(); };
+};
+
+/* ---- Synthese: der Kreis entsteht Schritt für Schritt ---- */
+MODULE.kreis=function(p){
+  var el=p._userNode, g, schritt=0, t0=0, auto=null, bWeiter, bZurueck;
+  var BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
+  var PUNKTE={pos:[2,2,1,2,0],neg:[1,1,0],neutral:[0,2]};
+  var SCHRITTE=[
+    {t:'Ortsbeschriftung', l:'Jeder Schauplatz bekommt einen Mittelpunkt und seinen Namen.'},
+    {t:'Raum und Umwelt', l:'Ein schraffierter Kreis: Er wächst mit der Anzahl Gefühlsäusserungen an diesem Ort. Klang: Marimba.'},
+    {t:'Stimmung · Gesellschaft', l:'Stimmung und Emotion (Harfe) und Gesellschaft und Soziales (Klavier) legen sich darüber – die grössten Kreise zuunterst.'},
+    {t:'Valenz', l:'Positive Nennungen wölben sich als Halbkreis nach oben, negative nach unten. Neutrale zählen nur in der Schraffur mit.'},
+    {t:'Körper und Raum', l:'Ein orangefarbener Punkt je Textstelle mit Wirkungsrichtung, geordnet nach positiver, negativer und neutraler Wahrnehmung. Vibraphon: Grundton, Terz, Quinte.'}
+  ];
+  p.setup=function(){
+    setze('tdg-modultitel','Grafik – Kreisgrösse');
+    g=modulGrund(p,el,function(w){return w<600?420:480;});
+    bZurueck=knopf('← Zurück',function(){ geh(schritt-1); });
+    bWeiter=knopf('Weiter →',function(){ geh(schritt+1); },true);
+    knopf('▶ Alles abspielen',function(){ clearInterval(auto); geh(0); auto=setInterval(function(){ if (schritt>=SCHRITTE.length-1){ clearInterval(auto); return; } geh(schritt+1); },2200); });
+    setze('tdg-quelle','Beispielort mit erfundenen Werten, gebaut wie die Demo-Grafik der Web-App. Farben: Pissarro. Form: Eisen und Glas. Klang: g-Moll.');
+    geh(0,true);
+  };
+  function geh(n,still){
+    schritt=Math.max(0,Math.min(SCHRITTE.length-1,n)); t0=p.millis();
+    bZurueck.disabled=schritt===0; bWeiter.disabled=schritt===SCHRITTE.length-1;
+    setze('tdg-modulinfo','Schritt '+(schritt+1)+' von '+SCHRITTE.length+' · '+SCHRITTE[schritt].t);
+    setze('tdg-legende',SCHRITTE[schritt].l);
+    if (!still){
+      audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
+      if (schritt===1) [0,1,2,4].forEach(function(s,j){ spiele('marimba',stufe2midi('marimba',s),j*.16,.9); });
+      if (schritt===2){ [0,2,4].forEach(function(s,j){ spiele('harfe',stufe2midi('harfe',s),j*.16,.9); }); [0,2].forEach(function(s,j){ spiele('klavier',stufe2midi('klavier',s),.5+j*.16,.8); }); }
+      if (schritt===3){ spiele('harfe',stufe2midi('harfe',4),0,.8); spiele('marimba',stufe2midi('marimba',-3),.25,.9); }
+      if (schritt===4) [0,2,4].forEach(function(s,j){ spiele('vibraphon',stufe2midi('vibraphon',s),j*.22,1); });
+    }
+    p.loop();
+  }
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/700), e=1-Math.pow(1-f,3), schmal=W<600;
+    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    var cx= schmal? W*.46 : W*.44, cy=H/2-(schmal?30:26), R0=kreisRadius(16,1), s=Math.min(schmal?1.35:1.9, (Math.min(W*.3,H*.36))/R0);
+    var kats=[schritt>=1, schritt>=2, schritt>=2], hal=schritt>=3;
+    function wachs(i){ return (schritt===1&&i===0)||(schritt===2&&i>0) ? e : 1; }
+    // Einzelne Kategorien mit Wachstum zeichnen
+    var bcs=BC.map(function(b,i){ return kats[i]? b : [0,0,0,0]; });
+    ctx.save();
+    if (schritt<=2){ var sk=bcs.map(function(b,i){return b;}); zeichneKreis(ctx,cx,cy,sk,s*(schritt===1?e:1),{haelften:false,schraffur:3,punkt:false}); }
+    else { ctx.globalAlpha=1; zeichneKreis(ctx,cx,cy,BC,s,{haelften:false,schraffur:3,punkt:false}); ctx.globalAlpha=schritt===3?e:1; zeichneKreis(ctx,cx,cy,BC,s,{kats:[true,true,true],haelften:true,schraffur:3,punkt:false}); }
+    ctx.restore();
+    if (schritt===2){ ctx.save(); ctx.globalAlpha=1-e; ctx.restore(); }
+    // Mittelpunkt
+    ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(cx,cy,4.5,0,Math.PI*2); ctx.fill();
+    var R=groessterRadius(BC,s);
+    // F-Werte
+    if (schritt>=4){ zeichneFwertPunkte(ctx,cx,cy,R+2,PUNKTE,e,Math.min(1.5,s*.8)); }
+    // Legende rechts
+    var ax=cx+R+(schmal?18:40), lx=ax+ (schmal?14:22);
+    ctx.save(); ctx.strokeStyle=F.tinte; ctx.fillStyle=F.tinte; ctx.lineWidth=1; ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.moveTo(cx+6,cy); ctx.lineTo(ax,cy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(ax,cy-5); ctx.lineTo(ax+8,cy); ctx.lineTo(ax,cy+5); ctx.fill(); ctx.restore();
+    var gT=schmal?12:13.5;
+    if (!schmal) text(ctx,'Ortsbeschriftung',lx,cy,{g:gT,w:600});
+    else text(ctx,'Ort',lx,cy,{g:gT,w:600});
+    if (schritt>=3){
+      ctx.save(); ctx.globalAlpha=schritt===3?e:1; ctx.strokeStyle=F.tinte; ctx.fillStyle=F.tinte; ctx.setLineDash([3,4]);
+      var vy=R*.62;
+      ctx.beginPath(); ctx.moveTo(ax,cy-12); ctx.lineTo(ax,cy-vy); ctx.moveTo(ax,cy+12); ctx.lineTo(ax,cy+vy); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(ax-5,cy-vy+8); ctx.lineTo(ax,cy-vy); ctx.lineTo(ax+5,cy-vy+8); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(ax-5,cy+vy-8); ctx.lineTo(ax,cy+vy); ctx.lineTo(ax+5,cy+vy-8); ctx.fill();
+      if (!schmal){ text(ctx,'Anteil positiver Gefühle',lx,cy-vy+4,{g:gT,w:600}); text(ctx,'Anteil negativer Gefühle',lx,cy+vy-4,{g:gT,w:600}); }
+      else { text(ctx,'positiv',lx,cy-vy+4,{g:gT,w:600}); text(ctx,'negativ',lx,cy+vy-4,{g:gT,w:600}); }
+      ctx.restore();
+    }
+    if (schritt>=4){
+      ctx.save(); ctx.globalAlpha=e; var rb=R+ (schmal?34:48);
+      ctx.strokeStyle=F.orange; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.arc(cx,cy,rb,Math.PI*.5+.25,Math.PI*1.5-.25); ctx.stroke();
+      [[-140,'Positive','Wahrnehmung'],[140,'Negative','Wahrnehmung'],[35,'Neutrale','Wahrnehmung']].forEach(function(q){
+        var w=q[0]*Math.PI/180, x=cx+Math.cos(w)*rb, y=cy+Math.sin(w)*rb;
+        ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fillStyle=F.papier; ctx.fill(); ctx.stroke();
+        var rechts=q[0]===35, tx=rechts? x+12 : x-12, gg=schmal?11.5:13; schrift(ctx,gg,600); var tw=ctx.measureText(q[2]).width;
+        if (!rechts && tx-tw<4) tx=tw+4; if (rechts && tx+tw>W-4) tx=W-4-tw;
+        var dy=(rechts?14:0)+(!rechts&&schmal?(q[0]<0?-18:18):0);
+        text(ctx,q[1],tx,y-8+dy,{g:gg,w:600,c:F.orange,a:rechts?'left':'right'});
+        text(ctx,q[2],tx,y+8+dy,{g:gg,w:600,c:F.orange,a:rechts?'left':'right'});
+      });
+      ctx.restore();
+    }
+    // Legende Kategorien unten links
+    var ly=H-(schmal?64:62);
+    KAT.forEach(function(k,i){
+      var y=ly+i*22, sichtbar=kats[i]; ctx.globalAlpha=sichtbar?1:.3;
+      ctx.save(); ctx.beginPath(); ctx.rect(8,y-7,14,14); ctx.clip(); ctx.strokeStyle=rgba(k.farbe,.7); ctx.lineWidth=1.6; for (var yy=y-7;yy<y+7;yy+=3){ ctx.beginPath(); ctx.moveTo(8,yy); ctx.lineTo(22,yy); ctx.stroke(); } ctx.restore();
+      ctx.fillStyle=rgba(k.farbe); ctx.fillRect(26,y-7,14,14);
+      text(ctx,k.name,48,y,{g:12.5,w:600}); schrift(ctx,12.5,600); var tw=ctx.measureText(k.name).width;
+      text(ctx,k.instrName,48+tw+6,y,{g:12.5,w:300,c:F.tinte2}); ctx.globalAlpha=1;
+    });
+    if (f>=1) p.noLoop();
+  };
+  var altRemove=p.remove; p.remove=function(){ clearInterval(auto); altRemove(); };
+};
+
+beobachter.push(zeigeDetail);
+schriftenBereit(function(){});
+zeigeDetail(zustand.gewaehlt);
+})();
+</script>
