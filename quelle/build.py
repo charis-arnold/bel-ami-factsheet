@@ -10,7 +10,7 @@ WP_PFAD = 'https://www.charisarnold.ch/wp-content/uploads/2026/09/'
 quelle = (hier / 'tdg-umsetzung.html').read_text(encoding='utf-8')
 daten = (hier / 'daten.json').read_text(encoding='utf-8')
 # Meldet im iframe die Höhe an die einbettende Seite (WordPress passt das iframe an).
-HOEHE = """<script>(function(){if(window.parent===window)return;document.documentElement.style.overflowY="hidden";var l=0;function m(){var h=Math.ceil(document.documentElement.scrollHeight);if(h!==l){l=h;window.parent.postMessage({tdgHoehe:h},'*');}}new ResizeObserver(m).observe(document.body);window.addEventListener('load',m);setInterval(m,1000);})();</script>"""
+HOEHE = """<script>(function(){if(window.parent===window)return;document.documentElement.style.overflowY="hidden";var l=0;function m(){var el=document.getElementById('tdg-prozess');if(!el)return;var h=Math.ceil(el.getBoundingClientRect().bottom+window.scrollY);if(h!==l){l=h;window.parent.postMessage({tdgHoehe:h},'*');}}new ResizeObserver(m).observe(document.getElementById('tdg-prozess'));window.addEventListener('load',m);setInterval(m,1000);})();</script>"""
 
 def baue(bild, klang):
     return quelle.replace('__DATEN__', daten).replace('__BILDPFAD__', bild).replace('__KLANGPFAD__', klang)

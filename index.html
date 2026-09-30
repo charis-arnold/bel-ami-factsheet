@@ -1089,4 +1089,4 @@ schriftenBereit(function(){});
 zeigeDetail(zustand.gewaehlt);
 })();
 </script>
-<script>(function(){if(window.parent===window)return;document.documentElement.style.overflowY="hidden";var l=0;function m(){var h=Math.ceil(document.documentElement.scrollHeight);if(h!==l){l=h;window.parent.postMessage({tdgHoehe:h},'*');}}new ResizeObserver(m).observe(document.body);window.addEventListener('load',m);setInterval(m,1000);})();</script></body></html>
+<script>(function(){if(window.parent===window)return;document.documentElement.style.overflowY="hidden";var l=0;function m(){var el=document.getElementById('tdg-prozess');if(!el)return;var h=Math.ceil(el.getBoundingClientRect().bottom+window.scrollY);if(h!==l){l=h;window.parent.postMessage({tdgHoehe:h},'*');}}new ResizeObserver(m).observe(document.getElementById('tdg-prozess'));window.addEventListener('load',m);setInterval(m,1000);})();</script></body></html>
