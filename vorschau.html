@@ -39,8 +39,6 @@
 .tdg-detail{position:absolute;left:0;right:0;top:0;z-index:2;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px 40px;align-items:start;padding:26px 0 30px;opacity:0;transition:opacity .35s ease}
 .tdg-detail[hidden]{display:none}
 .tdg-detail.offen{opacity:1}
-#tdg-prozess .tdg-zu{position:absolute;top:8px;right:0;border:0;background:transparent;color:var(--tinte2);font-size:13px;padding:4px 0}
-#tdg-prozess .tdg-zu:hover{color:var(--tinte)}
 .tdg-detail.ohne-modul .tdg-modulrahmen{display:none}
 .tdg-erkenntnis .feld{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--tinte2)}
 .tdg-erkenntnis p{font:600 clamp(22px,2.6vw,30px)/1.2 var(--sans);margin-top:8px!important;color:var(--tinte)}
@@ -91,7 +89,6 @@
   <div class="tdg-hell" id="tdg-hell" aria-hidden="true"></div>
   <div class="tdg-netz" id="tdg-netz" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen">
   <section class="tdg-detail" id="tdg-detail" aria-live="polite" hidden>
-    <button type="button" class="tdg-zu" id="tdg-zu" aria-label="Schliessen">Schliessen ×</button>
     <div class="tdg-personen" id="tdg-personen"></div>
     <div class="tdg-uebersetzung" id="tdg-uebersetzung"></div>
     <div class="tdg-modulrahmen">
@@ -437,12 +434,9 @@ new p5(function(p){
       // ab «Umsetzung» heller Grund: kommt von #tdg-hell hinter der Zeichenfläche (bis zum Rand)
       text(ctx,'Kontext',16,kontextY-6,{g:gT,w:600});
       text(ctx,'Paris 1885 · Zeitgenossen',16,kontextY+20,{g:13,w:300,c:F.tinte2});
-      text(ctx,'UMSETZUNG',16,212+oy,{g:11,w:600,c:F.tinte2,sperr:1});
       text(ctx,'Daten Visualisation',16,synth.y,{g:gT,w:600});
     } else {
       text(ctx,'Kontext',16,kontextY,{g:22,w:600});
-      var xE0=elementKnoten(KETTEN[1]).x;
-      text(ctx,'UMSETZUNG',xE0-22,kontextY,{g:11,w:600,c:F.tinte2,sperr:1});
       text(ctx,'Daten',16,synth.y-14,{g:W<370?19:22,w:600});
       text(ctx,'Visualisation',16,synth.y+12,{g:W<370?19:22,w:600});
     }
@@ -648,7 +642,6 @@ function zeigeDetail(id){
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
   if (k.modul) modulInstanz = new p5(MODULE[k.modul], el);
 }
-document.getElementById('tdg-zu').addEventListener('click',function(){ waehle(null,null); });
 function setze(id, html){ document.getElementById(id).innerHTML=html; }
 function knopf(label, fn, primaer){
   var b=document.createElement('button'); b.type='button'; b.className='tdg-knopf'+(primaer?' primaer':''); b.textContent=label; b.addEventListener('click',fn);
