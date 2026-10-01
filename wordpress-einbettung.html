@@ -41,6 +41,8 @@
 #tdg-prozess .tdg-zu{position:absolute;top:8px;right:0;border:0;background:transparent;color:var(--tinte2);font-size:13px;padding:4px 0}
 #tdg-prozess .tdg-zu:hover{color:var(--tinte)}
 .tdg-detail.ohne-modul .tdg-modulrahmen{display:none}
+.tdg-erkenntnis .feld{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--tinte2)}
+.tdg-erkenntnis p{font:600 clamp(22px,2.6vw,30px)/1.2 var(--sans);margin-top:8px!important;color:var(--tinte)}
 .tdg-personen{display:flex;flex-direction:column;gap:18px}
 .tdg-person{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start}
 .tdg-person img{width:96px;aspect-ratio:3/4;object-fit:cover;background:#dfe3de}
@@ -245,10 +247,10 @@ function vorladen(liste){ if (!audioStart()) return; liste.forEach(ladeInstr); }
 
 /* ---------- Inhalte ---------- */
 var KETTEN = [
-  { id:'literatur', feld:'Daten', kurz:'Daten',
-    personen:[{bild:'belami', name:'«Bel-Ami»', jahre:'Roman, 1885', rolle:'von Guy de Maupassant', werk:'Übersetzung Fürst N. Obolensky · Projekt Gutenberg'}],
-    titel:'Daten & Analyse', sub:'Roman «Bel-Ami» · Erhebung mit Python', netzTitel:'Analyse', netzSub:'Valenz je Kapitel', mini:'balken',
-    text:'Der Roman wird hier zur Datengrundlage: 18 Kapitel aus Projekt Gutenberg (Übersetzung Fürst N. Obolensky), mit der Claude API Textstelle für Textstelle annotiert, nach Valenz (−1/0/+1) und Intensität (1–3) quantifiziert, mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
+  { id:'literatur', feld:'Analyse', kurz:'Analyse',
+    links:'<div class="tdg-erkenntnis"><div class="feld">Erkenntnis</div><p>Der Aufstieg fühlt sich nicht wie einer an.</p></div>',
+    titel:'Analyse', sub:'Valenz je Kapitel', netzTitel:'Analyse', netzSub:'Valenz je Kapitel', mini:'balken',
+    text:'Kapitel für Kapitel steigt Duroy die Karriereleiter hoch – doch fast zwei Drittel aller emotionalen Momente sind negativ gefärbt. Nur drei der 18 Kapitel kippen ins Positive. Der Raum führt, nicht das Gefühl: In drei von vier Fällen geht die Wirkung vom Ort aus, nicht vom Körper.',
     modul:'analyse' },
   { id:'kunst', feld:'Kunst', kurz:'Farbe',
     personen:[{bild:'pissarro', name:'Camille Pissarro', jahre:'1830 – 1903', rolle:'Maler', werk:'«Avenue de l’Opéra», 1898', quer:true}],
@@ -289,7 +291,12 @@ var MENSCH = { id:'mensch', feld:'Mensch', kurz:'Mensch',
   titel:'Mensch', sub:'Guy de Maupassant · Protagonist und Zeitzeuge',
   text:'Maupassant kannte das Paris, das er beschreibt, aus eigener Anschauung – als kleiner Angestellter in den Ministerien, später als Journalist und Kritiker seiner Zeit. Wie sein Protagonist Georges Duroy bewegte er sich zwischen Redaktionen, Boulevards und Salons. Sein Blick auf die Stadt ist der Ausgangspunkt des Projekts.',
   modul:null };
-var ALLE = KETTEN.concat([SYNTHESE, MENSCH]);
+var DATEN_ROMAN = { id:'daten', feld:'Daten', kurz:'Daten',
+  personen:[{bild:'belami', name:'«Bel-Ami»', jahre:'Roman, 1885', rolle:'von Guy de Maupassant', werk:'Übersetzung Fürst N. Obolensky · Projekt Gutenberg'}],
+  titel:'Daten', sub:'Roman «Bel-Ami» · Erhebung mit Python',
+  text:'Maupassants Roman ist die Datengrundlage: 18 Kapitel als Rohtext aus Projekt Gutenberg, mit der Claude API Textstelle für Textstelle annotiert – 2902 Annotationen. Jede Stelle erhält eine Perspektive (Figur oder Erzähler), Inhalts-Tags in drei Kategorien (Raum und Umwelt, Stimmung und Emotion, Gesellschaft und Soziales), eine Valenz (−1/0/+1), eine Intensität (1–3) und, wo vorhanden, eine Wirkungsrichtung zwischen Körper und Raum. Die Orte werden mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
+  modul:null };
+var ALLE = KETTEN.concat([SYNTHESE, MENSCH, DATEN_ROMAN]);
 // Reihenfolge der Kontext-Spalten (Index in KETTEN): Kunst, Architektur, Fotografie, Typografie, Musik
 var KONTEXT_REIHE = [1,4,6,5,3];
 function kette(id){ return ALLE.filter(function(k){return k.id===id;})[0]; }
@@ -340,13 +347,14 @@ new p5(function(p){
       rP=Math.min(34, sp*.3); var rE=Math.min(30, sp*.27); eng = sp<132;
       var yP=92+oy, yE=292+oy; H=600+oy;
       function sx(i){ return spalte3+sp*(SP.indexOf(i)+.5); }
+      x2=sx(6); // obere Kreise auf der Achse von «Fotografie»
       mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Guy de Maupassant','Protagonist und Zeitzeuge'], k:MENSCH, x:x2, y:ZH/2, r:rP, zu:ZH}; knoten.push(mensch);
-      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami», 1885'], k:KETTEN[0], x:x2, y:ZH+ZH/2, r:rP, zu:2*ZH}; knoten.push(daten);
+      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami», 1885'], k:DATEN_ROMAN, x:x2, y:ZH+ZH/2, r:rP, zu:2*ZH}; knoten.push(daten);
       ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:2*ZH+ZH/2, r:rP, zu:oy}; knoten.push(ort);
       kontextY=yP;
       KETTEN.forEach(function(k,i){
-        if (i===0){ knoten.push({typ:'element', k:k, x:sx(1), y:daten.y, r:rE, rechts:true, zu:daten.zu}); return; }
-        if (i===2){ knoten.push({typ:'element', k:k, x:sx(1), y:ort.y, r:rE, rechts:true, zu:ort.zu}); return; }
+        if (i===0){ knoten.push({typ:'element', k:k, x:sx(5), y:daten.y, r:rE, rechts:true, zu:daten.zu}); return; }
+        if (i===2){ knoten.push({typ:'element', k:k, x:sx(5), y:ort.y, r:rE, rechts:true, zu:ort.zu}); return; }
         var x=sx(i);
         k.personen.forEach(function(pe,j){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
@@ -357,9 +365,9 @@ new p5(function(p){
       synth={x:(spalte3+W)/2, y:486+oy, r:44, zu:H};
     } else {
       // Handy: Typo links, Kreise in Spalte 2, Analyse in Spalte 3 (Beschriftung darunter)
-      dW=0; oy=0; L=0; var zeile=94, top=3*ZM+72, xP=38, xE=Math.min(W*.56, W-150), x2=Math.round(Math.min(176,W*.46));
+      dW=0; oy=0; L=0; var zeile=94, top=3*ZM+72, xP=38, xE=Math.min(W*.56, W-150), x2=xE;
       mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Guy de Maupassant'], k:MENSCH, x:x2, y:ZM/2, r:26, zu:ZM}; knoten.push(mensch);
-      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami»'], k:KETTEN[0], x:x2, y:ZM*1.5, r:26, zu:2*ZM}; knoten.push(daten);
+      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami»'], k:DATEN_ROMAN, x:x2, y:ZM*1.5, r:26, zu:2*ZM}; knoten.push(daten);
       ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:ZM*2.5, r:26, zu:3*ZM}; knoten.push(ort);
       kontextY=3*ZM+22;
       KETTEN.forEach(function(k,i){
@@ -391,11 +399,13 @@ new p5(function(p){
     beobachter.push(function(){ p.redraw(); });
   };
   function aktivId(){ return zustand.hover || zustand.gewaehlt; }
-  function stark(k){ var a=aktivId(); return a===k.id || a==='kreis' || (a==='mensch'&&k.id==='literatur') || (a==='literatur'&&k.id==='mensch'); }
+  function gruppe(id){ return (id==='mensch'||id==='daten')?'literatur':id; }
+  function stark(k){ var a=aktivId(); return !!a && (gruppe(a)===gruppe(k.id) || a==='kreis'); }
   function strichel(ctx, an, farbe, breite){
     ctx.setLineDash(an?[5,4]:[3,4]); ctx.lineDashOffset=an?-marsch:0;
     ctx.strokeStyle=farbe; ctx.lineWidth=breite;
   }
+  function xE0spalte(){ return elementKnoten(KETTEN[1]).x; }
   function elementKnoten(k){ return knoten.filter(function(n){return n.typ==='element'&&n.k===k;})[0]; }
   p.draw=function(){
     var ctx=p.drawingContext; marsch=(marsch+.6)%90;
@@ -462,7 +472,8 @@ new p5(function(p){
       } else {
         var an=stark(KETTEN[2]), letzte=ziele[ziele.length-1].ps[0];
         ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
-        ctx.moveTo(ort.x,ort.y+ort.r+6); ctx.lineTo(ort.x,letzte.y); ctx.stroke(); ctx.restore();
+        var sxm=Math.round(xE0spalte()-34);
+        ctx.moveTo(ort.x,ort.y+ort.r+6); ctx.lineTo(ort.x,3*ZM-12); ctx.lineTo(sxm,3*ZM-12); ctx.lineTo(sxm,letzte.y); ctx.stroke(); ctx.restore();
       }
     })();
     // Verbindungen Person → Element
@@ -608,7 +619,8 @@ function zeigeDetail(id){
   requestAnimationFrame(function(){ detail.classList.add('offen'); });
   var k=kette(id), per=document.getElementById('tdg-personen'), ueb=document.getElementById('tdg-uebersetzung');
   per.innerHTML='';
-  if (k.personen){
+  if (k.links){ per.innerHTML=k.links; }
+  else if (k.personen){
     k.personen.forEach(function(pe){
       var d=document.createElement('div'); d.className='tdg-person';
       d.innerHTML='<img alt="" loading="lazy" src="'+BILD+pe.bild+'.jpg"'+(pe.quer?' style="aspect-ratio:1/1"':'')+'>'+
@@ -618,7 +630,7 @@ function zeigeDetail(id){
   } else {
     per.innerHTML='<div class="tdg-person"><img alt="" src="'+BILD+'formkonzept.jpg" style="aspect-ratio:1/1"><div><div class="feld">Synthese</div><div class="name">Alle Zeitgenossen</div><div class="meta">Daten · Farbe · Klang · Form<br><em>Topografie der Gefühle, 2026</em></div></div></div>';
   }
-  ueb.innerHTML='<div class="pfeil">'+(k.personen?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3><div class="sub">'+k.sub+'</div><p class="text">'+k.text+'</p>';
+  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3><div class="sub">'+k.sub+'</div><p class="text">'+k.text+'</p>';
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ document.getElementById(x).innerHTML=''; });
   schliesseModul();
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
