@@ -358,7 +358,7 @@ new p5(function(p){
         var x=sx(i);
         k.personen.forEach(function(pe,j){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
-          knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r, zu:196+oy});
+          knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r, zu:386+oy}); // Aufklapper erst nach der Zeile «Umsetzung»
         });
         knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp, zu:386+oy});
       });
