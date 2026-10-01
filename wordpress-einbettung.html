@@ -687,7 +687,8 @@ MODULE.analyse=function(p){
       '<div class="tdg-zahl"><b>957</b><span>Textstellen mit Wirkungsrichtung</span></div>'+
       '<div class="tdg-zahl"><b>'+Math.round(100*neg/(pos+neg))+'&thinsp;%</b><span>der emotionalen Momente negativ gefärbt</span></div>'+
       '<div class="tdg-zahl"><b>3 von 18</b><span>Kapiteln überwiegend positiv</span></div></div>');
-    ['tdg-legende','tdg-quelle'].forEach(function(x){ document.getElementById(x).hidden=true; });
+    document.getElementById('tdg-legende').hidden=true;
+    setze('tdg-quelle','Balken: Anteil positiver minus Anteil negativer Textstellen je Kapitel (Valenz +1 / −1, bezogen auf alle bewerteten Stellen).');
     g=modulGrund(p,el,function(w){return w<600?300:340;});
   };
   p.draw=function(){
