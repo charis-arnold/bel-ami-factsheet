@@ -41,6 +41,8 @@
 .tdg-person img{width:96px;aspect-ratio:3/4;object-fit:cover;background:#dfe3de}
 .tdg-person .feld{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--tinte2)}
 .tdg-person .name{font:600 17px/1.25 var(--sans);margin-top:4px}
+.tdg-person .bildquelle{font:300 12.5px/1.4 var(--sans);color:var(--tinte2);margin-top:6px}
+.tdg-person .bildquelle a{color:inherit}
 .tdg-person .meta{font:300 15px/1.4 var(--sans);color:var(--tinte);margin-top:2px}
 .tdg-uebersetzung .pfeil{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}
 #tdg-prozess .tdg-uebersetzung h3{font:600 clamp(22px,2.6vw,28px)/1.15 var(--sans);margin:6px 0 2px}
@@ -244,7 +246,7 @@ var KETTEN = [
     text:'Pissarro malte die neuen Boulevards aus dem Fenster: Ocker, Rosé, das Blaugrau von Dächern und Himmel. Aus diesen Farben der Stadt stammt die Palette des Projekts. Die drei kräftigsten Töne tragen die drei Gefühlskategorien, das Orange zeigt, wie Körper und Raum aufeinander wirken, die hellen und dunklen Grautöne bilden den Grund der Karten.',
     modul:'farbe' },
   { id:'stadt', feld:'Stadtplanung', kurz:'Karte',
-    personen:[{bild:'haussmann', name:'Georges-Eugène Haussmann', jahre:'1809 – 1891', rolle:'Präfekt und Stadtplaner', werk:'Plan de Paris, 1878', quer:true}],
+    personen:[{bild:'haussmann', name:'Georges-Eugène Haussmann', jahre:'1809 – 1891', rolle:'Präfekt und Stadtplaner', werk:'1878 Andriveau-Goujon Pocket Map of Paris, France', bildQuelle:'https://fr.wikipedia.org/wiki/Fichier:1878_Andriveau-Goujon_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-andriveau-1878.jpg', quer:true}],
     titel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
     text:'Haussmann hat Paris in den Jahrzehnten vor «Bel-Ami» umgebaut: breite Boulevards, neue Achsen, neue Plätze. Duroy geht durch genau diese Stadt. Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
     modul:'karte' },
@@ -616,7 +618,7 @@ function zeigeDetail(id){
     k.personen.forEach(function(pe){
       var d=document.createElement('div'); d.className='tdg-person';
       d.innerHTML='<img alt="" loading="lazy" src="'+BILD+pe.bild+'.jpg"'+(pe.quer?' style="aspect-ratio:1/1"':'')+'>'+
-        '<div>'+(pe.ohneFeld?'':'<div class="feld">'+k.feld+'</div>')+'<div class="name">'+(pe.voll||pe.name)+'</div><div class="meta">'+pe.jahre+'<br>'+pe.rolle+(pe.werk?'<br><em>'+pe.werk+'</em>':'')+'</div></div>';
+        '<div>'+(pe.ohneFeld?'':'<div class="feld">'+k.feld+'</div>')+'<div class="name">'+(pe.voll||pe.name)+'</div><div class="meta">'+pe.jahre+'<br>'+pe.rolle+(pe.werk?'<br><em>'+pe.werk+'</em>':'')+'</div>'+(pe.bildQuelle?'<div class="bildquelle">Bild: <a href="'+pe.bildQuelle+'" target="_blank" rel="noopener">Wikipedia</a></div>':'')+'</div>';
       per.appendChild(d);
     });
   } else {
