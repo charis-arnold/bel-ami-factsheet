@@ -334,7 +334,7 @@ function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) docume
    1) NETZ – Zeitzeugen → Umsetzung → Synthese
 ====================================================================== */
 new p5(function(p){
-  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, daten=null;
+  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, oy=0, OY=128, daten=null;
   var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
   p.preload=function(){
     ['belami','maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
@@ -345,22 +345,22 @@ new p5(function(p){
     knoten=[]; schmal = W<720;
     var n=KETTEN.length;
     if (!schmal){
-      dW=Math.round(Math.min(140,Math.max(104,W*.1)));
-      var pad=18, sp=(W-dW-2*pad)/n, rP=Math.min(34, sp*.3), rE=Math.min(30, sp*.27);
-      var yP=92, yE=292; H=600;
-      daten={typ:'daten', k:KETTEN[0], x:dW/2+10, y:yE, r:Math.min(34,dW*.3)}; knoten.push(daten);
+      dW=0; oy=OY;
+      var pad=18, sp=(W-2*pad)/n, rP=Math.min(34, sp*.3), rE=Math.min(30, sp*.27);
+      var yP=92+oy, yE=292+oy; H=600+oy;
+      daten={typ:'daten', k:KETTEN[0], x:pad+sp*.5, y:58, r:rP}; knoten.push(daten);
       KETTEN.forEach(function(k,i){
-        var x=dW+pad+sp*(i+.5);
+        var x=pad+sp*(i+.5);
         k.personen.forEach(function(pe,j){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
           knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r});
         });
         knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
       });
-      synth={x:(dW+W)/2, y:486, r:44};
+      synth={x:W/2, y:486+oy, r:44};
     } else {
-      dW=0; var zeile=94, top=62+94, xP=38, xE=Math.min(W*.56, W-150);
-      daten={typ:'daten', k:KETTEN[0], x:xP, y:62, r:26}; knoten.push(daten);
+      dW=0; oy=0; var zeile=94, top=160, xP=38, xE=Math.min(W*.56, W-150);
+      daten={typ:'daten', k:KETTEN[0], x:xP, y:44, r:26}; knoten.push(daten);
       KETTEN.forEach(function(k,i){
         var y=top+zeile*i;
         k.personen.forEach(function(pe,j){
@@ -393,23 +393,24 @@ new p5(function(p){
     var a=aktivId();
     // Bänder
     if (!schmal){
-      ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(dW,196,W-dW,190);
+      ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(0,196+oy,W,190);
       ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.lineWidth=1;
-      [196,386].forEach(function(y){ ctx.beginPath(); ctx.moveTo(dW,y); ctx.lineTo(W,y); ctx.stroke(); });
-      ctx.beginPath(); ctx.moveTo(dW,0); ctx.lineTo(dW,H); ctx.stroke(); ctx.restore();
-      text(ctx,'ZEITZEUGEN · PARIS 1885',dW+16,18,{g:11,w:600,c:F.tinte2,sperr:1});
-      text(ctx,'UMSETZUNG',dW+16,212,{g:11,w:600,c:F.tinte2,sperr:1});
-      text(ctx,'SYNTHESE',dW+16,402,{g:11,w:600,c:F.tinte2,sperr:1});
+      [oy,196+oy,386+oy].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
+      text(ctx,'ZEITZEUGEN · PARIS 1885',16,18+oy,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'UMSETZUNG',16,212+oy,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'SYNTHESE',16,402+oy,{g:11,w:600,c:F.tinte2,sperr:1});
     } else {
-      text(ctx,'ZEITZEUGE',16,22,{g:11,w:600,c:F.tinte2,sperr:1});
+      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.beginPath(); ctx.moveTo(0,88); ctx.lineTo(W,88); ctx.stroke(); ctx.restore();
+      text(ctx,'ZEITZEUGE',68,110,{g:11,w:600,c:F.tinte2,sperr:1});
       var xE0=elementKnoten(KETTEN[0]).x;
-      text(ctx,'UMSETZUNG',xE0-22,22,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'UMSETZUNG',xE0-22,110,{g:11,w:600,c:F.tinte2,sperr:1});
     }
-    // Daten (Roman) → Analyse
-    (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
+    // Daten (Roman) → Maupassant
+    (function(){ var m=knoten.filter(function(n){return n.typ==='person'&&n.k===KETTEN[0];})[0], an=stark(KETTEN[0]);
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
-      if (!schmal){ ctx.moveTo(daten.x+daten.r+5,daten.y); ctx.lineTo(e.x-e.r-6,e.y); }
-      else { ctx.moveTo(daten.x+daten.r*.7,daten.y+daten.r*.7+2); ctx.bezierCurveTo(daten.x+60,daten.y+50,e.x-70,e.y-10,e.x-e.r-6,e.y-4); }
+      var y1=m.y-m.r-(schmal?6:28);
+      if (!schmal){ ctx.moveTo(daten.x,daten.y+daten.r+6); ctx.lineTo(daten.x,oy+6); ctx.moveTo(m.x,oy+30); ctx.lineTo(m.x,y1); }
+      else { ctx.moveTo(daten.x,daten.y+daten.r+6); ctx.lineTo(m.x,y1); }
       ctx.stroke(); ctx.restore(); })();
     // Verbindungen Person → Element
     KETTEN.forEach(function(k){
@@ -438,14 +439,8 @@ new p5(function(p){
         var bi=bilder.belami; if (bi && bi.width){ var sc=2*n.r/bi.width*1.05, ih=bi.height*sc; p.image(bi,n.x-bi.width*sc/2,n.y-ih*.66,bi.width*sc,ih); } else { ctx.fillStyle='#dfe3de'; ctx.fillRect(n.x-n.r,n.y-n.r,2*n.r,2*n.r); }
         ctx.restore();
         ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
-        if (!schmal){
-          ctx.save(); ctx.translate(14,n.y); ctx.rotate(-Math.PI/2); text(ctx,'DATEN',0,0,{g:11,w:600,a:'center',c:F.tinte2,sperr:1}); ctx.restore();
-          text(ctx,'Roman',n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
-          text(ctx,'«Bel-Ami»',n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
-        } else {
-          text(ctx,'DATEN',n.x+n.r+12,n.y-9,{g:10.5,w:600,c:F.tinte2,sperr:.6});
-          text(ctx,'Roman «Bel-Ami»',n.x+n.r+12,n.y+8,{g:13,w:600});
-        }
+        text(ctx,'Daten',n.x+n.r+14,n.y-9,{g:schmal?15:16,w:600});
+        text(ctx,'Roman «Bel-Ami», 1885',n.x+n.r+14,n.y+11,{g:schmal?12.5:13,w:300,c:F.tinte2});
       } else if (n.typ==='person'){
         ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
         bildCover(p,ctx,bilder[n.pe.bild],n.x-n.r,n.y-n.r,2*n.r,2*n.r); ctx.restore();
