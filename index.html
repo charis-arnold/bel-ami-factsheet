@@ -32,13 +32,9 @@
 .tdg-formel b{color:var(--tinte);font-weight:600}
 .tdg-formel i{font-style:normal;color:var(--orange);font-weight:300;font-size:18px}
 
-.tdg-chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 10px}
-#tdg-prozess .tdg-chip{border:1px solid #c5cbc5;background:transparent;color:var(--tinte);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:400;transition:background .15s,border-color .15s}
-#tdg-prozess .tdg-chip:hover{border-color:var(--tinte)}
-#tdg-prozess .tdg-chip[aria-pressed="true"]{background:var(--tinte);border-color:var(--tinte);color:#fff}
-#tdg-prozess .tdg-chip small{font-size:12px;color:inherit;opacity:.7;margin-left:4px}
 
-.tdg-netz{position:relative;width:100%;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
+
+.tdg-netz{position:relative;width:100%;margin-top:26px;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
 .tdg-netz canvas,.tdg-modul canvas{display:block}
 .tdg-hinweis{font-size:13px;color:var(--tinte2);margin-top:8px!important}
 
@@ -89,7 +85,6 @@
     <p class="tdg-formel"><b>Daten</b> <i>+</i> <b>Mensch</b> <i>+</i> <b>Kontext</b> <i>=</i> <b>Human Data</b></p>
   </header>
 
-  <nav class="tdg-chips" aria-label="Verbindung wählen" id="tdg-chips"></nav>
   <div class="tdg-netz" id="tdg-netz" role="img" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen"></div>
   <p class="tdg-hinweis" id="tdg-hinweis">Tippe auf eine Person oder ein Element, um der Verbindung zu folgen.</p>
 
@@ -302,18 +297,6 @@ function waehle(id, scrollen){
   if (scrollen){ var d=document.getElementById('tdg-detail'); if (d && d.getBoundingClientRect().top>window.innerHeight*.7) d.scrollIntoView({behavior:'smooth',block:'start'}); }
 }
 
-/* ---------- Chips ---------- */
-(function(){
-  var nav=document.getElementById('tdg-chips');
-  ALLE.forEach(function(k){
-    var b=document.createElement('button'); b.type='button'; b.className='tdg-chip'; b.dataset.id=k.id;
-    b.innerHTML=k.feld+'<small>→ '+k.kurz+'</small>';
-    b.addEventListener('click',function(){ waehle(k.id,false); });
-    nav.appendChild(b);
-  });
-  function sync(id){ [].forEach.call(nav.children,function(b){ b.setAttribute('aria-pressed', b.dataset.id===id?'true':'false'); }); }
-  beobachter.push(sync); sync(zustand.gewaehlt);
-})();
 
 /* ---------- gemeinsame Helfer für p5-Instanzen ---------- */
 function breiteVon(el){ return Math.max(280, Math.floor(el.getBoundingClientRect().width)); }
