@@ -274,7 +274,7 @@ var SYNTHESE = { id:'kreis', feld:'Synthese', kurz:'Kreis', titel:'Grafik – Kr
   text:'Hier laufen alle Fäden zusammen: Maupassants Text liefert die Zahlen, Pissarros Farben unterscheiden die Kategorien, die Tonart der «Danse macabre» lässt sie klingen, und die Formsprache von Eisen und Glas fasst sie zusammen. Pro Ort ein Kreis – er wächst mit jedem geäusserten Gefühl.' };
 var MENSCH = { id:'mensch', feld:'Mensch', kurz:'Mensch',
   personen:[{bild:'maupassant', name:'Guy de Maupassant', voll:'Henry René Albert Guy de Maupassant', jahre:'1850 – 1893', rolle:'Schriftsteller und Journalist', ohneFeld:true}],
-  titel:'Protagonist und Zeitzeuge', netzTitel:'Mensch', sub:'Guy de Maupassant · Protagonist und Zeitzeuge',
+  titel:'Protagonist und Zeitzeuge', netzTitel:'Mensch', netzSub:'Guy de Maupassant', sub:'',
   text:'Maupassant kannte das Paris, das er beschreibt, aus eigener Anschauung – als kleiner Angestellter in den Ministerien, später als Journalist und Kritiker seiner Zeit. Wie sein Protagonist Georges Duroy bewegte er sich zwischen Redaktionen, Boulevards und Salons. Sein Blick auf die Stadt ist der Ausgangspunkt des Projekts.',
   modul:null };
 var DATEN_ROMAN = { id:'daten', feld:'Daten', kurz:'Daten',
@@ -622,7 +622,7 @@ function zeigeDetail(id){
   } else {
     per.innerHTML='<div class="tdg-person"><img alt="" src="'+BILD+'formkonzept.jpg" style="aspect-ratio:1/1"><div><div class="feld">Synthese</div><div class="name">Alle Zeitgenossen</div><div class="meta">Daten · Farbe · Klang · Form<br><em>Topografie der Gefühle, 2026</em></div></div></div>';
   }
-  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3><div class="sub">'+k.sub+'</div><p class="text">'+k.text+'</p>';
+  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ document.getElementById(x).innerHTML=''; });
   schliesseModul();
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
