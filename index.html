@@ -31,7 +31,7 @@
 .tdg-netz canvas,.tdg-modul canvas{display:block}
 
 .tdg-detail{position:absolute;left:0;right:0;top:0;z-index:2;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px 40px;align-items:start;padding:48px 0 52px;opacity:0;transition:opacity .35s ease}
-.tdg-detail[hidden]{display:none}
+.tdg-detail[hidden],.tdg-legende-text[hidden],.tdg-quelle[hidden]{display:none}
 .tdg-detail.offen{opacity:1}
 .tdg-detail.ohne-modul .tdg-modulrahmen{display:none}
 .tdg-erkenntnis .feld{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--tinte2)}
@@ -624,7 +624,7 @@ function zeigeDetail(id){
   }
   ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
   richtePersonenAus();
-  ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ document.getElementById(x).innerHTML=''; });
+  ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ var e=document.getElementById(x); e.innerHTML=''; e.hidden=false; });
   schliesseModul();
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
   if (k.modul) modulInstanz = new p5(MODULE[k.modul], el);
@@ -687,8 +687,7 @@ MODULE.analyse=function(p){
       '<div class="tdg-zahl"><b>957</b><span>Textstellen mit Wirkungsrichtung</span></div>'+
       '<div class="tdg-zahl"><b>'+Math.round(100*neg/(pos+neg))+'&thinsp;%</b><span>der emotionalen Momente negativ gefärbt</span></div>'+
       '<div class="tdg-zahl"><b>3 von 18</b><span>Kapiteln überwiegend positiv</span></div></div>');
-    setze('tdg-legende','Der Aufstieg fühlt sich nicht wie einer an. Kapitel für Kapitel steigt Duroy auf – doch fast zwei Drittel aller emotionalen Momente sind negativ gefärbt. Fahre über einen Balken für die Zahlen.');
-    setze('tdg-quelle','Balken: Anteil positiver minus Anteil negativer Textstellen je Kapitel (Valenz +1 / −1, bezogen auf alle bewerteten Stellen).');
+    ['tdg-legende','tdg-quelle'].forEach(function(x){ document.getElementById(x).hidden=true; });
     g=modulGrund(p,el,function(w){return w<600?300:340;});
   };
   p.draw=function(){
