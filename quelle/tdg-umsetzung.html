@@ -340,7 +340,7 @@ new p5(function(p){
       x2=sx(6); // obere Kreise auf der Achse von «Fotografie»
       mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Protagonist und Zeitzeuge'], k:MENSCH, x:x2, y:ZH*.4, r:rP, zu:ZH, lab:['Maupassant','Schriftsteller']}; knoten.push(mensch);
       daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman'], k:DATEN_ROMAN, x:x2, y:ZH*1.4, r:rP, zu:2*ZH, lab:['Bel-Ami','Roman']}; knoten.push(daten);
-      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:ZH*2.4, r:rP, zu:oy, lab:['Stadtplanung','Paris']}; knoten.push(ort);
+      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris'], k:KETTEN[2], x:x2, y:ZH*2.4, r:rP, zu:oy, lab:['Stadtplanung','Paris']}; knoten.push(ort);
       kontextY=yP;
       KETTEN.forEach(function(k,i){
         if (i===0){ knoten.push({typ:'element', k:k, x:spalte3+sp*(SP.length+.5), y:daten.y, r:rE, unten:true, zu:daten.zu}); return; }
@@ -358,7 +358,7 @@ new p5(function(p){
       dW=0; oy=0; L=0; var zeile=94, top=3*ZM+72, xP=38, xE=Math.min(W*.56, W-150), x2=xE;
       mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Protagonist und Zeitzeuge'], k:MENSCH, x:x2, y:ZM*.42, r:26, zu:ZM, lab:['Maupassant','Schriftsteller']}; knoten.push(mensch);
       daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman'], k:DATEN_ROMAN, x:x2, y:ZM*1.42, r:26, zu:2*ZM, lab:['Bel-Ami','Roman']}; knoten.push(daten);
-      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:ZM*2.42, r:26, zu:3*ZM, lab:['Stadtplanung','Paris']}; knoten.push(ort);
+      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris'], k:KETTEN[2], x:x2, y:ZM*2.42, r:26, zu:3*ZM, lab:['Stadtplanung','Paris']}; knoten.push(ort);
       kontextY=3*ZM+22;
       KETTEN.forEach(function(k,i){
         if (i===0){ knoten.push({typ:'element', k:k, x:Math.min(W-62,x2+150), y:daten.y, r:24, unten:true, zu:daten.zu}); return; }
