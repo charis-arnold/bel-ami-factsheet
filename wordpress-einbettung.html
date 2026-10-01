@@ -26,15 +26,9 @@
 
 .tdg-kicker{font:600 13px/1.2 var(--sans);letter-spacing:.08em!important;text-transform:uppercase!important;color:var(--tinte)}
 .tdg-kicker span{font-weight:300;color:var(--tinte2);letter-spacing:0!important;text-transform:none!important;margin-left:.4em}
-#tdg-prozess h2.tdg-titel{font:600 clamp(26px,3.6vw,38px)/1.1 var(--sans);margin:0 0 .1em;color:var(--tinte)}
-.tdg-unter{font:300 clamp(19px,2.2vw,24px)/1.25 var(--sans);color:var(--tinte)}
-.tdg-intro{max-width:44em;margin-top:18px!important;font:400 17px/1.55 var(--sans);color:var(--tinte)}
 
-
-
-.tdg-netz{position:relative;z-index:1;width:100%;margin-top:26px;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
+.tdg-netz{position:relative;z-index:1;width:100%;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
 .tdg-netz canvas,.tdg-modul canvas{display:block}
-.tdg-hinweis{font-size:14px;color:var(--tinte2);margin-top:16px!important}
 
 .tdg-detail{position:absolute;left:0;right:0;top:0;z-index:2;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px 40px;align-items:start;padding:26px 0 30px;opacity:0;transition:opacity .35s ease}
 .tdg-detail[hidden]{display:none}
@@ -78,13 +72,6 @@
   .tdg-person img{width:76px}
 }
 </style>
-
-  <header>
-    <h2 class="tdg-titel">Umsetzungsprozess</h2>
-    <p class="tdg-unter">Mensch + Daten + Schauplatz / Kontext = Human Data</p>
-    <p class="tdg-intro">Guy de Maupassants «Bel-Ami» spielt in einer Stadt, die gerade neu entsteht. Jede gestalterische Entscheidung dieses Projekts – Daten, Farbe, Karte, Klang, Form, Schrift und Bild – hat ein Vorbild im Paris jener Jahre. Die gestrichelten Linien verbinden die Zeitgenossen mit dem, was aus ihnen geworden ist. Alle Fäden laufen in einer Grafik zusammen: dem Kreis, der für jeden Ort zeigt, wie er sich anfühlt.</p>
-    <p class="tdg-hinweis" id="tdg-hinweis">Tippe auf eine Person oder ein Element, um der Verbindung zu folgen.</p>
-  </header>
 
   <div class="tdg-hell" id="tdg-hell" aria-hidden="true"></div>
   <div class="tdg-netz" id="tdg-netz" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen">
