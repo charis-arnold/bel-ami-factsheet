@@ -330,7 +330,7 @@ function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) docume
 ====================================================================== */
 new p5(function(p){
   var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, oy=0, ZH=140, OY=420, daten=null, mensch=null, ort=null, L=0, kontextY=0, ZM=134, gT=30, eng=false, luecke=0, lueckeZiel=0, lueckeAb=0;
-  var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
+  var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]], HELL='rgba(255,255,255,.35)';
   p.preload=function(){
     ['belami','maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
       bilder[n]=p.loadImage(BILD+n+'.jpg', function(){}, function(){ bilder[n]=null; });
@@ -420,22 +420,20 @@ new p5(function(p){
     if (luecke<=0){ szene(ctx); return; }
     ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,lueckeAb); ctx.clip(); szene(ctx); ctx.restore();
     ctx.save(); ctx.beginPath(); ctx.rect(0,lueckeAb+luecke,W,H-lueckeAb); ctx.clip(); ctx.translate(0,luecke); szene(ctx); ctx.restore();
-    ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.lineWidth=1;
-    [lueckeAb,lueckeAb+luecke].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(W,y+.5); ctx.stroke(); }); ctx.restore();
+    // Lücke im hellen Bereich (ab «Umsetzung») ebenfalls hell
+    if (!schmal && lueckeAb>=196+oy){ ctx.fillStyle=HELL; ctx.fillRect(0,lueckeAb,W,luecke); }
   };
   function szene(ctx){
     var a=aktivId();
     // Bänder
     if (!schmal){
-      ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(0,196+oy,W,190);
-      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.lineWidth=1;
-      [ZH,2*ZH,oy,196+oy,386+oy].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
+      // ab «Umsetzung» durchgehend heller Hintergrund, keine Linien zwischen den Zeilen
+      ctx.fillStyle=HELL; ctx.fillRect(0,196+oy,W,H-(196+oy));
       text(ctx,'Kontext',16,kontextY-6,{g:gT,w:600});
       text(ctx,'Paris 1885 · Zeitgenossen',16,kontextY+20,{g:13,w:300,c:F.tinte2});
       text(ctx,'UMSETZUNG',16,212+oy,{g:11,w:600,c:F.tinte2,sperr:1});
       text(ctx,'Daten Visualisation',16,synth.y,{g:gT,w:600});
     } else {
-      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; [ZM,2*ZM,3*ZM].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
       text(ctx,'Kontext',16,kontextY,{g:22,w:600});
       var xE0=elementKnoten(KETTEN[1]).x;
       text(ctx,'UMSETZUNG',xE0-22,kontextY,{g:11,w:600,c:F.tinte2,sperr:1});
