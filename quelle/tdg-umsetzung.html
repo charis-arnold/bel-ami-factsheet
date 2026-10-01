@@ -54,6 +54,7 @@
 .tdg-modulkopf h4{font:600 13px/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .tdg-modulkopf .info{font:300 14px/1.4 var(--sans);color:var(--tinte2)}
 .tdg-modul{position:relative;width:100%;min-height:120px;touch-action:pan-y}
+.tdg-modul img.tdg-modulbild{display:block;width:100%;height:auto}
 .tdg-steuerung{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:12px}
 #tdg-prozess .tdg-knopf{border:1px solid var(--tinte);background:transparent;color:var(--tinte);padding:7px 14px;font-size:14px;border-radius:2px}
 #tdg-prozess .tdg-knopf.primaer{background:var(--tinte);color:#fff}
@@ -249,7 +250,7 @@ var KETTEN = [
     personen:[{bild:'haussmann', name:'Georges-Eugène Haussmann', jahre:'1809 – 1891', rolle:'Präfekt und Stadtplaner', werk:'1878 Andriveau-Goujon Pocket Map of Paris, France', bildQuelle:'https://fr.wikipedia.org/wiki/Fichier:1878_Andriveau-Goujon_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-andriveau-1878.jpg', quer:true}],
     titel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
     text:'Haussmann hat Paris in den Jahrzehnten vor «Bel-Ami» umgebaut: breite Boulevards, neue Achsen, neue Plätze. Duroy geht durch genau diese Stadt. Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
-    modul:'karte' },
+    modulBild:{datei:'karte-paris-1878_andriveau-goujon_pocket_map_of_paris_france.jpg', alt:'Plan de Paris von E. Andriveau-Goujon, 1878'} },
   { id:'musik', feld:'Musik', kurz:'Klang',
     personen:[{bild:'saint-saens', name:'Camille Saint-Saëns', jahre:'1835 – 1921', rolle:'Komponist', werk:'«Danse macabre», op. 40, 1874'}],
     titel:'Klangkonzept', sub:'Sonifikation mit Strudel', mini:'klang',
@@ -609,7 +610,7 @@ function schliesseModul(){ if (modulInstanz){ modulInstanz.remove(); modulInstan
 function zeigeDetail(id){
   var detail=document.getElementById('tdg-detail');
   if (!id){ detail.classList.remove('offen'); return; }
-  detail.hidden=false; detail.classList.toggle('ohne-modul', !kette(id).modul);
+  detail.hidden=false; detail.classList.toggle('ohne-modul', !kette(id).modul && !kette(id).modulBild);
   requestAnimationFrame(function(){ detail.classList.add('offen'); });
   var k=kette(id), per=document.getElementById('tdg-personen'), ueb=document.getElementById('tdg-uebersetzung');
   per.innerHTML='';
@@ -631,6 +632,11 @@ function zeigeDetail(id){
   schliesseModul();
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
   if (k.modul) modulInstanz = new p5(MODULE[k.modul], el);
+  else if (k.modulBild){
+    el.innerHTML='<img class="tdg-modulbild" alt="'+k.modulBild.alt+'" loading="lazy" src="'+BILD+k.modulBild.datei+'">';
+    document.querySelector('#tdg-prozess .tdg-modulkopf').hidden=true;
+    ['tdg-legende','tdg-quelle'].forEach(function(x){ document.getElementById(x).hidden=true; });
+  }
 }
 /* Linke Spalte so verschieben, dass ihre erste Textzeile auf der Grundlinie
    der ersten Fliesstextzeile rechts steht – nur zweispaltig */
