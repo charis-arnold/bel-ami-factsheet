@@ -287,7 +287,7 @@ var DATEN_ROMAN = { id:'daten', feld:'Daten', kurz:'Daten',
   text:'Maupassants Roman ist die Datengrundlage: 18 Kapitel als Rohtext aus Projekt Gutenberg, mit der Claude API Textstelle für Textstelle annotiert – 2902 Annotationen. Jede Stelle erhält eine Perspektive (Figur oder Erzähler), Inhalts-Tags in drei Kategorien (Raum und Umwelt, Stimmung und Emotion, Gesellschaft und Soziales), eine Valenz (−1/0/+1), eine Intensität (1–3) und, wo vorhanden, eine Wirkungsrichtung zwischen Körper und Raum. Die Orte werden mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
   modul:null };
 // Kartografie: eigener Kreis neben «Schauplatz», eigener Aufklapper
-var KARTE = { id:'karte', feld:'Kartografie', kurz:'Karte',
+var KARTE = { id:'karte', feld:'Kartografie', pfeil:'Schauplatz', kurz:'Karte',
   personen:[{bild:'qgis-dunkel', ohneBild:true, name:'QGIS', jahre:'Kartendaten: OpenStreetMap', rolle:'Fusswege: OSMnx', ohneFeld:true, quer:true}],
   titel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
   text:'Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
