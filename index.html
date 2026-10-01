@@ -249,8 +249,8 @@ var KETTEN = [
     modul:'farbe' },
   { id:'stadt', feld:'Stadtplanung', pfeil:'Schauplatz', kurz:'Karte',
     personen:[{bild:'haussmann', ohneBild:true, ohneFeld:true, name:'Georges-Eugène Haussmann', jahre:'1809 – 1891', rolle:'Präfekt und Stadtplaner', werk:'1878 Andriveau-Goujon Pocket Map of Paris, France', bildQuelle:'https://fr.wikipedia.org/wiki/Fichier:1878_Andriveau-Goujon_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-andriveau-1878.jpg', quer:true}],
-    titel:'Paris', netzTitel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
-    text:'Haussmann hat Paris in den Jahrzehnten vor «Bel-Ami» umgebaut: breite Boulevards, neue Achsen, neue Plätze. Duroy geht durch genau diese Stadt. Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
+    titel:'Paris', sub:'',
+    text:'Haussmann hat Paris in den Jahrzehnten vor «Bel-Ami» umgebaut: breite Boulevards, neue Achsen, neue Plätze. Duroy geht durch genau diese Stadt.',
     modulBild:{datei:'karte-paris-1878_andriveau-goujon_pocket_map_of_paris_france.jpg', alt:'Plan de Paris von E. Andriveau-Goujon, 1878'} },
   { id:'musik', feld:'Musik', kurz:'Klang',
     personen:[{bild:'saint-saens', name:'Camille Saint-Saëns', jahre:'1835 – 1921', rolle:'Komponist', werk:'«Danse macabre», op. 40, 1874'}],
@@ -286,7 +286,13 @@ var DATEN_ROMAN = { id:'daten', feld:'Daten', kurz:'Daten',
   titel:'Roman', netzTitel:'Daten', netzSub:'Roman «Bel-Ami»', sub:'Erhebung mit Python',
   text:'Maupassants Roman ist die Datengrundlage: 18 Kapitel als Rohtext aus Projekt Gutenberg, mit der Claude API Textstelle für Textstelle annotiert – 2902 Annotationen. Jede Stelle erhält eine Perspektive (Figur oder Erzähler), Inhalts-Tags in drei Kategorien (Raum und Umwelt, Stimmung und Emotion, Gesellschaft und Soziales), eine Valenz (−1/0/+1), eine Intensität (1–3) und, wo vorhanden, eine Wirkungsrichtung zwischen Körper und Raum. Die Orte werden mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
   modul:null };
-var ALLE = KETTEN.concat([SYNTHESE, MENSCH, DATEN_ROMAN]);
+// Kartografie: eigener Kreis neben «Schauplatz», eigener Aufklapper
+var KARTE = { id:'karte', feld:'Kartografie', kurz:'Karte',
+  personen:[{bild:'qgis-dunkel', name:'QGIS', jahre:'Kartendaten: OpenStreetMap', rolle:'Fusswege: OSMnx', ohneFeld:true, quer:true}],
+  titel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
+  text:'Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
+  modul:'karte' };
+var ALLE = KETTEN.concat([SYNTHESE, MENSCH, DATEN_ROMAN, KARTE]);
 // Reihenfolge der Kontext-Spalten (Index in KETTEN): Kunst, Architektur, Fotografie, Typografie, Musik
 var KONTEXT_REIHE = [1,4,6,5,3];
 function kette(id){ return ALLE.filter(function(k){return k.id===id;})[0]; }
@@ -344,7 +350,7 @@ new p5(function(p){
       kontextY=yP;
       KETTEN.forEach(function(k,i){
         if (i===0){ knoten.push({typ:'element', k:k, x:spalte3+sp*(SP.length+.5), y:daten.y, r:rE, unten:true, zu:daten.zu}); return; }
-        if (i===2){ knoten.push({typ:'element', k:k, x:sx(5), y:ort.y, r:rE, unten:true, zu:ort.zu}); return; }
+        if (i===2){ knoten.push({typ:'element', k:KARTE, x:sx(5), y:ort.y, r:rE, unten:true, zu:ort.zu}); return; }
         var x=sx(i);
         k.personen.forEach(function(pe,j){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
@@ -362,7 +368,7 @@ new p5(function(p){
       kontextY=3*ZM+22;
       KETTEN.forEach(function(k,i){
         if (i===0){ knoten.push({typ:'element', k:k, x:Math.min(W-62,x2+150), y:daten.y, r:24, unten:true, zu:daten.zu}); return; }
-        if (i===2){ knoten.push({typ:'element', k:k, x:Math.min(W-62,x2+150), y:ort.y, r:24, unten:true, zu:ort.zu}); return; }
+        if (i===2){ knoten.push({typ:'element', k:KARTE, x:Math.min(W-62,x2+150), y:ort.y, r:24, unten:true, zu:ort.zu}); return; }
         var y=top+zeile*KONTEXT_REIHE.indexOf(i);
         k.personen.forEach(function(pe,j){
           var m=k.personen.length;
@@ -392,7 +398,7 @@ new p5(function(p){
   };
   function aktivId(){ return zustand.hover || (zustand.ruhig ? null : zustand.gewaehlt); }
   // Direkte Nachbarn: Hover/Klick hebt nur den Kreis und seine direkten Verbindungen hervor
-  var NACHBARN = { mensch:['daten'], daten:['mensch','literatur'], literatur:['daten'] };
+  var NACHBARN = { mensch:['daten'], daten:['mensch','literatur'], literatur:['daten'], stadt:['karte'], karte:['stadt'] };
   function stark(k){ var a=aktivId(); return !!a && (a===k.id || a==='kreis' || (NACHBARN[a]||[]).indexOf(k.id)>=0); }
   function kante(){ var a=aktivId(); return !!a && (a==='kreis' || [].slice.call(arguments).indexOf(a)>=0); }
   function strichel(ctx, an, farbe, breite){
@@ -446,7 +452,7 @@ new p5(function(p){
       ctx.moveTo(z[0].x,z[0].y+z[0].r+36); ctx.lineTo(z[1].x,z[1].y-z[1].r-6);
       ctx.stroke(); ctx.restore(); });
     // Schauplatz → Kartografie
-    (function(){ var e=elementKnoten(KETTEN[2]), an=stark(KETTEN[2]);
+    (function(){ var e=elementKnoten(KARTE), an=kante('stadt','karte');
       ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
       ctx.moveTo(ort.x+ort.r+6,ort.y); ctx.lineTo(e.x-e.r-6,e.y);
       ctx.stroke(); ctx.restore(); })();
@@ -456,7 +462,7 @@ new p5(function(p){
         return {k:k, x:ps.reduce(function(s,n){return s+n.x;},0)/ps.length, y:Math.min.apply(null,ps.map(function(n){return n.y-n.r;})), ps:ps}; });
       if (!schmal){
         var busY=oy+14;
-        ziele.map(function(z){ z.an=stark(KETTEN[2])||stark(z.k); return z; })
+        ziele.map(function(z){ z.an=kante('stadt')||stark(z.k); return z; })
           .sort(function(a,b){ return a.an-b.an; })
           .forEach(function(z){
             var ty=z.y-(z.ps.length>1?24:30);
@@ -465,7 +471,7 @@ new p5(function(p){
             ctx.stroke(); ctx.restore();
           });
       } else {
-        var an=stark(KETTEN[2]), letzte=ziele[ziele.length-1].ps[0];
+        var an=kante('stadt'), letzte=ziele[ziele.length-1].ps[0];
         ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
         var sxm=Math.round(xE0spalte()-34);
         ctx.moveTo(ort.x,ort.y+ort.r+34); ctx.lineTo(ort.x,3*ZM-8); ctx.lineTo(sxm,3*ZM-8); ctx.lineTo(sxm,letzte.y); ctx.stroke(); ctx.restore();
