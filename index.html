@@ -380,7 +380,7 @@ new p5(function(p){
         });
         knoten.push({typ:'element', k:k, x:xE, y:y, r:22, zu:y+zeile/2});
       });
-      H=top+zeile*(n-2)+170; synth={x:W/2, y:H-92, r:40, zu:H};
+      H=top+zeile*(n-2)+170; synth={x:Math.round(W*.6), y:H-92, r:40, zu:H};
     }
     if (zustand.knoten) zustand.knoten=passenderKnoten(zustand.knoten);
     if (zustand.knoten) lueckeAb=zustand.knoten.zu;
@@ -433,12 +433,14 @@ new p5(function(p){
       text(ctx,'Kontext',16,kontextY-6,{g:gT,w:600});
       text(ctx,'Paris 1885 · Zeitgenossen',16,kontextY+20,{g:13,w:300,c:F.tinte2});
       text(ctx,'UMSETZUNG',16,212+oy,{g:11,w:600,c:F.tinte2,sperr:1});
-      text(ctx,'SYNTHESE',16,402+oy,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'Daten Visualisation',16,synth.y,{g:gT,w:600});
     } else {
       ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; [ZM,2*ZM,3*ZM].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
       text(ctx,'Kontext',16,kontextY,{g:22,w:600});
       var xE0=elementKnoten(KETTEN[1]).x;
       text(ctx,'UMSETZUNG',xE0-22,kontextY,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'Daten',16,synth.y-14,{g:W<370?19:22,w:600});
+      text(ctx,'Visualisation',16,synth.y+12,{g:W<370?19:22,w:600});
     }
     // Daten (Buch) → Analyse, horizontal
     (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
