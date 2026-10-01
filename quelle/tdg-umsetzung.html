@@ -429,21 +429,21 @@ new p5(function(p){
     }
     // Analyse → Daten Visualisation (eigene Spalte rechts)
     if (!schmal) (function(){ var e=elementKnoten(KETTEN[0]), an=kante('literatur');
-      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
+      ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
       ctx.moveTo(e.x,e.y+e.r+40); ctx.lineTo(e.x,synth.y); ctx.lineTo(synth.x+synth.r+18,synth.y);
       ctx.stroke(); ctx.restore(); })();
     // Daten (Buch) → Analyse, horizontal
     (function(){ var e=elementKnoten(KETTEN[0]), an=kante('daten','literatur');
       var x0=daten.x+daten.r+6, x1=e.x-e.r-6; if (x1-x0<8) return;
-      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath(); ctx.moveTo(x0,daten.y); ctx.lineTo(x1,daten.y); ctx.stroke(); ctx.restore(); })();
+      ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath(); ctx.moveTo(x0,daten.y); ctx.lineTo(x1,daten.y); ctx.stroke(); ctx.restore(); })();
     // Mensch → Daten → Schauplatz
     [[mensch,daten,kante('mensch','daten')],[daten,ort,kante('daten')]].forEach(function(z){ var an=z[2];
-      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
+      ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
       ctx.moveTo(z[0].x,z[0].y+z[0].r+36); ctx.lineTo(z[1].x,z[1].y-z[1].r-6);
       ctx.stroke(); ctx.restore(); });
     // Schauplatz → Kartografie
     (function(){ var e=elementKnoten(KETTEN[2]), an=stark(KETTEN[2]);
-      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
+      ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
       ctx.moveTo(ort.x+ort.r+6,ort.y); ctx.lineTo(e.x-e.r-6,e.y);
       ctx.stroke(); ctx.restore(); })();
     // Schauplatz → Kontext (Kunst, Musik, Architektur, Typografie, Fotografie)
@@ -456,13 +456,13 @@ new p5(function(p){
           .sort(function(a,b){ return a.an-b.an; })
           .forEach(function(z){
             var ty=z.y-(z.ps.length>1?24:30);
-            ctx.save(); strichel(ctx,z.an,z.an?F.orange:'rgba(34,31,31,.3)',z.an?1.4:1); ctx.beginPath();
+            ctx.save(); strichel(ctx,z.an,z.an?F.gold:'rgba(34,31,31,.3)',z.an?1.4:1); ctx.beginPath();
             ctx.moveTo(ort.x,ort.y+ort.r+36); ctx.lineTo(ort.x,busY); ctx.lineTo(z.x,busY); ctx.lineTo(z.x,ty);
             ctx.stroke(); ctx.restore();
           });
       } else {
         var an=stark(KETTEN[2]), letzte=ziele[ziele.length-1].ps[0];
-        ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
+        ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
         var sxm=Math.round(xE0spalte()-34);
         ctx.moveTo(ort.x,ort.y+ort.r+34); ctx.lineTo(ort.x,3*ZM-8); ctx.lineTo(sxm,3*ZM-8); ctx.lineTo(sxm,letzte.y); ctx.stroke(); ctx.restore();
       }
@@ -471,7 +471,7 @@ new p5(function(p){
     KETTEN.forEach(function(k){
       var e=elementKnoten(k), an=stark(k);
       if (k!==KETTEN[0]) knoten.filter(function(n){return n.typ==='person'&&n.k===k;}).forEach(function(n){
-        ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1);
+        ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.35)',an?1.6:1);
         ctx.beginPath();
         if (!schmal){ ctx.moveTo(n.x,n.y+n.r+26); ctx.bezierCurveTo(n.x,e.y-60,e.x,e.y-70,e.x,e.y-e.r-6); }
         else { var x0=Math.max(n.x+n.r+4,(k._textEnde||0)+6); if (x0<e.x-e.r-10){ ctx.moveTo(x0,n.y+5); ctx.lineTo(e.x-e.r-6,e.y+5); } }
@@ -479,7 +479,7 @@ new p5(function(p){
       });
       // Element → Synthese
       var anS = schmal ? (a==='kreis') : (a==='kreis' || a===k.id);
-      ctx.save(); strichel(ctx,anS,anS?F.orange:'rgba(34,31,31,.22)',anS?1.4:1);
+      ctx.save(); strichel(ctx,anS,anS?F.gold:'rgba(34,31,31,.22)',anS?1.4:1);
       ctx.beginPath();
       if (!schmal){ if (k===KETTEN[0]||k===KETTEN[2]){ ctx.restore(); return; } var y0=e.y+e.r+42; ctx.moveTo(e.x,y0); ctx.bezierCurveTo(e.x,synth.y-40,synth.x+(e.x-synth.x)*.25,synth.y-70,synth.x+(e.x-synth.x)*.12,synth.y-synth.r-6); }
       else if (k===KETTEN[KONTEXT_REIHE[KONTEXT_REIHE.length-1]]) { ctx.moveTo(e.x,e.y+e.r+26); ctx.bezierCurveTo(e.x,e.y+80,synth.x,synth.y-90,synth.x,synth.y-synth.r-8); }
@@ -493,7 +493,7 @@ new p5(function(p){
         ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
         var bi=bilder[n.bild]; if (n.bild!=='belami') bildCover(p,ctx,bi,n.x-n.r,n.y-n.r,2*n.r,2*n.r); else if (bi && bi.width){ var sc=2*n.r/bi.width*1.05, ih=bi.height*sc; p.image(bi,n.x-bi.width*sc/2,n.y-ih*.66,bi.width*sc,ih); } else { ctx.fillStyle='#dfe3de'; ctx.fillRect(n.x-n.r,n.y-n.r,2*n.r,2*n.r); }
         ctx.restore();
-        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.gold:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
         if (n.lab){ text(ctx,n.lab[0],n.x,n.y+n.r+(schmal?13:16),{g:13,w:600,a:'center'}); text(ctx,n.lab[1],n.x,n.y+n.r+(schmal?27:31),{g:12,w:300,a:'center',c:F.tinte2}); }
         var gZ=schmal?(W<370?19:22):gT, ty=n.y-(n.sub.length-1)*8-(schmal?4:6);
         text(ctx,n.titel,16,ty,{g:gZ,w:600});
@@ -501,7 +501,7 @@ new p5(function(p){
       } else if (n.typ==='person'){
         ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
         bildCover(p,ctx,bilder[n.pe.bild],n.x-n.r,n.y-n.r,2*n.r,2*n.r); ctx.restore();
-        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.gold:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
         if (!schmal){
           var erst = n.k.personen[0]===n.pe;
           if (erst) text(ctx,n.k.feld.toUpperCase(),n.k.personen.length>1?(n.x+knoten.filter(function(m){return m.k===n.k&&m.typ==='person';})[1].x)/2:n.x,n.y-n.r-(n.k.personen.length>1?8:14),{g:11,w:600,a:'center',sperr:.8,c:F.tinte2});
@@ -537,7 +537,7 @@ new p5(function(p){
     var s=synth.r/ (6+15.5*4) ;
     zeichneKreis(ctx,synth.x,synth.y,DEMO_BC,s,{schraffur:3,punktR:3});
     zeichneFwertPunkte(ctx,synth.x,synth.y,synth.r*1.0,{pos:[2,2,1],neg:[1,2],neutral:[0]},1,.7);
-    if (a==='kreis'){ ctx.beginPath(); ctx.arc(synth.x,synth.y,synth.r+18,0,Math.PI*2); ctx.setLineDash([5,4]); ctx.lineDashOffset=-marsch; ctx.strokeStyle=F.orange; ctx.lineWidth=1.4; ctx.stroke(); }
+    if (a==='kreis'){ ctx.beginPath(); ctx.arc(synth.x,synth.y,synth.r+18,0,Math.PI*2); ctx.setLineDash([5,4]); ctx.lineDashOffset=-marsch; ctx.strokeStyle=F.gold; ctx.lineWidth=1.4; ctx.stroke(); }
     ctx.restore();
     text(ctx,'Grafik – Kreisgrösse',synth.x,synth.y+synth.r+28,{g:14,w:600,a:'center'});
     text(ctx,'Alle Elemente in einer Form',synth.x,synth.y+synth.r+44,{g:12,w:300,a:'center',c:F.tinte2});
@@ -546,7 +546,7 @@ new p5(function(p){
     var x=n.x,y=n.y,r=n.r;
     ctx.save();
     ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); ctx.fillStyle=an?'#fff':'rgba(255,255,255,.7)'; ctx.fill();
-    ctx.setLineDash([]); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.45)'; ctx.lineWidth=an?2:1; ctx.stroke();
+    ctx.setLineDash([]); ctx.strokeStyle=an?F.gold:'rgba(34,31,31,.45)'; ctx.lineWidth=an?2:1; ctx.stroke();
     ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.clip();
     var t=p.millis()/1000;
     switch(n.k.mini){
