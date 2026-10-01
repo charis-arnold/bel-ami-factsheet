@@ -288,10 +288,10 @@ var DATEN_ROMAN = { id:'daten', feld:'Daten', kurz:'Daten',
   modul:null };
 // Kartografie: eigener Kreis neben «Schauplatz», eigener Aufklapper
 var KARTE = { id:'karte', feld:'Kartografie', kurz:'Karte',
-  personen:[{bild:'qgis-dunkel', name:'QGIS', jahre:'Kartendaten: OpenStreetMap', rolle:'Fusswege: OSMnx', ohneFeld:true, quer:true}],
+  personen:[{bild:'qgis-dunkel', ohneBild:true, name:'QGIS', jahre:'Kartendaten: OpenStreetMap', rolle:'Fusswege: OSMnx', ohneFeld:true, quer:true}],
   titel:'Kartografie', sub:'QGIS · OpenStreetMap · OSMnx', mini:'karte',
   text:'Die Karten entstanden in QGIS aus OpenStreetMap – eine Start-, eine Überblicks- und 18 Kapitelkarten. Die Wege zwischen den Schauplätzen berechnet OSMnx als kürzesten Fussweg.',
-  modul:'karte' };
+  modulBild:{datei:'qgis-dunkel.jpg', alt:'Karte von Paris, erstellt in QGIS'} };
 var ALLE = KETTEN.concat([SYNTHESE, MENSCH, DATEN_ROMAN, KARTE]);
 // Reihenfolge der Kontext-Spalten (Index in KETTEN): Kunst, Architektur, Fotografie, Typografie, Musik
 var KONTEXT_REIHE = [1,4,6,5,3];
