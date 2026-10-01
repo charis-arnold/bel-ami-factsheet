@@ -545,7 +545,7 @@ new p5(function(p){
   function miniIkon(ctx,n,an){
     var x=n.x,y=n.y,r=n.r;
     ctx.save();
-    ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); ctx.fillStyle=an?'#fff':'rgba(255,255,255,.7)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); if (n.k.mini!=='balken'){ ctx.fillStyle=an?'#fff':'rgba(255,255,255,.7)'; ctx.fill(); }
     ctx.setLineDash([]); ctx.strokeStyle=an?F.gold:'rgba(34,31,31,.45)'; ctx.lineWidth=an?2:1; ctx.stroke();
     ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.clip();
     var t=p.millis()/1000;
