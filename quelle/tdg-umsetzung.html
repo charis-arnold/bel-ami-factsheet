@@ -55,6 +55,12 @@
 .tdg-modulkopf h4{font:600 13px/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .tdg-modulkopf .info{font:300 14px/1.4 var(--sans);color:var(--tinte2)}
 .tdg-modul{position:relative;width:100%;min-height:120px;touch-action:pan-y}
+.tdg-bildpalette{display:flex;gap:32px;align-items:flex-start}
+.tdg-bildpalette img.tdg-modulbild{flex:0 1 auto;max-width:60%}
+.tdg-palette{flex:1 1 0;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:18px 14px}
+.tdg-kachel span{display:block;aspect-ratio:1/1;margin-bottom:6px}
+.tdg-kachel b{display:block;font:600 13px/1.3 var(--sans);color:var(--tinte)}
+.tdg-kachel small{display:block;font:300 12px/1.3 var(--sans);color:var(--tinte2)}
 .tdg-modul img.tdg-modulbild{display:block;width:auto;max-width:100%;max-height:640px;height:auto}
 .tdg-steuerung{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:12px}
 #tdg-prozess .tdg-knopf{border:1px solid var(--tinte);background:transparent;color:var(--tinte);padding:7px 14px;font-size:14px;border-radius:2px}
@@ -74,6 +80,9 @@
   .tdg-detail{grid-template-columns:1fr;gap:22px}
   .tdg-person{grid-template-columns:76px 1fr}
   .tdg-person img{width:76px}
+  .tdg-bildpalette{flex-direction:column;gap:24px}
+  .tdg-bildpalette img.tdg-modulbild{max-width:100%}
+  .tdg-palette{width:100%}
 }
 </style>
 
@@ -114,6 +123,13 @@ var F = {
   grau:'#8a928a', sand:'#ccc4b1', dunkel:'#2d3b3f', nebel:'#cfd4cf', creme:'#e8e5de', eis:'#c7d1d6'
 };
 // Kategorienfarben wie in der Web-App (kreisgrafik.js / KREIS_KATEGORIEN)
+// Farbpalette des Projekts (aus Pissarros Strassenbildern)
+var FARBPALETTE = [
+  {h:F.gold,n:'Raum und Umwelt'},{h:F.rose,n:'Stimmung und Emotion'},{h:F.navy,n:'Gesellschaft und Soziales'},
+  {h:F.oliv,n:'Analyse, negativ'},{h:F.orange,n:'Körper und Raum'},{h:F.petrol,n:'Beschriftung'},
+  {h:F.grau,n:'Karte'},{h:F.sand,n:'Karte'},{h:F.dunkel,n:'Karte, dunkel'},
+  {h:F.nebel,n:'Grund'},{h:F.creme,n:'Grund'},{h:F.eis,n:'Wasser'}
+];
 var KAT = [
   {key:'raum', name:'Raum und Umwelt', farbe:[198,162,43], instr:'marimba', instrName:'Marimba'},
   {key:'stimmung', name:'Stimmung und Emotion', farbe:[188,148,143], instr:'harfe', instrName:'Harfe'},
@@ -246,7 +262,7 @@ var KETTEN = [
     personen:[{bild:'pissarro', ohneBild:true, name:'Camille Pissarro', jahre:'1830 – 1903', rolle:'Maler', werk:'«Rue Saint Lazare», 1893', bildQuelle:'https://byronsmuse.wordpress.com/2020/11/27/camille-pissarro-impressions-of-parisian-streets/', bildQuelleText:'Byron’s Muse', quer:true}],
     titel:'Farbkonzept', sub:'Die Farben der Stadt', mini:'farben',
     text:'Pissarro malte die neuen Boulevards aus dem Fenster: Ocker, Rosé, das Blaugrau von Dächern und Himmel. Aus diesen Farben der Stadt stammt die Palette des Projekts. Die drei kräftigsten Töne tragen die drei Gefühlskategorien, das Orange zeigt, wie Körper und Raum aufeinander wirken, die hellen und dunklen Grautöne bilden den Grund der Karten.',
-    modulBild:{datei:'1893-rue-saint-lazare-camille-pissarro.jpg', alt:'Camille Pissarro, «Rue Saint Lazare», 1893'} },
+    modulBild:{datei:'1893-rue-saint-lazare-camille-pissarro.jpg', alt:'Camille Pissarro, «Rue Saint Lazare», 1893', palette:true} },
   { id:'stadt', feld:'Stadtplanung', pfeil:'Schauplatz', kurz:'Karte',
     personen:[{bild:'haussmann', ohneBild:true, ohneFeld:true, name:'Georges-Eugène Haussmann', jahre:'1809 – 1891', rolle:'Präfekt und Stadtplaner', werk:'1878 Andriveau-Goujon Pocket Map of Paris, France', bildQuelle:'https://fr.wikipedia.org/wiki/Fichier:1878_Andriveau-Goujon_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-andriveau-1878.jpg', quer:true}],
     titel:'Paris', sub:'',
@@ -640,7 +656,9 @@ function zeigeDetail(id){
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
   if (k.modul) modulInstanz = new p5(MODULE[k.modul], el);
   else if (k.modulBild){
-    el.innerHTML='<img class="tdg-modulbild" alt="'+k.modulBild.alt+'" loading="lazy" src="'+BILD+k.modulBild.datei+'">';
+    var bild='<img class="tdg-modulbild" alt="'+k.modulBild.alt+'" loading="lazy" src="'+BILD+k.modulBild.datei+'">';
+    el.innerHTML = k.modulBild.palette ? '<div class="tdg-bildpalette">'+bild+'<div class="tdg-palette">'+FARBPALETTE.map(function(x){
+        return '<div class="tdg-kachel"><span style="background:'+x.h+'"></span><b>'+x.n+'</b><small>'+x.h.toUpperCase()+'</small></div>'; }).join('')+'</div></div>' : bild;
     document.querySelector('#tdg-prozess .tdg-modulkopf').hidden=true;
     ['tdg-legende','tdg-quelle'].forEach(function(x){ document.getElementById(x).hidden=true; });
   }
@@ -751,12 +769,7 @@ MODULE.analyse=function(p){
 /* ---- Farbe: Pissarro, nachgezeichnet mit der Palette ---- */
 MODULE.farbe=function(p){
   var el=p._userNode, g, img=null, punkte=[], hov=-1, fest=-1, t0=0, original=false;
-  var PAL=[
-    {h:F.gold,n:'Raum und Umwelt'},{h:F.rose,n:'Stimmung und Emotion'},{h:F.navy,n:'Gesellschaft und Soziales'},
-    {h:F.oliv,n:'Analyse, negativ'},{h:F.orange,n:'Körper und Raum'},{h:F.petrol,n:'Beschriftung'},
-    {h:F.grau,n:'Karte'},{h:F.sand,n:'Karte'},{h:F.dunkel,n:'Karte, dunkel'},
-    {h:F.nebel,n:'Grund'},{h:F.creme,n:'Grund'},{h:F.eis,n:'Wasser'}
-  ].map(function(x){ x.rgb=hex2rgb(x.h); x.anteil=0; return x; });
+  var PAL=FARBPALETTE.map(function(x){ return {h:x.h, n:x.n, rgb:hex2rgb(x.h), anteil:0}; });
   var bildBox, palBox;
   p.preload=function(){ img=p.loadImage(BILD+'pissarro.jpg',function(){},function(){img=null;}); };
   function lay(W,H){
