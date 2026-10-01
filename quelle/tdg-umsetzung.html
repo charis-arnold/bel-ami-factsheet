@@ -36,7 +36,7 @@
 
 .tdg-netz{position:relative;width:100%;margin-top:26px;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
 .tdg-netz canvas,.tdg-modul canvas{display:block}
-.tdg-hinweis{font-size:13px;color:var(--tinte2);margin-top:8px!important}
+.tdg-hinweis{font-size:14px;color:var(--tinte2);margin-top:16px!important}
 
 .tdg-detail{margin-top:34px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px 40px;align-items:start}
 .tdg-personen{display:flex;flex-direction:column;gap:18px}
@@ -82,11 +82,10 @@
     <h2 class="tdg-titel">Umsetzungsprozess</h2>
     <p class="tdg-unter">Mensch + Daten + Schauplatz / Kontext = Human Data</p>
     <p class="tdg-intro">Guy de Maupassants «Bel-Ami» spielt in einer Stadt, die gerade neu entsteht. Jede gestalterische Entscheidung dieses Projekts – Daten, Farbe, Karte, Klang, Form, Schrift und Bild – hat ein Vorbild im Paris jener Jahre. Die gestrichelten Linien verbinden die Zeitgenossen mit dem, was aus ihnen geworden ist. Alle Fäden laufen in einer Grafik zusammen: dem Kreis, der für jeden Ort zeigt, wie er sich anfühlt.</p>
-    <p class="tdg-formel"><b>Daten</b> <i>+</i> <b>Mensch</b> <i>+</i> <b>Kontext</b> <i>=</i> <b>Human Data</b></p>
+    <p class="tdg-hinweis" id="tdg-hinweis">Tippe auf eine Person oder ein Element, um der Verbindung zu folgen.</p>
   </header>
 
   <div class="tdg-netz" id="tdg-netz" role="img" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen"></div>
-  <p class="tdg-hinweis" id="tdg-hinweis">Tippe auf eine Person oder ein Element, um der Verbindung zu folgen.</p>
 
   <section class="tdg-detail" id="tdg-detail" aria-live="polite">
     <div class="tdg-personen" id="tdg-personen"></div>
