@@ -31,7 +31,7 @@
 .tdg-netz canvas,.tdg-modul canvas{display:block}
 
 .tdg-detail{position:absolute;left:0;right:0;top:0;z-index:2;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px 40px;align-items:start;padding:48px 0 52px;opacity:0;transition:opacity .35s ease}
-.tdg-detail[hidden],.tdg-legende-text[hidden],.tdg-quelle[hidden]{display:none}
+.tdg-detail[hidden],.tdg-legende-text[hidden],.tdg-quelle[hidden],.tdg-modulkopf h4[hidden]{display:none}
 .tdg-detail.offen{opacity:1}
 .tdg-detail.ohne-modul .tdg-modulrahmen{display:none}
 .tdg-erkenntnis .feld{font:600 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--tinte2)}
@@ -624,6 +624,7 @@ function zeigeDetail(id){
   }
   ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
   richtePersonenAus();
+  document.getElementById('tdg-modultitel').hidden=false;
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ var e=document.getElementById(x); e.innerHTML=''; e.hidden=false; });
   schliesseModul();
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
@@ -680,7 +681,7 @@ MODULE.analyse=function(p){
   var el=p._userNode, g, hov=-1, anim=0;
   var K=DATEN.kapitel, pos=0,neg=0,neu=0; K.forEach(function(k){pos+=k[0];neg+=k[1];neu+=k[2];});
   p.setup=function(){
-    setze('tdg-modultitel','Analyse');
+    document.getElementById('tdg-modultitel').hidden=true;
     setze('tdg-modulinfo','Duroys Weg vom mittellosen Angestellten zum Schwiegersohn des Pressebarons');
     setze('tdg-modulvor','<div class="tdg-zahlen">'+
       '<div class="tdg-zahl"><b>2902</b><span>Annotationen</span></div>'+
