@@ -334,7 +334,7 @@ function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) docume
    1) NETZ – Zeitzeugen → Umsetzung → Synthese
 ====================================================================== */
 new p5(function(p){
-  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, oy=0, ZH=116, OY=348, daten=null, mensch=null, ort=null;
+  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, oy=0, ZH=116, OY=348, daten=null, mensch=null, ort=null, L=0, kontextY=0, ZM=122, gT=30, eng=false;
   var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
   p.preload=function(){
     ['belami','maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
@@ -342,37 +342,45 @@ new p5(function(p){
     });
   };
   function layout(){
-    knoten=[]; schmal = W<720;
+    knoten=[]; schmal = W<900;
     var n=KETTEN.length;
     if (!schmal){
-      dW=0; oy=OY;
-      var pad=18, sp=(W-2*pad)/n, rP=Math.min(34, sp*.3), rE=Math.min(30, sp*.27);
+      // Drei Spalten: 1 Typo (0…L) · 2 Kreise (x2) · 3 Analyse bzw. Kontext/Umsetzung (ab spalte3)
+      dW=0; oy=OY; gT=W>=1100?30:(W>=980?26:24); schrift(p.drawingContext,gT,600);
+      L=Math.round(Math.max(150, p.drawingContext.measureText('Schauplatz').width+28, Math.min(240,W*.17)));
+      var pad=18, rP=34, x2=L+rP+6, spalte3=x2+rP+34, sp=(W-spalte3-pad)/(n-1);
+      rP=Math.min(34, sp*.3); var rE=Math.min(30, sp*.27); eng = sp<132;
       var yP=92+oy, yE=292+oy; H=600+oy;
-      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:'Guy de Maupassant · Protagonist und Zeitzeuge', k:KETTEN[0], x:pad+sp*.5, y:ZH/2, r:rP}; knoten.push(mensch);
-      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:'Roman «Bel-Ami», 1885', k:KETTEN[0], x:pad+sp*.5, y:ZH+ZH/2, r:rP}; knoten.push(daten);
-      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:'Paris 1885', k:KETTEN[2], x:pad+sp*.5, y:2*ZH+ZH/2, r:rP}; knoten.push(ort);
+      function sx(i){ return spalte3+sp*(i-1+.5); }
+      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Guy de Maupassant','Protagonist und Zeitzeuge'], k:KETTEN[0], x:x2, y:ZH/2, r:rP}; knoten.push(mensch);
+      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami», 1885'], k:KETTEN[0], x:x2, y:ZH+ZH/2, r:rP}; knoten.push(daten);
+      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:2*ZH+ZH/2, r:rP}; knoten.push(ort);
+      kontextY=yP;
       KETTEN.forEach(function(k,i){
-        var x=pad+sp*(i+.5);
-        if (i!==0 && i!==2) k.personen.forEach(function(pe,j){
+        if (i===0){ knoten.push({typ:'element', k:k, x:sx(1), y:daten.y, r:rE, rechts:true}); return; }
+        var x=sx(i);
+        if (i!==2) k.personen.forEach(function(pe,j){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
           knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r});
         });
-        if (i===0) knoten.push({typ:'element', k:k, x:Math.max(pad+sp*2.5, daten.x+daten.r+190+rE), y:daten.y, r:rE, rechts:true});
-        else knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
+        knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
       });
-      synth={x:W/2, y:486+oy, r:44};
+      synth={x:(spalte3+W)/2, y:486+oy, r:44};
     } else {
-      dW=0; oy=0; var zeile=94, top=336, xP=38, xE=Math.min(W*.56, W-150);
-      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:'Protagonist und Zeitzeuge', k:KETTEN[0], x:xP, y:44, r:26}; knoten.push(mensch);
-      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:'Roman «Bel-Ami»', k:KETTEN[0], x:xP, y:132, r:26}; knoten.push(daten);
-      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:'Paris 1885', k:KETTEN[2], x:xP, y:220, r:26}; knoten.push(ort);
+      // Handy: Typo links, Kreise in Spalte 2, Analyse in Spalte 3 (Beschriftung darunter)
+      dW=0; oy=0; L=0; var zeile=94, top=3*ZM+72, xP=38, xE=Math.min(W*.56, W-150), x2=Math.round(Math.min(176,W*.46));
+      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Guy de Maupassant'], k:KETTEN[0], x:x2, y:ZM/2, r:26}; knoten.push(mensch);
+      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami»'], k:KETTEN[0], x:x2, y:ZM*1.5, r:26}; knoten.push(daten);
+      ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:ZM*2.5, r:26}; knoten.push(ort);
+      kontextY=3*ZM+22;
       KETTEN.forEach(function(k,i){
-        var y=top+zeile*({0:0,1:1,2:0}[i]!=null?{0:0,1:1,2:0}[i]:i-1);
-        if (i!==0 && i!==2) k.personen.forEach(function(pe,j){
+        if (i===0){ knoten.push({typ:'element', k:k, x:Math.min(W-62,x2+150), y:daten.y, r:24, unten:true}); return; }
+        var y=top+zeile*(i===2?0:(i===1?1:i-1));
+        if (i!==2) k.personen.forEach(function(pe,j){
           var m=k.personen.length;
           knoten.push({typ:'person', k:k, pe:pe, x:xP+(m>1?j*20:0), y:y+(m>1?(j?8:-8):0), r:m>1?20:26});
         });
-        knoten.push({typ:'element', k:k, x:i===0?Math.min(W-118,xE+34):xE, y:i===0?daten.y:y, r:22, rechts:i===0});
+        knoten.push({typ:'element', k:k, x:xE, y:y, r:22});
       });
       H=top+zeile*(n-1)+170; synth={x:W/2, y:H-92, r:40};
     }
@@ -401,20 +409,20 @@ new p5(function(p){
       ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(0,196+oy,W,190);
       ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.lineWidth=1;
       [ZH,2*ZH,oy,196+oy,386+oy].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
-      text(ctx,'Kontext',16,24+oy,{g:16,w:600});
+      text(ctx,'Kontext',16,kontextY-6,{g:gT,w:600});
+      text(ctx,'Paris 1885 · Zeitgenossen',16,kontextY+20,{g:13,w:300,c:F.tinte2});
       text(ctx,'UMSETZUNG',16,212+oy,{g:11,w:600,c:F.tinte2,sperr:1});
       text(ctx,'SYNTHESE',16,402+oy,{g:11,w:600,c:F.tinte2,sperr:1});
     } else {
-      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; [88,176,264].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
-      text(ctx,'Kontext',68,286,{g:15,w:600});
-      var xE0=elementKnoten(KETTEN[0]).x;
-      text(ctx,'UMSETZUNG',xE0-22,286,{g:11,w:600,c:F.tinte2,sperr:1});
+      ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; [ZM,2*ZM,3*ZM].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
+      text(ctx,'Kontext',16,kontextY,{g:22,w:600});
+      var xE0=elementKnoten(KETTEN[1]).x;
+      text(ctx,'UMSETZUNG',xE0-22,kontextY,{g:11,w:600,c:F.tinte2,sperr:1});
     }
     // Daten (Buch) → Analyse, horizontal
     (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
-      schrift(ctx,schmal?12.5:13,300); var tw=ctx.measureText(daten.sub).width; schrift(ctx,schmal?15:16,600); tw=Math.max(tw,ctx.measureText(daten.titel).width);
-      var x0=daten.x+daten.r+14+tw+10, x1=e.x-e.r-6; if (x1-x0<8) return;
-      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath(); ctx.moveTo(x0,daten.y); ctx.lineTo(x1,e.y); ctx.stroke(); ctx.restore(); })();
+      var x0=daten.x+daten.r+6, x1=e.x-e.r-6; if (x1-x0<8) return;
+      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath(); ctx.moveTo(x0,daten.y); ctx.lineTo(x1,daten.y); ctx.stroke(); ctx.restore(); })();
     // Mensch → Daten → Schauplatz
     (function(){ var an=stark(KETTEN[0]);
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
@@ -424,7 +432,7 @@ new p5(function(p){
     // Schauplatz → Kartografie
     (function(){ var e=elementKnoten(KETTEN[2]), an=stark(KETTEN[2]);
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
-      if (!schmal){ schrift(ctx,16,600); var tw=ctx.measureText(ort.titel).width; ctx.moveTo(ort.x+ort.r+14+tw+12,ort.y-9); ctx.lineTo(e.x,ort.y-9); ctx.lineTo(e.x,e.y-e.r-6); }
+      if (!schmal){ ctx.moveTo(ort.x+ort.r+6,ort.y); ctx.lineTo(e.x,ort.y); ctx.lineTo(e.x,e.y-e.r-6); }
       else { ctx.moveTo(ort.x,ort.y+ort.r+6); ctx.lineTo(ort.x,e.y); ctx.lineTo(e.x-e.r-6,e.y); }
       ctx.stroke(); ctx.restore(); })();
     // Verbindungen Person → Element
@@ -454,8 +462,9 @@ new p5(function(p){
         var bi=bilder[n.bild]; if (n.bild!=='belami') bildCover(p,ctx,bi,n.x-n.r,n.y-n.r,2*n.r,2*n.r); else if (bi && bi.width){ var sc=2*n.r/bi.width*1.05, ih=bi.height*sc; p.image(bi,n.x-bi.width*sc/2,n.y-ih*.66,bi.width*sc,ih); } else { ctx.fillStyle='#dfe3de'; ctx.fillRect(n.x-n.r,n.y-n.r,2*n.r,2*n.r); }
         ctx.restore();
         ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
-        text(ctx,n.titel,n.x+n.r+14,n.y-9,{g:schmal?15:16,w:600});
-        text(ctx,n.sub,n.x+n.r+14,n.y+11,{g:schmal?12.5:13,w:300,c:F.tinte2});
+        var gZ=schmal?(W<370?19:22):gT, ty=n.y-(n.sub.length-1)*8-(schmal?4:6);
+        text(ctx,n.titel,16,ty,{g:gZ,w:600});
+        n.sub.forEach(function(z,i){ text(ctx,z,16,ty+(schmal?20:gT*.85)+i*16,{g:schmal?12:13,w:300,c:F.tinte2}); });
       } else if (n.typ==='person'){
         ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
         bildCover(p,ctx,bilder[n.pe.bild],n.x-n.r,n.y-n.r,2*n.r,2*n.r); ctx.restore();
@@ -464,7 +473,7 @@ new p5(function(p){
           var erst = n.k.personen[0]===n.pe;
           if (erst) text(ctx,n.k.feld.toUpperCase(),n.k.personen.length>1?(n.x+knoten.filter(function(m){return m.k===n.k&&m.typ==='person';})[1].x)/2:n.x,n.y-n.r-(n.k.personen.length>1?8:14),{g:11,w:600,a:'center',sperr:.8,c:F.tinte2});
           if (n.k.personen.length===1){
-            var nm=n.pe.name.split(' '), zeile2=nm.pop();
+            var nm=(eng&&n.pe.kurz?n.pe.kurz:n.pe.name).split(' '), zeile2=nm.pop();
             text(ctx,nm.join(' '),n.x,n.y+n.r+14,{g:12.5,w:600,a:'center'});
             text(ctx,zeile2,n.x,n.y+n.r+29,{g:12.5,w:600,a:'center'});
           } else if (!erst){
@@ -477,9 +486,9 @@ new p5(function(p){
         }
       } else {
         miniIkon(ctx,n,an);
-        if (!schmal && !n.rechts){
-          text(ctx,n.k.netzTitel||n.k.titel,n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
-          text(ctx,n.k.netzSub||n.k.sub.split(' · ')[0],n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
+        if ((!schmal && !n.rechts) || n.unten){
+          text(ctx,n.k.netzTitel||n.k.titel,n.x,n.y+n.r+(n.unten?13:16),{g:13,w:600,a:'center'});
+          if (!eng || n.unten) text(ctx,n.k.netzSub||n.k.sub.split(' · ')[0],n.x,n.y+n.r+(n.unten?27:31),{g:12,w:300,a:'center',c:F.tinte2});
         } else {
           var gr=n.rechts?(schmal?15:16):13, gs=n.rechts?(schmal?12.5:13):12, dy=n.rechts?9:7;
           text(ctx,n.k.netzTitel||n.k.titel,n.x+n.r+(n.rechts?14:10),n.y-dy,{g:gr,w:600});
