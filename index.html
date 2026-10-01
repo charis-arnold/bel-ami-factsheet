@@ -254,7 +254,7 @@ function vorladen(liste){ if (!audioStart()) return; liste.forEach(ladeInstr); }
 var KETTEN = [
   { id:'literatur', feld:'Literatur', kurz:'Daten',
     personen:[{bild:'maupassant', name:'Guy de Maupassant', voll:'Henry René Albert Guy de Maupassant', jahre:'1850 – 1893', rolle:'Schriftsteller und Journalist · Zeitzeuge', werk:'«Bel-Ami», 1885'}],
-    titel:'Daten & Analyse', sub:'Roman «Bel-Ami» · Erhebung mit Python', mini:'balken',
+    titel:'Daten & Analyse', sub:'Roman «Bel-Ami» · Erhebung mit Python', netzTitel:'Analyse', netzSub:'Valenz je Kapitel', mini:'balken',
     text:'Maupassant kannte das Paris, das er beschreibt, aus eigener Anschauung – als Journalist und Kritiker seiner Zeit. Sein Roman wird hier zur Datengrundlage: 18 Kapitel aus Projekt Gutenberg (Übersetzung Fürst N. Obolensky), mit der Claude API Textstelle für Textstelle annotiert, nach Valenz (−1/0/+1) und Intensität (1–3) quantifiziert, mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
     modul:'analyse' },
   { id:'kunst', feld:'Kunst', kurz:'Farbe',
@@ -334,10 +334,10 @@ function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) docume
    1) NETZ – Zeitzeugen → Umsetzung → Synthese
 ====================================================================== */
 new p5(function(p){
-  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null;
+  var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, daten=null;
   var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
   p.preload=function(){
-    ['maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
+    ['belami','maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
       bilder[n]=p.loadImage(BILD+n+'.jpg', function(){}, function(){ bilder[n]=null; });
     });
   };
@@ -345,19 +345,22 @@ new p5(function(p){
     knoten=[]; schmal = W<720;
     var n=KETTEN.length;
     if (!schmal){
-      var pad=18, sp=(W-2*pad)/n, rP=Math.min(34, sp*.3), rE=Math.min(30, sp*.27);
+      dW=Math.round(Math.min(140,Math.max(104,W*.1)));
+      var pad=18, sp=(W-dW-2*pad)/n, rP=Math.min(34, sp*.3), rE=Math.min(30, sp*.27);
       var yP=92, yE=292; H=600;
+      daten={typ:'daten', k:KETTEN[0], x:dW/2+10, y:yE, r:Math.min(34,dW*.3)}; knoten.push(daten);
       KETTEN.forEach(function(k,i){
-        var x=pad+sp*(i+.5);
+        var x=dW+pad+sp*(i+.5);
         k.personen.forEach(function(pe,j){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
           knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r});
         });
         knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
       });
-      synth={x:W/2, y:486, r:44};
+      synth={x:(dW+W)/2, y:486, r:44};
     } else {
-      var zeile=94, top=62, xP=38, xE=Math.min(W*.56, W-150);
+      dW=0; var zeile=94, top=62+94, xP=38, xE=Math.min(W*.56, W-150);
+      daten={typ:'daten', k:KETTEN[0], x:xP, y:62, r:26}; knoten.push(daten);
       KETTEN.forEach(function(k,i){
         var y=top+zeile*i;
         k.personen.forEach(function(pe,j){
@@ -390,17 +393,24 @@ new p5(function(p){
     var a=aktivId();
     // Bänder
     if (!schmal){
-      ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(0,196,W,190);
+      ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(dW,196,W-dW,190);
       ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle=F.linie; ctx.lineWidth=1;
-      [196,386].forEach(function(y){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.restore();
-      text(ctx,'ZEITZEUGEN · PARIS 1885',16,18,{g:11,w:600,c:F.tinte2,sperr:1});
-      text(ctx,'UMSETZUNG',16,212,{g:11,w:600,c:F.tinte2,sperr:1});
-      text(ctx,'SYNTHESE',16,402,{g:11,w:600,c:F.tinte2,sperr:1});
+      [196,386].forEach(function(y){ ctx.beginPath(); ctx.moveTo(dW,y); ctx.lineTo(W,y); ctx.stroke(); });
+      ctx.beginPath(); ctx.moveTo(dW,0); ctx.lineTo(dW,H); ctx.stroke(); ctx.restore();
+      text(ctx,'ZEITZEUGEN · PARIS 1885',dW+16,18,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'UMSETZUNG',dW+16,212,{g:11,w:600,c:F.tinte2,sperr:1});
+      text(ctx,'SYNTHESE',dW+16,402,{g:11,w:600,c:F.tinte2,sperr:1});
     } else {
       text(ctx,'ZEITZEUGE',16,22,{g:11,w:600,c:F.tinte2,sperr:1});
       var xE0=elementKnoten(KETTEN[0]).x;
       text(ctx,'UMSETZUNG',xE0-22,22,{g:11,w:600,c:F.tinte2,sperr:1});
     }
+    // Daten (Roman) → Analyse
+    (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
+      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
+      if (!schmal){ ctx.moveTo(daten.x+daten.r+5,daten.y); ctx.lineTo(e.x-e.r-6,e.y); }
+      else { ctx.moveTo(daten.x+daten.r*.7,daten.y+daten.r*.7+2); ctx.bezierCurveTo(daten.x+60,daten.y+50,e.x-70,e.y-10,e.x-e.r-6,e.y-4); }
+      ctx.stroke(); ctx.restore(); })();
     // Verbindungen Person → Element
     KETTEN.forEach(function(k){
       var e=elementKnoten(k), an=stark(k);
@@ -423,7 +433,20 @@ new p5(function(p){
     knoten.forEach(function(n){
       var an=stark(n.k), al = a && !an ? .45 : 1;
       ctx.save(); ctx.globalAlpha=al;
-      if (n.typ==='person'){
+      if (n.typ==='daten'){
+        ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
+        var bi=bilder.belami; if (bi && bi.width){ var sc=2*n.r/bi.width*1.05, ih=bi.height*sc; p.image(bi,n.x-bi.width*sc/2,n.y-ih*.66,bi.width*sc,ih); } else { ctx.fillStyle='#dfe3de'; ctx.fillRect(n.x-n.r,n.y-n.r,2*n.r,2*n.r); }
+        ctx.restore();
+        ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
+        if (!schmal){
+          ctx.save(); ctx.translate(14,n.y); ctx.rotate(-Math.PI/2); text(ctx,'DATEN',0,0,{g:11,w:600,a:'center',c:F.tinte2,sperr:1}); ctx.restore();
+          text(ctx,'Roman',n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
+          text(ctx,'«Bel-Ami»',n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
+        } else {
+          text(ctx,'DATEN',n.x+n.r+12,n.y-9,{g:10.5,w:600,c:F.tinte2,sperr:.6});
+          text(ctx,'Roman «Bel-Ami»',n.x+n.r+12,n.y+8,{g:13,w:600});
+        }
+      } else if (n.typ==='person'){
         ctx.save(); ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.clip();
         bildCover(p,ctx,bilder[n.pe.bild],n.x-n.r,n.y-n.r,2*n.r,2*n.r); ctx.restore();
         ctx.beginPath(); ctx.arc(n.x,n.y,n.r+3,0,Math.PI*2); ctx.strokeStyle=an?F.orange:'rgba(34,31,31,.5)'; ctx.lineWidth=an?2:1; ctx.setLineDash([]); ctx.stroke();
@@ -445,11 +468,11 @@ new p5(function(p){
       } else {
         miniIkon(ctx,n,an);
         if (!schmal){
-          text(ctx,n.k.titel,n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
-          text(ctx,n.k.sub.split(' · ')[0],n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
+          text(ctx,n.k.netzTitel||n.k.titel,n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
+          text(ctx,n.k.netzSub||n.k.sub.split(' · ')[0],n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
         } else {
-          text(ctx,n.k.titel,n.x+n.r+10,n.y-7,{g:13,w:600});
-          schrift(ctx,12,300); var sub=n.k.sub.split(' · ')[0];
+          text(ctx,n.k.netzTitel||n.k.titel,n.x+n.r+10,n.y-7,{g:13,w:600});
+          schrift(ctx,12,300); var sub=n.k.netzSub||n.k.sub.split(' · ')[0];
           text(ctx,sub,n.x+n.r+10,n.y+9,{g:12,w:300,c:F.tinte2});
         }
       }
