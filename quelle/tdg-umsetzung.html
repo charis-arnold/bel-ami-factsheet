@@ -15,8 +15,9 @@
   --serif:'Source Serif 4',Georgia,serif; --sans:'Source Sans 3','Helvetica Neue',Arial,sans-serif;
   font-family:var(--sans); color:var(--tinte); background:var(--grund);
   max-width:1120px; margin:0 auto; padding:clamp(20px,4vw,48px) clamp(16px,4vw,48px) 28px;
-  box-sizing:border-box; line-height:1.5; font-size:16px; -webkit-font-smoothing:antialiased;
+  box-sizing:border-box; line-height:1.5; font-size:16px; -webkit-font-smoothing:antialiased; position:relative;
 }
+.tdg-hell{position:absolute;left:0;right:0;bottom:0;top:100%;background:#f5f7f5;z-index:0;pointer-events:none}
 #tdg-prozess *,#tdg-prozess *::before,#tdg-prozess *::after{box-sizing:border-box}
 #tdg-prozess h2,#tdg-prozess h3,#tdg-prozess h4,#tdg-prozess p,#tdg-prozess figure{margin:0;padding:0;border:0;text-transform:none;letter-spacing:normal}
 #tdg-prozess img{max-width:100%;height:auto;display:block;border:0;box-shadow:none}
@@ -31,7 +32,7 @@
 
 
 
-.tdg-netz{position:relative;width:100%;margin-top:26px;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
+.tdg-netz{position:relative;z-index:1;width:100%;margin-top:26px;border-top:1px dashed var(--linie);border-bottom:1px dashed var(--linie);touch-action:pan-y}
 .tdg-netz canvas,.tdg-modul canvas{display:block}
 .tdg-hinweis{font-size:14px;color:var(--tinte2);margin-top:16px!important}
 
@@ -87,6 +88,7 @@
     <p class="tdg-hinweis" id="tdg-hinweis">Tippe auf eine Person oder ein Element, um der Verbindung zu folgen.</p>
   </header>
 
+  <div class="tdg-hell" id="tdg-hell" aria-hidden="true"></div>
   <div class="tdg-netz" id="tdg-netz" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen">
   <section class="tdg-detail" id="tdg-detail" aria-live="polite" hidden>
     <button type="button" class="tdg-zu" id="tdg-zu" aria-label="Schliessen">Schliessen ×</button>
@@ -330,7 +332,7 @@ function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) docume
 ====================================================================== */
 new p5(function(p){
   var el=document.getElementById('tdg-netz'), bilder={}, knoten=[], W=800, H=560, schmal=false, marsch=0, synth=null, dW=0, oy=0, ZH=140, OY=420, daten=null, mensch=null, ort=null, L=0, kontextY=0, ZM=134, gT=30, eng=false, luecke=0, lueckeZiel=0, lueckeAb=0;
-  var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]], HELL='rgba(255,255,255,.35)';
+  var DEMO_BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]], HELL='#f5f7f5';
   p.preload=function(){
     ['belami','maupassant','pissarro','haussmann','saint-saens','eiffel','orsay','fournier','dhaap-oper','qgis-dunkel'].forEach(function(n){
       bilder[n]=p.loadImage(BILD+n+'.jpg', function(){}, function(){ bilder[n]=null; });
@@ -416,19 +418,19 @@ new p5(function(p){
     var hGes=Math.round(H+luecke);
     if (p.height!==hGes) p.resizeCanvas(W,hGes);
     detail.style.top=lueckeAb+'px';
-    p.clear(); ctx.fillStyle=F.grund; ctx.fillRect(0,0,W,hGes);
+    var hellAb = schmal ? hGes : (196+oy) + (luecke>0 && lueckeAb<196+oy ? luecke : 0);
+    var hellDiv=document.getElementById('tdg-hell');
+    hellDiv.style.top = schmal ? '100%' : (el.offsetTop + hellAb)+'px';
+    p.clear(); ctx.fillStyle=F.grund; ctx.fillRect(0,0,W,hellAb);
     if (luecke<=0){ szene(ctx); return; }
     ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,lueckeAb); ctx.clip(); szene(ctx); ctx.restore();
     ctx.save(); ctx.beginPath(); ctx.rect(0,lueckeAb+luecke,W,H-lueckeAb); ctx.clip(); ctx.translate(0,luecke); szene(ctx); ctx.restore();
-    // Lücke im hellen Bereich (ab «Umsetzung») ebenfalls hell
-    if (!schmal && lueckeAb>=196+oy){ ctx.fillStyle=HELL; ctx.fillRect(0,lueckeAb,W,luecke); }
   };
   function szene(ctx){
     var a=aktivId();
     // Bänder
     if (!schmal){
-      // ab «Umsetzung» durchgehend heller Hintergrund, keine Linien zwischen den Zeilen
-      ctx.fillStyle=HELL; ctx.fillRect(0,196+oy,W,H-(196+oy));
+      // ab «Umsetzung» heller Grund: kommt von #tdg-hell hinter der Zeichenfläche (bis zum Rand)
       text(ctx,'Kontext',16,kontextY-6,{g:gT,w:600});
       text(ctx,'Paris 1885 · Zeitgenossen',16,kontextY+20,{g:13,w:300,c:F.tinte2});
       text(ctx,'UMSETZUNG',16,212+oy,{g:11,w:600,c:F.tinte2,sperr:1});
