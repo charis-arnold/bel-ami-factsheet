@@ -395,6 +395,8 @@ new p5(function(p){
   }
   p.setup=function(){
     W=breiteVon(el); var c=p.createCanvas(W,H); c.parent(el); p.frameRate(30); layout();
+    // Normalzustand: «Daten Visualisation» ist bereits ausgeklappt
+    waehle('kreis', synth); lueckeAb=synth.zu;
     beiGroesse(el,function(w){ W=w; layout(); });
     schriftenBereit(function(){ p.redraw(); });
     if ('IntersectionObserver' in window) new IntersectionObserver(function(e){ e[0].isIntersecting?p.loop():p.noLoop(); }).observe(el);
