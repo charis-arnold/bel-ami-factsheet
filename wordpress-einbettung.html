@@ -403,8 +403,10 @@ new p5(function(p){
     beobachter.push(function(){ p.redraw(); });
   };
   function aktivId(){ return zustand.hover || (zustand.ruhig ? null : zustand.gewaehlt); }
-  function gruppe(id){ return (id==='mensch'||id==='daten')?'literatur':id; }
-  function stark(k){ var a=aktivId(); return !!a && (gruppe(a)===gruppe(k.id) || a==='kreis'); }
+  // Direkte Nachbarn: Hover/Klick hebt nur den Kreis und seine direkten Verbindungen hervor
+  var NACHBARN = { mensch:['daten'], daten:['mensch','literatur'], literatur:['daten'] };
+  function stark(k){ var a=aktivId(); return !!a && (a===k.id || a==='kreis' || (NACHBARN[a]||[]).indexOf(k.id)>=0); }
+  function kante(){ var a=aktivId(); return !!a && (a==='kreis' || [].slice.call(arguments).indexOf(a)>=0); }
   function strichel(ctx, an, farbe, breite){
     ctx.setLineDash(an?[5,4]:[3,4]); ctx.lineDashOffset=an?-marsch:0;
     ctx.strokeStyle=farbe; ctx.lineWidth=breite;
@@ -445,20 +447,19 @@ new p5(function(p){
       text(ctx,'Visualisation',16,synth.y+12,{g:W<370?19:22,w:600});
     }
     // Analyse → Daten Visualisation (eigene Spalte rechts)
-    if (!schmal) (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
+    if (!schmal) (function(){ var e=elementKnoten(KETTEN[0]), an=kante('literatur');
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
       ctx.moveTo(e.x,e.y+e.r+40); ctx.lineTo(e.x,synth.y); ctx.lineTo(synth.x+synth.r+18,synth.y);
       ctx.stroke(); ctx.restore(); })();
     // Daten (Buch) → Analyse, horizontal
-    (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
+    (function(){ var e=elementKnoten(KETTEN[0]), an=kante('daten','literatur');
       var x0=daten.x+daten.r+6, x1=e.x-e.r-6; if (x1-x0<8) return;
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath(); ctx.moveTo(x0,daten.y); ctx.lineTo(x1,daten.y); ctx.stroke(); ctx.restore(); })();
     // Mensch → Daten → Schauplatz
-    (function(){ var an=stark(KETTEN[0]);
+    [[mensch,daten,kante('mensch','daten')],[daten,ort,kante('daten')]].forEach(function(z){ var an=z[2];
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
-      ctx.moveTo(mensch.x,mensch.y+mensch.r+36); ctx.lineTo(daten.x,daten.y-daten.r-6);
-      ctx.moveTo(daten.x,daten.y+daten.r+36); ctx.lineTo(ort.x,ort.y-ort.r-6);
-      ctx.stroke(); ctx.restore(); })();
+      ctx.moveTo(z[0].x,z[0].y+z[0].r+36); ctx.lineTo(z[1].x,z[1].y-z[1].r-6);
+      ctx.stroke(); ctx.restore(); });
     // Schauplatz → Kartografie
     (function(){ var e=elementKnoten(KETTEN[2]), an=stark(KETTEN[2]);
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
