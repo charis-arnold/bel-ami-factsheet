@@ -282,7 +282,7 @@ var MENSCH = { id:'mensch', feld:'Mensch', kurz:'Mensch',
   text:'Maupassant kannte das Paris, das er beschreibt, aus eigener Anschauung – als kleiner Angestellter in den Ministerien, später als Journalist und Kritiker seiner Zeit. Wie sein Protagonist Georges Duroy bewegte er sich zwischen Redaktionen, Boulevards und Salons. Sein Blick auf die Stadt ist der Ausgangspunkt des Projekts.',
   modul:null };
 var DATEN_ROMAN = { id:'daten', feld:'Daten', kurz:'Daten',
-  personen:[{bild:'belami', name:'«Bel-Ami»', jahre:'Roman, 1885', rolle:'von Guy de Maupassant', werk:'Übersetzung Fürst N. Obolensky · Projekt Gutenberg', ohneFeld:true}],
+  personen:[{bild:'belami', name:'«Bel-Ami»', jahre:'Roman, 1885', rolle:'von Guy de Maupassant', werk:'Übersetzung Fürst N. Obolensky · Projekt Gutenberg', bildQuelle:'https://www.reclam.de/produktdetail/bel-ami-9783150207499', bildQuelleText:'Verlag Philipp Reclam', ohneFeld:true}],
   titel:'Roman', netzTitel:'Daten', netzSub:'Roman «Bel-Ami»', sub:'Erhebung mit Python',
   text:'Maupassants Roman ist die Datengrundlage: 18 Kapitel als Rohtext aus Projekt Gutenberg, mit der Claude API Textstelle für Textstelle annotiert – 2902 Annotationen. Jede Stelle erhält eine Perspektive (Figur oder Erzähler), Inhalts-Tags in drei Kategorien (Raum und Umwelt, Stimmung und Emotion, Gesellschaft und Soziales), eine Valenz (−1/0/+1), eine Intensität (1–3) und, wo vorhanden, eine Wirkungsrichtung zwischen Körper und Raum. Die Orte werden mit Nominatim geocodiert und mit OSMnx zu Fusswegen verbunden.',
   modul:null };
@@ -626,7 +626,7 @@ function zeigeDetail(id){
     k.personen.forEach(function(pe){
       var d=document.createElement('div'); d.className='tdg-person'+(pe.ohneBild?' ohne-bild':'');
       d.innerHTML=(pe.ohneBild?'':'<img alt="" loading="lazy" src="'+BILD+pe.bild+'.jpg"'+(pe.quer?' style="aspect-ratio:1/1"':'')+'>')+
-        '<div>'+(pe.ohneFeld?'':'<div class="feld">'+k.feld+'</div>')+'<div class="name">'+(pe.voll||pe.name)+'</div><div class="meta">'+pe.jahre+'<br>'+pe.rolle+(pe.werk?'<br><em>'+pe.werk+'</em>':'')+'</div>'+(pe.bildQuelle?'<div class="bildquelle">Bild: <a href="'+pe.bildQuelle+'" target="_blank" rel="noopener">Wikipedia</a></div>':'')+'</div>';
+        '<div>'+(pe.ohneFeld?'':'<div class="feld">'+k.feld+'</div>')+'<div class="name">'+(pe.voll||pe.name)+'</div><div class="meta">'+pe.jahre+'<br>'+pe.rolle+(pe.werk?'<br><em>'+pe.werk+'</em>':'')+'</div>'+(pe.bildQuelle?'<div class="bildquelle">Bild: <a href="'+pe.bildQuelle+'" target="_blank" rel="noopener">'+(pe.bildQuelleText||'Wikipedia')+'</a></div>':'')+'</div>';
       per.appendChild(d);
     });
   } else {
