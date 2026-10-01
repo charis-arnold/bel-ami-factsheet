@@ -623,11 +623,23 @@ function zeigeDetail(id){
     per.innerHTML='<div class="tdg-person"><img alt="" src="'+BILD+'formkonzept.jpg" style="aspect-ratio:1/1"><div><div class="feld">Synthese</div><div class="name">Alle Zeitgenossen</div><div class="meta">Daten · Farbe · Klang · Form<br><em>Topografie der Gefühle, 2026</em></div></div></div>';
   }
   ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
+  richtePersonenAus();
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ document.getElementById(x).innerHTML=''; });
   schliesseModul();
   var el=document.getElementById('tdg-modul'); el.innerHTML='';
   if (k.modul) modulInstanz = new p5(MODULE[k.modul], el);
 }
+/* Linke Spalte so verschieben, dass ihre erste Textzeile auf der Grundlinie
+   der ersten Fliesstextzeile rechts steht – nur zweispaltig */
+function richtePersonenAus(){
+  var per=document.getElementById('tdg-personen'), n=per.querySelector('.feld, .name, p'), t=document.querySelector('#tdg-uebersetzung p.text');
+  per.style.paddingTop='';
+  if (!n || !t || per.offsetLeft===t.offsetLeft) return;
+  function grundlinie(el){ var m=document.createElement('span'); m.style.cssText='display:inline-block;width:0;height:0'; el.insertBefore(m,el.firstChild); var y=m.getBoundingClientRect().bottom; m.remove(); return y; }
+  per.style.paddingTop=Math.max(0,Math.round(grundlinie(t)-grundlinie(n)))+'px';
+}
+beiGroesse(document.getElementById('tdg-detail'), richtePersonenAus);
+if (document.fonts) document.fonts.ready.then(richtePersonenAus);
 function setze(id, html){ document.getElementById(id).innerHTML=html; }
 function knopf(label, fn, primaer){
   var b=document.createElement('button'); b.type='button'; b.className='tdg-knopf'+(primaer?' primaer':''); b.textContent=label; b.addEventListener('click',fn);
