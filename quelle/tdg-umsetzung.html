@@ -396,13 +396,13 @@ new p5(function(p){
   p.setup=function(){
     W=breiteVon(el); var c=p.createCanvas(W,H); c.parent(el); p.frameRate(30); layout();
     // Normalzustand: «Daten Visualisation» ist bereits ausgeklappt
-    waehle('kreis', synth); lueckeAb=synth.zu;
+    waehle('kreis', synth); lueckeAb=synth.zu; zustand.ruhig=true; // Linien im Normalzustand nicht aktiviert
     beiGroesse(el,function(w){ W=w; layout(); });
     schriftenBereit(function(){ p.redraw(); });
     if ('IntersectionObserver' in window) new IntersectionObserver(function(e){ e[0].isIntersecting?p.loop():p.noLoop(); }).observe(el);
     beobachter.push(function(){ p.redraw(); });
   };
-  function aktivId(){ return zustand.hover || zustand.gewaehlt; }
+  function aktivId(){ return zustand.hover || (zustand.ruhig ? null : zustand.gewaehlt); }
   function gruppe(id){ return (id==='mensch'||id==='daten')?'literatur':id; }
   function stark(k){ var a=aktivId(); return !!a && (gruppe(a)===gruppe(k.id) || a==='kreis'); }
   function strichel(ctx, an, farbe, breite){
@@ -609,6 +609,7 @@ new p5(function(p){
   p.mouseClicked=function(){
     if (!imNetz()) return;
     var n=trefferKnoten(p.mouseX,p.mouseY); if (!n) return;
+    zustand.ruhig=false;
     var id=idVon(n), wechsel = zustand.knoten && n.zu!==zustand.knoten.zu;
     waehle(id,n);
     if (zustand.knoten){ if (wechsel) luecke=0; lueckeAb=n.zu; }
