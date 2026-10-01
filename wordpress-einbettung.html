@@ -343,7 +343,7 @@ new p5(function(p){
       // Drei Spalten: 1 Typo (0…L) · 2 Kreise (x2) · 3 Analyse bzw. Kontext/Umsetzung (ab spalte3)
       dW=0; oy=OY; gT=W>=1100?30:(W>=980?26:24); schrift(p.drawingContext,gT,600);
       L=Math.round(Math.max(150, p.drawingContext.measureText('Schauplatz').width+28, Math.min(240,W*.17)));
-      var pad=18, rP=34, x2=L+rP+6, spalte3=x2+rP+34, SP=KONTEXT_REIHE, sp=(W-spalte3-pad)/SP.length;
+      var pad=18, rP=34, x2=0, spalte3=L+10, SP=KONTEXT_REIHE, sp=(W-spalte3-pad)/(SP.length+1); // +1: eigene Spalte rechts für «Analyse»
       rP=Math.min(34, sp*.3); var rE=Math.min(30, sp*.27); eng = sp<132;
       var yP=92+oy, yE=292+oy; H=600+oy;
       function sx(i){ return spalte3+sp*(SP.indexOf(i)+.5); }
@@ -353,7 +353,7 @@ new p5(function(p){
       ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:2*ZH+ZH/2, r:rP, zu:oy}; knoten.push(ort);
       kontextY=yP;
       KETTEN.forEach(function(k,i){
-        if (i===0){ knoten.push({typ:'element', k:k, x:sx(5), y:daten.y, r:rE, rechts:true, zu:daten.zu}); return; }
+        if (i===0){ knoten.push({typ:'element', k:k, x:spalte3+sp*(SP.length+.5), y:daten.y, r:rE, unten:true, zu:daten.zu}); return; }
         if (i===2){ knoten.push({typ:'element', k:k, x:sx(5), y:ort.y, r:rE, rechts:true, zu:ort.zu}); return; }
         var x=sx(i);
         k.personen.forEach(function(pe,j){
@@ -362,7 +362,7 @@ new p5(function(p){
         });
         knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp, zu:386+oy});
       });
-      synth={x:(spalte3+W)/2, y:486+oy, r:44, zu:H};
+      synth={x:x2, y:486+oy, r:44, zu:H};
     } else {
       // Handy: Typo links, Kreise in Spalte 2, Analyse in Spalte 3 (Beschriftung darunter)
       dW=0; oy=0; L=0; var zeile=94, top=3*ZM+72, xP=38, xE=Math.min(W*.56, W-150), x2=xE;
@@ -442,6 +442,11 @@ new p5(function(p){
       text(ctx,'Daten',16,synth.y-14,{g:W<370?19:22,w:600});
       text(ctx,'Visualisation',16,synth.y+12,{g:W<370?19:22,w:600});
     }
+    // Analyse → Daten Visualisation (eigene Spalte rechts)
+    if (!schmal) (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
+      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
+      ctx.moveTo(e.x,e.y+e.r+40); ctx.lineTo(e.x,synth.y); ctx.lineTo(synth.x+synth.r+18,synth.y);
+      ctx.stroke(); ctx.restore(); })();
     // Daten (Buch) → Analyse, horizontal
     (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
       var x0=daten.x+daten.r+6, x1=e.x-e.r-6; if (x1-x0<8) return;
@@ -531,7 +536,7 @@ new p5(function(p){
         miniIkon(ctx,n,an);
         if ((!schmal && !n.rechts) || n.unten){
           text(ctx,n.k.netzTitel||n.k.titel,n.x,n.y+n.r+(n.unten?13:16),{g:13,w:600,a:'center'});
-          if (!eng || n.unten) text(ctx,n.k.netzSub||n.k.sub.split(' · ')[0],n.x,n.y+n.r+(n.unten?27:31),{g:12,w:300,a:'center',c:F.tinte2});
+          if ((!eng && !n.unten) || (n.unten && schmal)) text(ctx,n.k.netzSub||n.k.sub.split(' · ')[0],n.x,n.y+n.r+(n.unten?27:31),{g:12,w:300,a:'center',c:F.tinte2});
         } else {
           var gr=n.rechts?(schmal?15:16):13, gs=n.rechts?(schmal?12.5:13):12, dy=n.rechts?9:7;
           text(ctx,n.k.netzTitel||n.k.titel,n.x+n.r+(n.rechts?14:10),n.y-dy,{g:gr,w:600});
