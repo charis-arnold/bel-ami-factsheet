@@ -334,7 +334,7 @@ new p5(function(p){
       var yP=92+oy, yE=292+oy; H=600+oy;
       function sx(i){ return spalte3+sp*(SP.indexOf(i)+.5); }
       x2=sx(6); // obere Kreise auf der Achse von «Fotografie»
-      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Guy de Maupassant','Protagonist und Zeitzeuge'], k:MENSCH, x:x2, y:ZH*.4, r:rP, zu:ZH, lab:['Maupassant','Schriftsteller']}; knoten.push(mensch);
+      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Protagonist und Zeitzeuge'], k:MENSCH, x:x2, y:ZH*.4, r:rP, zu:ZH, lab:['Maupassant','Schriftsteller']}; knoten.push(mensch);
       daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami», 1885'], k:DATEN_ROMAN, x:x2, y:ZH*1.4, r:rP, zu:2*ZH, lab:['«Bel-Ami»','Roman, 1885']}; knoten.push(daten);
       ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:ZH*2.4, r:rP, zu:oy, lab:['Plan de Paris','1878']}; knoten.push(ort);
       kontextY=yP;
@@ -352,7 +352,7 @@ new p5(function(p){
     } else {
       // Handy: Typo links, Kreise in Spalte 2, Analyse in Spalte 3 (Beschriftung darunter)
       dW=0; oy=0; L=0; var zeile=94, top=3*ZM+72, xP=38, xE=Math.min(W*.56, W-150), x2=xE;
-      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Guy de Maupassant'], k:MENSCH, x:x2, y:ZM*.42, r:26, zu:ZM, lab:['Maupassant','Schriftsteller']}; knoten.push(mensch);
+      mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:['Protagonist und Zeitzeuge'], k:MENSCH, x:x2, y:ZM*.42, r:26, zu:ZM, lab:['Maupassant','Schriftsteller']}; knoten.push(mensch);
       daten={typ:'zeile', bild:'belami', titel:'Daten', sub:['Roman «Bel-Ami»'], k:DATEN_ROMAN, x:x2, y:ZM*1.42, r:26, zu:2*ZM, lab:['«Bel-Ami»','Roman, 1885']}; knoten.push(daten);
       ort={typ:'zeile', bild:'haussmann', titel:'Schauplatz', sub:['Paris 1885'], k:KETTEN[2], x:x2, y:ZM*2.42, r:26, zu:3*ZM, lab:['Plan de Paris','1878']}; knoten.push(ort);
       kontextY=3*ZM+22;
