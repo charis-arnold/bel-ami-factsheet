@@ -356,20 +356,21 @@ new p5(function(p){
           var m=k.personen.length, dx=m>1?(j-.5)*rP*1.55:0, r=m>1?rP*.78:rP;
           knoten.push({typ:'person', k:k, pe:pe, x:x+dx, y:yP+(m>1?(j?10:-10):0), r:r});
         });
-        knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
+        if (i===0) knoten.push({typ:'element', k:k, x:Math.max(pad+sp*2.5, daten.x+daten.r+190+rE), y:daten.y, r:rE, rechts:true});
+        else knoten.push({typ:'element', k:k, x:x, y:yE, r:rE, spalte:x, sp:sp});
       });
       synth={x:W/2, y:486+oy, r:44};
     } else {
       dW=0; oy=0; var zeile=94, top=248, xP=38, xE=Math.min(W*.56, W-150);
       mensch={typ:'zeile', bild:'maupassant', titel:'Mensch', sub:'Protagonist und Zeitzeuge', k:KETTEN[0], x:xP, y:44, r:26}; knoten.push(mensch);
-      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:'Roman «Bel-Ami», 1885', k:KETTEN[0], x:xP, y:132, r:26}; knoten.push(daten);
+      daten={typ:'zeile', bild:'belami', titel:'Daten', sub:'Roman «Bel-Ami»', k:KETTEN[0], x:xP, y:132, r:26}; knoten.push(daten);
       KETTEN.forEach(function(k,i){
         var y=top+zeile*i;
         k.personen.forEach(function(pe,j){
           var m=k.personen.length;
           knoten.push({typ:'person', k:k, pe:pe, x:xP+(m>1?j*20:0), y:y+(m>1?(j?8:-8):0), r:m>1?20:26});
         });
-        knoten.push({typ:'element', k:k, x:xE, y:y, r:22});
+        knoten.push({typ:'element', k:k, x:i===0?Math.min(W-118,xE+34):xE, y:i===0?daten.y:y, r:22, rechts:i===0});
       });
       H=top+zeile*n+170; synth={x:W/2, y:H-92, r:40};
     }
@@ -407,6 +408,11 @@ new p5(function(p){
       var xE0=elementKnoten(KETTEN[0]).x;
       text(ctx,'UMSETZUNG',xE0-22,198,{g:11,w:600,c:F.tinte2,sperr:1});
     }
+    // Daten (Buch) → Analyse, horizontal
+    (function(){ var e=elementKnoten(KETTEN[0]), an=stark(KETTEN[0]);
+      schrift(ctx,schmal?12.5:13,300); var tw=ctx.measureText(daten.sub).width; schrift(ctx,schmal?15:16,600); tw=Math.max(tw,ctx.measureText(daten.titel).width);
+      var x0=daten.x+daten.r+14+tw+10, x1=e.x-e.r-6; if (x1-x0<8) return;
+      ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath(); ctx.moveTo(x0,daten.y); ctx.lineTo(x1,e.y); ctx.stroke(); ctx.restore(); })();
     // Daten (Roman) → Maupassant
     (function(){ var m=knoten.filter(function(n){return n.typ==='person'&&n.k===KETTEN[0];})[0], an=stark(KETTEN[0]);
       ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1); ctx.beginPath();
@@ -418,7 +424,7 @@ new p5(function(p){
     // Verbindungen Person → Element
     KETTEN.forEach(function(k){
       var e=elementKnoten(k), an=stark(k);
-      knoten.filter(function(n){return n.typ==='person'&&n.k===k;}).forEach(function(n){
+      if (k!==KETTEN[0]) knoten.filter(function(n){return n.typ==='person'&&n.k===k;}).forEach(function(n){
         ctx.save(); strichel(ctx,an,an?F.orange:'rgba(34,31,31,.35)',an?1.6:1);
         ctx.beginPath();
         if (!schmal){ ctx.moveTo(n.x,n.y+n.r+26); ctx.bezierCurveTo(n.x,e.y-60,e.x,e.y-70,e.x,e.y-e.r-6); }
@@ -429,7 +435,7 @@ new p5(function(p){
       var anS = schmal ? (a==='kreis') : (a==='kreis' || a===k.id);
       ctx.save(); strichel(ctx,anS,anS?F.orange:'rgba(34,31,31,.22)',anS?1.4:1);
       ctx.beginPath();
-      if (!schmal){ ctx.moveTo(e.x,e.y+e.r+42); ctx.bezierCurveTo(e.x,synth.y-40,synth.x+(e.x-synth.x)*.25,synth.y-70,synth.x+(e.x-synth.x)*.12,synth.y-synth.r-6); }
+      if (!schmal){ if (k===KETTEN[0]){ var mp=knoten.filter(function(n){return n.typ==='person'&&n.k===k;})[0]; e={x:mp.x, y:mp.y, r:mp.r}; } ctx.moveTo(e.x,e.y+e.r+42); ctx.bezierCurveTo(e.x,synth.y-40,synth.x+(e.x-synth.x)*.25,synth.y-70,synth.x+(e.x-synth.x)*.12,synth.y-synth.r-6); }
       else if (k===KETTEN[KETTEN.length-1]) { ctx.moveTo(e.x,e.y+e.r+26); ctx.bezierCurveTo(e.x,e.y+80,synth.x,synth.y-90,synth.x,synth.y-synth.r-8); }
       ctx.stroke(); ctx.restore();
     });
@@ -465,13 +471,14 @@ new p5(function(p){
         }
       } else {
         miniIkon(ctx,n,an);
-        if (!schmal){
+        if (!schmal && !n.rechts){
           text(ctx,n.k.netzTitel||n.k.titel,n.x,n.y+n.r+16,{g:13,w:600,a:'center'});
           text(ctx,n.k.netzSub||n.k.sub.split(' · ')[0],n.x,n.y+n.r+31,{g:12,w:300,a:'center',c:F.tinte2});
         } else {
-          text(ctx,n.k.netzTitel||n.k.titel,n.x+n.r+10,n.y-7,{g:13,w:600});
-          schrift(ctx,12,300); var sub=n.k.netzSub||n.k.sub.split(' · ')[0];
-          text(ctx,sub,n.x+n.r+10,n.y+9,{g:12,w:300,c:F.tinte2});
+          var gr=n.rechts?(schmal?15:16):13, gs=n.rechts?(schmal?12.5:13):12, dy=n.rechts?9:7;
+          text(ctx,n.k.netzTitel||n.k.titel,n.x+n.r+(n.rechts?14:10),n.y-dy,{g:gr,w:600});
+          var sub=n.k.netzSub||n.k.sub.split(' · ')[0];
+          text(ctx,sub,n.x+n.r+(n.rechts?14:10),n.y+(n.rechts?11:9),{g:gs,w:300,c:F.tinte2});
         }
       }
       ctx.restore();
