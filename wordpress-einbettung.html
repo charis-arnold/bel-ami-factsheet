@@ -233,7 +233,7 @@ function vorladen(liste){ if (!audioStart()) return; liste.forEach(ladeInstr); }
 
 /* ---------- Inhalte ---------- */
 var KETTEN = [
-  { id:'literatur', feld:'Analyse', kurz:'Analyse',
+  { id:'literatur', feld:'Analyse', pfeil:'Daten', kurz:'Analyse',
     links:'<div class="tdg-erkenntnis"><div class="feld">Erkenntnis</div><p>Der Aufstieg fühlt sich nicht wie einer an.</p></div>',
     titel:'Analyse', sub:'Valenz je Kapitel', netzTitel:'Analyse', netzSub:'Valenz je Kapitel', mini:'balken',
     text:'Kapitel für Kapitel steigt Duroy die Karriereleiter hoch – doch fast zwei Drittel aller emotionalen Momente sind negativ gefärbt. Nur drei der 18 Kapitel kippen ins Positive. Der Raum führt, nicht das Gefühl: In drei von vier Fällen geht die Wirkung vom Ort aus, nicht vom Körper.',
@@ -622,7 +622,7 @@ function zeigeDetail(id){
   } else {
     per.innerHTML='<div class="tdg-person"><img alt="" src="'+BILD+'formkonzept.jpg" style="aspect-ratio:1/1"><div><div class="feld">Synthese</div><div class="name">Alle Zeitgenossen</div><div class="meta">Daten · Farbe · Klang · Form<br><em>Topografie der Gefühle, 2026</em></div></div></div>';
   }
-  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?k.feld+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
+  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
   richtePersonenAus();
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ document.getElementById(x).innerHTML=''; });
   schliesseModul();
