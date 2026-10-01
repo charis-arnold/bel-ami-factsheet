@@ -53,7 +53,7 @@
 .tdg-uebersetzung .sub{font:300 16px/1.3 var(--sans);color:var(--tinte2)}
 .tdg-uebersetzung p.text{font:400 16.5px/1.6 var(--sans);margin-top:14px!important}
 
-.tdg-modulrahmen{grid-column:1/-1;background:var(--papier);border:1px solid #dde1dc;padding:clamp(14px,2.4vw,26px)}
+.tdg-modulrahmen{grid-column:1/-1;background:transparent;border:0;padding:0}
 .tdg-modulkopf{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 20px;align-items:baseline;margin-bottom:10px}
 .tdg-modulkopf h4{font:600 13px/1.3 var(--sans);letter-spacing:.08em;text-transform:uppercase}
 .tdg-modulkopf .info{font:300 14px/1.4 var(--sans);color:var(--tinte2)}
@@ -548,7 +548,6 @@ new p5(function(p){
     var anK = !a || a==='kreis' || true;
     ctx.save(); ctx.globalAlpha = (a && a!=='kreis') ? .85 : 1;
     var s=synth.r/ (6+15.5*4) ;
-    ctx.beginPath(); ctx.arc(synth.x,synth.y,synth.r+10,0,Math.PI*2); ctx.fillStyle=F.grund; ctx.fill();
     zeichneKreis(ctx,synth.x,synth.y,DEMO_BC,s,{schraffur:3,punktR:3});
     zeichneFwertPunkte(ctx,synth.x,synth.y,synth.r*1.0,{pos:[2,2,1],neg:[1,2],neutral:[0]},1,.7);
     if (a==='kreis'){ ctx.beginPath(); ctx.arc(synth.x,synth.y,synth.r+18,0,Math.PI*2); ctx.setLineDash([5,4]); ctx.lineDashOffset=-marsch; ctx.strokeStyle=F.orange; ctx.lineWidth=1.4; ctx.stroke(); }
@@ -695,7 +694,7 @@ MODULE.analyse=function(p){
   };
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(); anim=Math.min(1,anim+.04);
-    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    p.clear(); // transparent: Hintergrund der Seite scheint durch
     var l=W<600?40:52, r=W<600?8:150, o=24, u=46, mitte=o+(H-o-u)/2, sk=(H-o-u)/2/75;
     // Raster
     [-75,-50,-25,0,25,50,75].forEach(function(v){
@@ -778,7 +777,7 @@ MODULE.farbe=function(p){
   };
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/1600), aktiv=hov>=0?hov:fest;
-    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    p.clear(); // transparent: Hintergrund der Seite scheint durch
     if (original || !punkte.length){ if (img) p.image(img,bildBox.x,bildBox.y,bildBox.w,bildBox.h); if (!punkte.length && !original) text(ctx,'Bild wird geladen …',10,20,{g:13,c:F.tinte2}); }
     else {
       ctx.fillStyle=F.creme; ctx.fillRect(bildBox.x,bildBox.y,bildBox.w,bildBox.h);
@@ -917,7 +916,7 @@ MODULE.klang=function(p){
   }
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(), jetzt=p.millis();
-    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    p.clear(); // transparent: Hintergrund der Seite scheint durch
     var zh=52, x0=6, spalteText=W<520?56:70;
     text(ctx,'GEFÜHLSKATEGORIEN',x0,12,{g:11,w:600,c:F.tinte2,sperr:.8});
     zeilen.forEach(function(z,k){
@@ -974,7 +973,7 @@ MODULE.form=function(p){
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/1400), schmal=W<600;
     var e=1-Math.pow(1-f,3);
-    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    p.clear(); // transparent: Hintergrund der Seite scheint durch
     var pad=schmal?22:40, basisY=schmal?H-70:H-140, sp=(W-pad-(schmal?pad:110))/(O.length-1);
     var maxT=Math.max.apply(null,O.map(function(o){return o.t;})), s=Math.min(sp*.46, schmal?20:34)/kreisRadius(maxT,1);
     var maxH=basisY-30, maxN=Math.max.apply(null,B.map(function(b){return b[2];}));
@@ -1029,7 +1028,7 @@ MODULE.schrift=function(p){
   };
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(), s=STILE[wahl], gr=Math.min(groesse, W/7);
-    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    p.clear(); // transparent: Hintergrund der Seite scheint durch
     setze('tdg-modulinfo',s.n+' · '+groesse+' Punkt');
     text(ctx,'Topografie',8,24+gr*.55,{g:gr,w:s.w,f:s.f,b:'middle'});
     text(ctx,'der Gefühle',8,24+gr*1.6,{g:gr,w:s.w,f:s.f});
@@ -1124,7 +1123,7 @@ MODULE.kreis=function(p){
   }
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/700), e=1-Math.pow(1-f,3), schmal=W<600;
-    p.clear(); ctx.fillStyle=F.papier; ctx.fillRect(0,0,W,H);
+    p.clear(); // transparent: Hintergrund der Seite scheint durch
     var cx= schmal? W*.46 : W*.44, cy=H/2-(schmal?30:26), R0=kreisRadius(16,1), s=Math.min(schmal?1.35:1.9, (Math.min(W*.3,H*.36))/R0);
     var kats=[schritt>=1, schritt>=2, schritt>=2], hal=schritt>=3;
     function wachs(i){ return (schritt===1&&i===0)||(schritt===2&&i>0) ? e : 1; }
@@ -1164,7 +1163,8 @@ MODULE.kreis=function(p){
       ctx.beginPath(); ctx.arc(cx,cy,rb,Math.PI*.5+.25,Math.PI*1.5-.25); ctx.stroke();
       [[-140,'Positive','Wahrnehmung'],[140,'Negative','Wahrnehmung'],[35,'Neutrale','Wahrnehmung']].forEach(function(q){
         var w=q[0]*Math.PI/180, x=cx+Math.cos(w)*rb, y=cy+Math.sin(w)*rb;
-        ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fillStyle=F.papier; ctx.fill(); ctx.stroke();
+        ctx.save(); ctx.globalCompositeOperation='destination-out'; ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill(); ctx.restore();
+        ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.stroke();
         var rechts=q[0]===35, tx=rechts? x+12 : x-12, gg=schmal?11.5:13; schrift(ctx,gg,600); var tw=ctx.measureText(q[2]).width;
         if (!rechts && tx-tw<4) tx=tw+4; if (rechts && tx+tw>W-4) tx=W-4-tw;
         var dy=(rechts?14:0)+(!rechts&&schmal?(q[0]<0?-18:18):0);
