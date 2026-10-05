@@ -5,7 +5,7 @@
 ====================================================================== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Source+Sans+3:wght@300;400;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap" rel="stylesheet">
 
 <div id="tdg-prozess" data-bildpfad="https://www.charisarnold.ch/wp-content/uploads/2026/09/" data-klangpfad="https://www.charisarnold.ch/wp-content/uploads/2026/09/">
 <style>
@@ -23,6 +23,12 @@
 #tdg-prozess img{max-width:100%;height:auto;display:block;border:0;box-shadow:none}
 #tdg-prozess button{font-family:var(--sans);cursor:pointer;-webkit-appearance:none;appearance:none;text-transform:none;letter-spacing:normal;line-height:1.2;box-shadow:none}
 #tdg-prozess button:focus-visible,#tdg-prozess input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+.tdg-intro{position:relative;z-index:1;font-family:'Arimo',Arial,sans-serif;color:var(--tinte);max-width:760px;margin:0 0 clamp(28px,4vw,44px)}
+#tdg-prozess .tdg-intro h2{font:700 clamp(24px,2.6vw,30px)/1.2 'Arimo',Arial,sans-serif}
+.tdg-intro .formel{font:400 clamp(18px,1.8vw,21px)/1.45 'Arimo',Arial,sans-serif;margin-top:6px!important}
+.tdg-intro .lead{font:400 clamp(16px,1.6vw,18px)/1.7 'Arimo',Arial,sans-serif;margin-top:24px!important}
+.tdg-intro .hinweis{font:400 15px/1.5 'Arimo',Arial,sans-serif;color:var(--tinte2);margin-top:20px!important}
 
 .tdg-kicker{font:600 13px/1.2 var(--sans);letter-spacing:.08em!important;text-transform:uppercase!important;color:var(--tinte)}
 .tdg-kicker span{font-weight:300;color:var(--tinte2);letter-spacing:0!important;text-transform:none!important;margin-left:.4em}
@@ -87,6 +93,12 @@
 </style>
 
   <div class="tdg-hell" id="tdg-hell" aria-hidden="true"></div>
+  <header class="tdg-intro">
+    <h2>Umsetzungsprozess</h2>
+    <p class="formel">Mensch + Daten + Schauplatz / Kontext<br>= Human Data</p>
+    <p class="lead">Guy de Maupassants «Bel-Ami» spielt in einer Stadt, die gerade neu entsteht. Jede gestalterische Entscheidung dieses Projekts – Daten, Farben, Karte, Form, Schrift und Bild – hat ein Vorbild im Paris jener Jahre. Alles läuft in der Datenvisualisierung zusammen: ein Kreis für jeden Ort zeigt, wie sich dieser anfühlt.</p>
+    <p class="hinweis">Tippe auf die Elemente und erfahre mehr.</p>
+  </header>
   <div class="tdg-netz" id="tdg-netz" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen">
   <section class="tdg-detail" id="tdg-detail" aria-live="polite" hidden>
     <div class="tdg-personen" id="tdg-personen"></div>
