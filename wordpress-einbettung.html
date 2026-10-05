@@ -72,12 +72,20 @@
 #tdg-prozess .tdg-knopf{border:1px solid var(--tinte);background:transparent;color:var(--tinte);padding:7px 14px;font-size:14px;border-radius:2px}
 #tdg-prozess .tdg-knopf.primaer{background:var(--tinte);color:#fff}
 #tdg-prozess .tdg-knopf:disabled{opacity:.35;cursor:default}
+.tdg-steuerung.mitte{justify-content:center;gap:16px;margin:36px 0 32px}
+#tdg-prozess .tdg-rund{width:40px;height:40px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--tinte)}
+#tdg-prozess .tdg-rund svg{display:block;width:16px;height:16px;fill:currentColor}
+/* Play wie in der Web-App (.grafik-play-button): dunkle runde Fläche, helles Zeichen */
+#tdg-prozess .tdg-rund.play{width:48px;height:48px;border:none;background:var(--tinte);color:#fff}
+#tdg-prozess .tdg-rund.play:hover{background:#333}
+#tdg-prozess .tdg-rund.play svg{width:18px;height:18px}
 .tdg-steuerung label{font-size:14px;color:var(--tinte2);display:flex;align-items:center;gap:10px;flex:1 1 260px}
 .tdg-steuerung input[type=range]{flex:1;accent-color:var(--orange);min-width:120px}
 .tdg-legende-text{font:400 15px/1.5 var(--sans);margin-top:12px!important;color:var(--tinte);min-height:3em}
 .tdg-zahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px 20px;margin:4px 0 16px}
 .tdg-zahl b{display:block;font:600 28px/1 var(--sans);color:var(--tinte)}
 .tdg-zahl span{font:300 13.5px/1.3 var(--sans);color:var(--tinte2)}
+.tdg-modulvor-text{font:400 16.5px/1.6 var(--sans);color:var(--tinte);margin:0 0 14px!important;min-height:3.2em}
 .tdg-quelle{font:300 12.5px/1.4 var(--sans);color:var(--tinte2);margin-top:10px!important}
 
 .tdg-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -151,7 +159,7 @@ var KAT = [
 var FWERT = [ // Punktgrösse wie FWERT_PUNKT_DURCHMESSER
   {name:'Der Körper spürt', d:10, klang:'Vibraphon (Grundton)', stufe:0},
   {name:'Die Emotion beeinflusst die Raumwahrnehmung', d:7.5, klang:'Vibraphon (Terz)', stufe:3},
-  {name:'Der Raum löst Emotion aus', d:5, klang:'Vibraphon (Quinte)', stufe:7}
+  {name:'Der Raum löst die Emotion aus', d:5, klang:'Vibraphon (Quinte)', stufe:7}
 ];
 var SANS = "'Source Sans 3','Helvetica Neue',Arial,sans-serif";
 var SERIF = "'Source Serif 4',Georgia,serif";
@@ -284,7 +292,7 @@ var KETTEN = [
   { id:'musik', feld:'Musik', kurz:'Klang',
     personen:[{bild:'saint-saens', name:'Camille Saint-Saëns', jahre:'1835 – 1921', rolle:'Komponist', werk:'«Danse macabre», op. 40, 1874', bildQuelle:'https://de.wikipedia.org/wiki/Camille_Saint-Sa%C3%ABns#/media/Datei:Saintsaens.jpg'}],
     titel:'Klangkonzept', sub:'Sonifikation mit Strudel', mini:'klang',
-    text:'Die «Danse macabre» steht in g-Moll – und in g-Moll klingt auch «Topografie der Gefühle». Jede Gefühlskategorie hat ein eigenes Instrument, die Tonhöhe folgt der Kreisgrösse. Wie Körper und Raum aufeinander wirken, spielt das Vibraphon: Grundton, Terz und Quinte des g-Moll-Dreiklangs.',
+    text:'Die «Danse macabre» steht in g-Moll – und in g-Moll klingt auch «Topografie der Gefühle». Jede Gefühlsäusserung ist ein Ton, gespielt in dem Moment, in dem sie in der Grafik erscheint. Die drei Gefühlskategorien haben je ein Instrument, die Lage folgt der Farbreihe: Marimba tief, Harfe in der Mitte, Klavier hoch. Mit dem Kreis steigt die Tonhöhe – jeder Ort beginnt unten und wird so zu einer kleinen Phrase. Positive Äusserungen klingen eine Oktave höher, negative eine tiefer: Was trägt, klingt hell, was drückt, dunkel. Wie Körper und Raum aufeinander wirken, spielt das Vibraphon, lauter als die Melodie, auf Grundton, Terz und Quinte des g-Moll-Dreiklangs.',
     modul:'klang' },
   { id:'architektur', feld:'Architektur', pfeil:'Kontext', kurz:'Form',
     personen:[{bild:'eiffel', name:'Alexandre Gustave Eiffel', jahre:'1832 – 1923', rolle:'Ingenieur', werk:'Tour Eiffel, 1889', bildQuelle:'https://de.wikipedia.org/wiki/Datei:Tour_Eiffel_3c02660.jpg'},
@@ -296,14 +304,14 @@ var KETTEN = [
     personen:[{bild:'fournier', name:'Pierre Simon Fournier', jahre:'1712 – 1768', rolle:'Typograf und Schriftgiesser', werk:'Typografisches Punktsystem, 1737'}],
     titel:'Schrift', sub:'Source Serif 4 · Source Sans 3', mini:'schrift',
     text:'Fournier führte das typografische Punktsystem ein und schnitt Schriften, die den Übergang zu klaren, kontrastreichen Formen einleiteten. Die Source Serif knüpft ausdrücklich an diese Schriften an. Sie setzt Titel und Lesetexte, die Source Sans übernimmt Beschriftungen und Legenden – jeweils in Semibold und Light, beide frei als Google Fonts.',
-    modul:'schrift' },
+    modul:null },
   { id:'foto', feld:'Fotografie', pfeil:'Kontext', kurz:'Bild',
     personen:[{bild:'dhaap-oper', name:'Commission du Vieux Paris', kurz:'Vieux Paris', jahre:'gegründet 1897', rolle:'Fotografien u. a. von Charles Lansiaux (1855 – 1939)', werk:'DHAAP – Département Histoire de l’Architecture et Archéologie de Paris', bildQuelle:'https://fnp.huma-num.fr/adws/app/515ec27b-90ce-11ec-a660-af5a22dfde2b/', bildQuelleText:'Huma-Num', quer:true}],
     titel:'Fotografie', sub:'Fotomarker auf der Karte', mini:'foto',
     text:'Die Commission du Vieux Paris dokumentierte die Stadt, bevor sie sich weiter veränderte. Auf ihren Glasplatten sind viele Schauplätze des Romans festgehalten: Plätze, Fassaden, Bahnhöfe, Kirchen. In der Web-App führen Fotomarker direkt zu diesen Aufnahmen.',
     modulBild:{datei:'cha_bel-ami-05.jpg', alt:'Web-App: Karte mit geöffnetem Fotomarker, historische Aufnahme der Place de l’Opéra'} }
 ];
-var SYNTHESE = { id:'kreis', feld:'Synthese', kurz:'Kreis', titel:'Grafik – Kreisgrösse', sub:'Anzahl Gefühlsäusserungen an einem Ort', modul:'kreis',
+var SYNTHESE = { id:'kreis', feld:'Synthese', kurz:'Kreis', titel:'Daten Farbe Form Klang', sub:'Anzahl Gefühlsäusserungen an einem Ort', modul:'kreis',
   text:'Hier laufen alle Fäden zusammen: Maupassants Text liefert die Zahlen, Pissarros Farben unterscheiden die Kategorien, die Tonart der «Danse macabre» lässt sie klingen, und die Formsprache von Eisen und Glas fasst sie zusammen. Pro Ort ein Kreis – er wächst mit jedem geäusserten Gefühl.' };
 var MENSCH = { id:'mensch', feld:'Mensch', kurz:'Mensch',
   personen:[{bild:'maupassant', name:'Guy de Maupassant', voll:'Henry René Albert Guy de Maupassant', jahre:'1850 – 1893', rolle:'Schriftsteller und Journalist', bildQuelle:'https://de.wikipedia.org/wiki/Guy_de_Maupassant#/media/Datei:Maupassant_par_Nadar.jpg', ohneFeld:true}],
@@ -348,7 +356,7 @@ function bildCover(p, ctx, img, x, y, w, h){
   var s=Math.max(w/img.width,h/img.height), iw=img.width*s, ih=img.height*s;
   p.image(img, x+(w-iw)/2, y+(h-ih)/2, iw, ih);
 }
-function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fn); }
+function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) Promise.all([document.fonts.ready, document.fonts.load("600 20px 'Source Serif 4'").catch(function(){})]).then(fn); }
 
 /* ======================================================================
    1) NETZ – Zeitzeugen → Umsetzung → Synthese
@@ -507,6 +515,7 @@ new p5(function(p){
       }
     })();
     // Verbindungen Person → Element
+    var zumKreis=[];
     KETTEN.forEach(function(k){
       var e=elementKnoten(k), an=stark(k);
       if (k!==KETTEN[0]) knoten.filter(function(n){return n.typ==='person'&&n.k===k;}).forEach(function(n){
@@ -520,10 +529,23 @@ new p5(function(p){
       var anS = schmal ? (a==='kreis') : (a==='kreis' || a===k.id);
       ctx.save(); strichel(ctx,anS,anS?F.gold:'rgba(34,31,31,.22)',anS?1.4:1);
       ctx.beginPath();
-      if (!schmal){ if (k===KETTEN[0]||k===KETTEN[2]){ ctx.restore(); return; } var y0=e.y+e.r+42; ctx.moveTo(e.x,y0); ctx.bezierCurveTo(e.x,synth.y-40,synth.x+(e.x-synth.x)*.25,synth.y-70,synth.x+(e.x-synth.x)*.12,synth.y-synth.r-6); }
+      if (!schmal){ ctx.restore(); if (k!==KETTEN[0]&&k!==KETTEN[2]) zumKreis.push({e:e,an:anS}); return; }
       else if (k===KETTEN[KONTEXT_REIHE[KONTEXT_REIHE.length-1]]) { ctx.moveTo(e.x,e.y+e.r+26); ctx.bezierCurveTo(e.x,e.y+80,synth.x,synth.y-90,synth.x,synth.y-synth.r-8); }
       ctx.stroke(); ctx.restore();
     });
+    // Element → Synthese, rechtwinklig wie Schauplatz → Kontext (aktive Linien zuletzt)
+    // Sammellinie und Stamm je nur einmal zeichnen, damit sich die Strichelungen nicht überlagern
+    if (zumKreis.length){
+      var kreisBusY=synth.y-synth.r-34, xs=zumKreis.map(function(z){ return z.e.x; }).concat(synth.x),
+          stammAn=zumKreis.some(function(z){ return z.an; });
+      var linie=function(an,pkte){ ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.22)',an?1.4:1); ctx.beginPath();
+        ctx.moveTo(pkte[0],pkte[1]); for (var i=2;i<pkte.length;i+=2) ctx.lineTo(pkte[i],pkte[i+1]); ctx.stroke(); ctx.restore(); };
+      linie(false,[Math.min.apply(null,xs),kreisBusY,Math.max.apply(null,xs),kreisBusY]);
+      zumKreis.sort(function(a,b){ return a.an-b.an; }).forEach(function(z){ var e=z.e;
+        if (Math.abs(e.x-synth.x)<1) linie(z.an||stammAn,[e.x,e.y+e.r+42,e.x,synth.y-synth.r-6]);
+        else linie(z.an, z.an ? [e.x,e.y+e.r+42,e.x,kreisBusY,synth.x,kreisBusY] : [e.x,e.y+e.r+42,e.x,kreisBusY]); });
+      if (!zumKreis.some(function(z){ return Math.abs(z.e.x-synth.x)<1; })) linie(stammAn,[synth.x,kreisBusY,synth.x,synth.y-synth.r-6]);
+    }
     // Knoten
     knoten.forEach(function(n){
       var an=stark(n.k), al = a && !an && n.typ!=='zeile' ? .45 : 1;
@@ -584,7 +606,9 @@ new p5(function(p){
   function miniIkon(ctx,n,an){
     var x=n.x,y=n.y,r=n.r;
     ctx.save();
-    ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); if (n.k.mini!=='balken'){ ctx.fillStyle=an?'#fff':'rgba(255,255,255,.7)'; ctx.fill(); }
+    ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); if (n.k.mini==='schrift'||n.k.mini==='klang'){ ctx.fillStyle=schmal?F.grund:HELL; ctx.fill(); } // grau wie der Hintergrund
+    else if (n.k.mini==='boegen'){ ctx.fillStyle='#727272'; ctx.fill(); } // Negativ: Grund im Grau der Opéra-Fotografie (dhaap-oper.jpg), Bögen hell
+    else if (n.k.mini!=='balken'){ ctx.fillStyle=an?'#fff':'rgba(255,255,255,.7)'; ctx.fill(); }
     ctx.setLineDash([]); ctx.strokeStyle=an?F.gold:'rgba(34,31,31,.45)'; ctx.lineWidth=an?2:1; ctx.stroke();
     ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.clip();
     var t=p.millis()/1000;
@@ -594,19 +618,26 @@ new p5(function(p){
         v.forEach(function(q,i){ var h=q*r*1.1; ctx.fillStyle=q>0?F.gold:F.oliv; ctx.fillRect(x-r+bw*(i+1),y,bw*.7,-h); });
         ctx.fillStyle=F.tinte; ctx.fillRect(x-r,y,2*r,.8); break;
       case 'farben':
-        var pal=[F.gold,F.rose,F.navy,F.oliv,F.orange,F.petrol,F.grau,F.sand,F.dunkel], c=2*r/3.4;
-        pal.forEach(function(f,i){ ctx.fillStyle=f; ctx.fillRect(x-1.5*c+(i%3)*c*1.02,y-1.5*c+Math.floor(i/3)*c*1.02,c*.95,c*.95); }); break;
+        // Kreissegmente statt Rechtecke, getrennt durch feine weisse Fugen
+        var pal=[F.gold,F.rose,F.navy,F.oliv,F.orange,F.petrol,F.grau,F.sand,F.dunkel], st=Math.PI*2/pal.length;
+        pal.forEach(function(f,i){ var w0=-Math.PI/2+i*st; ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,r+1,w0,w0+st); ctx.closePath(); ctx.fillStyle=f; ctx.fill(); });
+        ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; pal.forEach(function(f,i){ var w0=-Math.PI/2+i*st; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(w0)*(r+1),y+Math.sin(w0)*(r+1)); ctx.stroke(); }); break;
       case 'karte':
         bildCover(p,ctx,bilder['qgis-dunkel'],x-r,y-r,2*r,2*r); break;
       case 'klang':
-        for (var i=0;i<4;i++){ var ph=((t*.6+i/4)%1); ctx.beginPath(); ctx.arc(x,y,ph*r,0,Math.PI*2); ctx.strokeStyle=rgba(KAT[i%3].farbe,1-ph); ctx.lineWidth=2; ctx.stroke(); }
-        ctx.fillStyle=F.orange; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); break;
+        // schraffierte Kreise der drei Kategorien wie in der Grafik, die grössten zuunterst; sie atmen leicht
+        [.92,.68,.44].forEach(function(f,i){ var rr=r*f*(1+.05*Math.sin(t*2.2-i*1.3)), c=KAT[i].farbe;
+          ctx.save(); ctx.beginPath(); ctx.arc(x,y,rr,0,Math.PI*2); ctx.fillStyle=schmal?F.grund:HELL; ctx.fill(); ctx.clip();
+          ctx.strokeStyle=rgba(c,.75); ctx.lineWidth=1.6;
+          for (var yy=y-rr; yy<=y+rr; yy+=3){ ctx.beginPath(); ctx.moveTo(x-rr,yy); ctx.lineTo(x+rr,yy); ctx.stroke(); }
+          ctx.restore(); });
+        ctx.fillStyle=F.tinte; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill(); break;
       case 'boegen':
-        ctx.strokeStyle=F.oliv; ctx.lineWidth=1.2; var b=y+r*.45;
+        ctx.strokeStyle=schmal?F.grund:HELL; ctx.lineWidth=1.2; var b=y+r*.45;
         [[-.8,.8],[-.8,.1],[-.3,.5],[.1,.8],[-.6,-.2]].forEach(function(q){ var a1=x+q[0]*r,a2=x+q[1]*r; ctx.beginPath(); ctx.arc((a1+a2)/2,b,(a2-a1)/2,Math.PI,0); ctx.stroke(); });
-        ctx.fillStyle=F.tinte; ctx.fillRect(x-r,b,2*r,1); break;
+        ctx.fillStyle=schmal?F.grund:HELL; ctx.fillRect(x-r,b,2*r,1); break;
       case 'schrift':
-        text(ctx,'Aa',x,y+2,{g:r*1.05,w:600,f:SANS,a:'center'}); break;
+        text(ctx,'Aa',x,y+2,{g:r*1.05,w:600,f:SERIF,a:'center'}); break;
       case 'foto':
         bildCover(p,ctx,bilder['dhaap-oper'],x-r,y-r,2*r,2*r); break;
     }
@@ -658,10 +689,8 @@ function zeigeDetail(id){
         '<div>'+(pe.ohneFeld?'':'<div class="feld">'+k.feld+'</div>')+'<div class="name">'+(pe.voll||pe.name)+'</div><div class="meta">'+pe.jahre+'<br>'+pe.rolle+(pe.werk?'<br><em>'+pe.werk+'</em>':'')+'</div>'+(pe.bildQuelle?'<div class="bildquelle">Bild: <a href="'+pe.bildQuelle+'" target="_blank" rel="noopener">'+(pe.bildQuelleText||'Wikipedia')+'</a></div>':'')+'</div>';
       per.appendChild(d);
     });
-  } else {
-    per.innerHTML='<div class="tdg-person"><img alt="" src="'+BILD+'formkonzept.jpg" style="aspect-ratio:1/1"><div><div class="feld">Synthese</div><div class="name">Alle Zeitgenossen</div><div class="meta">Daten · Farbe · Klang · Form<br><em>Topografie der Gefühle, 2026</em></div></div></div>';
-  }
-  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Alles zusammen →')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
+  } // Synthese (Kreis): linke Spalte bleibt leer
+  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Daten Visualisation')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
   richtePersonenAus();
   document.querySelector('#tdg-prozess .tdg-modulkopf').hidden=false;
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ var e=document.getElementById(x); e.innerHTML=''; e.hidden=false; });
@@ -922,40 +951,23 @@ MODULE.karte=function(p){
 
 /* ---- Klang: die Legende zum Anhören ---- */
 MODULE.klang=function(p){
-  var el=p._userNode, g, zeilen=[], wellen=[], hov=-1, abspiel=null;
+  var el=p._userNode, g, zeilen=[], hov=-1;
   p.setup=function(){
     setze('tdg-modultitel','Klangkonzept');
     setze('tdg-modulinfo','g-Moll · Samples der VCSL-Bibliothek, wie in Strudel');
     zeilen=KAT.map(function(k,i){ return {art:'kat',i:i,titel:k.name,klang:k.instrName,farbe:k.farbe}; })
       .concat(FWERT.map(function(f,i){ return {art:'fw',i:i,titel:f.name,klang:f.klang,d:f.d}; }));
     g=modulGrund(p,el,function(w){return 6*56+40;});
-    knopf('▶ Kapitel 1 anhören',function(){ spieleKapitel1(); },true);
-    setze('tdg-legende','Tippe auf eine Zeile. Die Kategorien spielen eine kleine Phrase, die wie ein wachsender Kreis ansteigt; die drei Wirkungsrichtungen erklingen als Töne des g-Moll-Dreiklangs.');
-    setze('tdg-quelle','«Kapitel 1 anhören»: alle 18 Orte des ersten Kapitels nacheinander. Pro Nennung ein Ton im Instrument ihrer Kategorie, pro Wirkungsrichtung ein Vibraphon-Anschlag.');
+    setze('tdg-legende','Tippe auf eine Zeile. Jede Kategorie spielt drei Töne auf ihrem Instrument: die Grundlage, eine Oktave höher für positive und eine Oktave tiefer für negative Äusserungen. Die Wirkungsrichtungen erklingen auf dem Vibraphon als Grundton, Terz und Quinte.');
   };
   function spieleZeile(z){
     audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
-    if (z.art==='kat'){ var ins=KAT[z.i].instr; [0,1,2,4].forEach(function(s,j){ spiele(ins,stufe2midi(ins,s),j*.18,.9); }); }
+    // wie die Legende der Web-App: Grundlage, positiv eine Oktave höher, negativ eine tiefer
+    if (z.art==='kat'){ var ins=KAT[z.i].instr; [0,7,-7].forEach(function(s,j){ spiele(ins,stufe2midi(ins,s),j*.45,.9); }); }
     else spiele('vibraphon',stufe2midi('vibraphon',[0,2,4][z.i]),0,1);
-    wellen.push({z:z,t:p.millis()}); p.loop();
-  }
-  function spieleKapitel1(){
-    audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
-    var t=.35, seq=DATEN.kap1; abspiel={start:p.millis()+350, orte:[]};
-    seq.forEach(function(o){
-      var start=t; var stufen=[0,0,0];
-      o[1].forEach(function(b,i){
-        var n=Math.min(8,summe(b)), ins=KAT[i].instr;
-        for (var j=0;j<n;j++){ stufen[i]=Math.floor(Math.sqrt(j+1)*2)-1; spiele(ins,stufe2midi(ins,stufen[i]),t+j*.11+i*.035,.55); }
-      });
-      o[2].forEach(function(c,i){ if (c) spiele('vibraphon',stufe2midi('vibraphon',[0,2,4][i]),t+.05+i*.08,Math.min(1,.4+c*.08)); });
-      var d=Math.max(.5,Math.min(1.6,.25+Math.sqrt(summe(o[1].map(summe)))*.28));
-      abspiel.orte.push({n:o[0],t0:start,t1:start+d,bc:o[1]}); t+=d;
-    });
-    abspiel.ende=t; p.loop();
   }
   p.draw=function(){
-    var ctx=p.drawingContext, W=g.W(), H=g.H(), jetzt=p.millis();
+    var ctx=p.drawingContext, W=g.W();
     p.clear(); // transparent: Hintergrund der Seite scheint durch
     var zh=52, x0=6, spalteText=W<520?56:70;
     text(ctx,'GEFÜHLSKATEGORIEN',x0,12,{g:11,w:600,c:F.tinte2,sperr:.8});
@@ -967,32 +979,19 @@ MODULE.klang=function(p){
       // Lautsprecher
       ctx.save(); ctx.fillStyle=F.tinte; ctx.beginPath(); ctx.moveTo(ix-9,iy-3); ctx.lineTo(ix-5,iy-3); ctx.lineTo(ix,iy-7); ctx.lineTo(ix,iy+7); ctx.lineTo(ix-5,iy+3); ctx.lineTo(ix-9,iy+3); ctx.closePath(); ctx.fill(); ctx.restore();
       var mx=x0+44;
+      // wie die Legende der Web-App: Schraffur (alle Nennungen), dann halbe Felder – oben positiv, unten negativ
+      var FE=16, FL=5, fx=mx-FE/2, fy=y-FE/2;
       if (z.art==='kat'){
-        ctx.save(); ctx.beginPath(); ctx.arc(mx,y,9,0,Math.PI*2); ctx.clip(); ctx.strokeStyle=rgba(z.farbe,.7); ctx.lineWidth=1.6;
-        for (var yy=y-9; yy<y+9; yy+=3){ ctx.beginPath(); ctx.moveTo(mx-9,yy); ctx.lineTo(mx+9,yy); ctx.stroke(); } ctx.restore();
-        ctx.fillStyle=rgba(z.farbe); ctx.beginPath(); ctx.arc(mx+22,y,9,0,Math.PI*2); ctx.fill();
-      } else { ctx.fillStyle='#C2511C'; ctx.beginPath(); ctx.arc(mx+11,y,z.d/2+1,0,Math.PI*2); ctx.fill(); }
-      var tx=mx+spalteText-22+22;
+        ctx.save(); ctx.beginPath(); ctx.rect(fx,fy,FE,FE); ctx.clip(); ctx.strokeStyle=rgba(z.farbe,.7); ctx.lineWidth=1.6;
+        for (var yy=fy+1.5; yy<fy+FE; yy+=3){ ctx.beginPath(); ctx.moveTo(fx,yy); ctx.lineTo(fx+FE,yy); ctx.stroke(); } ctx.restore();
+        ctx.fillStyle=rgba(z.farbe); ctx.fillRect(fx+FE+FL,fy,FE,FE/2); ctx.fillRect(fx+2*(FE+FL),fy+FE/2,FE,FE/2);
+      } else { ctx.fillStyle='#C2511C'; ctx.beginPath(); ctx.arc(mx,y,z.d/2+1,0,Math.PI*2); ctx.fill(); }
+      var tx=Math.max(mx+spalteText, fx+3*FE+2*FL+14);
       schrift(ctx,14,600); var tl=umbruch(ctx,z.titel,W-tx-10);
       if (tl.length===1 && W>=560){ text(ctx,z.titel,tx,y,{g:14,w:600}); schrift(ctx,14,600); text(ctx,z.klang,tx+ctx.measureText(z.titel).width+10,y,{g:14,w:300,c:F.tinte2}); }
       else { var gz=13.5; schrift(ctx,gz,600); while (ctx.measureText(z.titel).width>W-tx-6 && gz>10){ gz-=.5; schrift(ctx,gz,600); } text(ctx,z.titel,tx,y-8,{g:gz,w:600}); text(ctx,z.klang,tx,y+10,{g:13,w:300,c:F.tinte2}); }
     });
-    // Wellen
-    wellen=wellen.filter(function(w){ return jetzt-w.t<1600; });
-    wellen.forEach(function(w){
-      var ph=(jetzt-w.t)/1600, cx=x0+44+(w.z.art==='kat'?11:11), c=w.z.art==='kat'?w.z.farbe:[194,81,28];
-      for (var i=0;i<3;i++){ var q=ph-i*.12; if (q<0) continue; ctx.beginPath(); ctx.arc(cx,w.z.y,10+q*60,0,Math.PI*2); ctx.strokeStyle=rgba(c,Math.max(0,.8-q)); ctx.lineWidth=1.5; ctx.stroke(); }
-    });
-    // Kapitel-1-Wiedergabe
-    if (abspiel){
-      var ts=(jetzt-abspiel.start)/1000, akt=abspiel.orte.filter(function(o){return ts>=o.t0&&ts<o.t1;})[0];
-      var bx=W-(W<560?0:0);
-      if (akt){ setze('tdg-modulinfo','Kapitel 1 · '+akt.n); }
-      var fort=Math.max(0,Math.min(1,ts/abspiel.ende));
-      ctx.fillStyle=F.orange; ctx.fillRect(0,H-4,W*fort,3);
-      if (ts>abspiel.ende+1.5){ abspiel=null; setze('tdg-modulinfo','g-Moll · Samples der VCSL-Bibliothek, wie in Strudel'); }
-    }
-    if (!wellen.length && !abspiel) p.noLoop();
+    p.noLoop(); // nur bei Hover neu zeichnen
   };
   function zeileBei(){ var n=-1; zeilen.forEach(function(z,k){ if (Math.abs(p.mouseY-z.y)<24) n=k; }); return imCanvas(p)?n:-1; }
   p.mouseMoved=function(){ var n=zeileBei(); if (n!==hov){ hov=n; p.cursor(n>=0?'pointer':'default'); p.redraw(); } };
@@ -1128,102 +1127,178 @@ MODULE.foto=function(p){
 
 /* ---- Synthese: der Kreis entsteht Schritt für Schritt ---- */
 MODULE.kreis=function(p){
-  var el=p._userNode, g, schritt=0, t0=0, auto=null, bWeiter, bZurueck;
-  var BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]];
-  var PUNKTE={pos:[2,2,1,2,0],neg:[1,1,0],neutral:[0,2]};
+  // Legendenaufbau wie in der Web-App (kreisgrafik.js, demoLegende): Stufen 0–8, Stufe 4 und 5 hier zusammengelegt
+  var el=p._userNode, g, schritt=0, vorher=0, t0=0, auto=null, bWeiter, bZurueck, bPlay, ZEICHEN, treffer=[];
+  var BC=[[3,8,3,2],[1,6,2,1],[2,4,1,1]]; // [neg,pos,neutral,unbewertet] wie DEMO_BAND_COUNTS
+  var LT=hex2rgb('#3A5058'), OR=hex2rgb('#C2511C');
+  var WAHR={pos:'Positive Wahrnehmung', neg:'Negative Wahrnehmung', neutral:'Neutrale Wahrnehmung'};
+  var WINKEL={neutral:0, pos:-Math.PI*120/180, neg:Math.PI*120/180}, SPANNE=Math.PI*100/180;
+  var KG=['Kreisgrösse:','Anzahl Gefühlsäusserungen','an diesem Ort','Der Kreis wächst mit jedem','geäusserten Gefühl'];
   var SCHRITTE=[
-    {t:'Ortsbeschriftung', l:'Jeder Schauplatz bekommt einen Mittelpunkt und seinen Namen.'},
-    {t:'Raum und Umwelt', l:'Ein schraffierter Kreis: Er wächst mit der Anzahl Gefühlsäusserungen an diesem Ort. Klang: Marimba.'},
-    {t:'Stimmung · Gesellschaft', l:'Stimmung und Emotion (Harfe) und Gesellschaft und Soziales (Klavier) legen sich darüber – die grössten Kreise zuunterst.'},
-    {t:'Valenz', l:'Positive Nennungen wölben sich als Halbkreis nach oben, negative nach unten. Neutrale zählen nur in der Schraffur mit.'},
-    {t:'Körper und Raum', l:'Ein orangefarbener Punkt je Textstelle mit Wirkungsrichtung, geordnet nach positiver, negativer und neutraler Wahrnehmung. Vibraphon: Grundton, Terz, Quinte.'}
+    {t:'Ort', l:'Auf der Route fühlt Duroy. Jeder Ort, an dem etwas in ihm vorgeht, wird zu einem Kreis.'},
+    {t:'Kreisgrösse', l:'Wie oft ein Ort etwas auslöst, bestimmt seine Grösse. Jede Gefühlsäusserung lässt den Kreis wachsen.'},
+    {t:'Positive Gefühle', l:'Was Duroy trägt, wölbt sich nach oben: die obere Kreishälfte zeigt den Anteil positiver Gefühle.'},
+    {t:'Negative Gefühle', l:'Was Duroy bedrückt, wölbt sich nach unten: die untere Kreishälfte zeigt den Anteil negativer Gefühle.'},
+    {t:'Gefühlskategorien', l:'Duroys Gefühle werden in drei Kategorien aufgeteilt.'},
+    {t:'Positive Wahrnehmung', l:'Rote Punkte zeigen, wie sich Ort und Gefühl gegenseitig beeinflussen. Links oben sammelt sich, was positiv wahrgenommen wird.'},
+    {t:'Negative Wahrnehmung', l:'Links unten, was negativ wahrgenommen wird.'},
+    {t:'Neutrale Wahrnehmung', l:'Und rechts, was weder trägt noch drückt: die neutrale Wahrnehmung.'}
   ];
   p.setup=function(){
-    setze('tdg-modultitel','Grafik – Kreisgrösse');
-    g=modulGrund(p,el,function(w){return w<600?420:480;});
-    bZurueck=knopf('← Zurück',function(){ geh(schritt-1); });
-    bWeiter=knopf('Weiter →',function(){ geh(schritt+1); },true);
-    knopf('▶ Alles abspielen',function(){ clearInterval(auto); geh(0); auto=setInterval(function(){ if (schritt>=SCHRITTE.length-1){ clearInterval(auto); return; } geh(schritt+1); },2200); });
-    setze('tdg-quelle','Beispielort mit erfundenen Werten, gebaut wie die Demo-Grafik der Web-App. Farben: Pissarro. Form: Eisen und Glas. Klang: g-Moll.');
+    // ohne Modulkopf: Titel steht schon rechts oben, der Stufentext steht über der Grafik
+    document.querySelector('#tdg-prozess .tdg-modulkopf').hidden=true;
+    document.getElementById('tdg-legende').hidden=true;
+    g=modulGrund(p,el,function(w){return w<600?640:540;});
+    // Zurück · Play · Weiter, mittig – Play wie der Knopf der Web-App
+    ZEICHEN={zurueck:'<svg viewBox="0 0 16 16"><rect x="2" y="3" width="2" height="10"/><path d="M14 3v10L5 8z"/></svg>',
+      weiter:'<svg viewBox="0 0 16 16"><path d="M2 3v10l9-5z"/><rect x="12" y="3" width="2" height="10"/></svg>',
+      play:'<svg viewBox="0 0 16 16"><path d="M4 2v12l10-6z"/></svg>', pause:'<svg viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12"/><rect x="9.5" y="2" width="3.5" height="12"/></svg>'};
+    document.getElementById('tdg-steuerung').classList.add('mitte');
+    function rund(b,art,label){ b.className='tdg-knopf tdg-rund '+art; b.innerHTML=ZEICHEN[art]; b.setAttribute('aria-label',label); b.title=label; return b; }
+    bZurueck=rund(knopf('',function(){ halt(); geh(schritt-1); }),'zurueck','Zurück');
+    bPlay=rund(knopf('',function(){
+      if (auto){ halt(); return; }
+      geh(schritt>=SCHRITTE.length-1?0:schritt+1); zeigePlay(true);
+      auto=setInterval(function(){ if (schritt>=SCHRITTE.length-1){ halt(); return; } geh(schritt+1); },2400);
+    }),'play','Alles abspielen');
+    bWeiter=rund(knopf('',function(){ halt(); geh(schritt+1); }),'weiter','Weiter');
+    setze('tdg-quelle','Beispielort mit erfundenen Werten, aufgebaut wie die Legende der Web-App. Tippe auf eine Zeile der Legende, um ihren Klang zu hören.');
     geh(0,true);
   };
+  function zeigePlay(laeuft){ bPlay.innerHTML=ZEICHEN[laeuft?'pause':'play']; bPlay.setAttribute('aria-label',laeuft?'Anhalten':'Alles abspielen'); bPlay.title=laeuft?'Anhalten':'Alles abspielen'; }
+  function halt(){ clearInterval(auto); auto=null; zeigePlay(false); }
   function geh(n,still){
+    vorher=still?Math.max(0,Math.min(SCHRITTE.length-1,n)):schritt;
     schritt=Math.max(0,Math.min(SCHRITTE.length-1,n)); t0=p.millis();
     bZurueck.disabled=schritt===0; bWeiter.disabled=schritt===SCHRITTE.length-1;
-    setze('tdg-modulinfo','Schritt '+(schritt+1)+' von '+SCHRITTE.length+' · '+SCHRITTE[schritt].t);
-    setze('tdg-legende',SCHRITTE[schritt].l);
-    if (!still){
+    // Text der Stufe über der Grafik statt einer Schrittanzeige
+    setze('tdg-modulvor','<p class="tdg-modulvor-text">'+SCHRITTE[schritt].l+'</p>');
+    if (!still && schritt>vorher){
       audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
-      if (schritt===1) [0,1,2,4].forEach(function(s,j){ spiele('marimba',stufe2midi('marimba',s),j*.16,.9); });
-      if (schritt===2){ [0,2,4].forEach(function(s,j){ spiele('harfe',stufe2midi('harfe',s),j*.16,.9); }); [0,2].forEach(function(s,j){ spiele('klavier',stufe2midi('klavier',s),.5+j*.16,.8); }); }
-      if (schritt===3){ spiele('harfe',stufe2midi('harfe',4),0,.8); spiele('marimba',stufe2midi('marimba',-3),.25,.9); }
-      if (schritt===4) [0,2,4].forEach(function(s,j){ spiele('vibraphon',stufe2midi('vibraphon',s),j*.22,1); });
+      if (schritt===1) [0,1,2,3,4].forEach(function(s,j){ spiele('marimba',stufe2midi('marimba',s),j*.14,.8); });
+      if (schritt===2) spiele('marimba',stufe2midi('marimba',7),0,.9);
+      if (schritt===3) spiele('marimba',stufe2midi('marimba',-7),0,.9);
+      if (schritt===4){ spiele('harfe',stufe2midi('harfe',0),0,.9); spiele('klavier',stufe2midi('klavier',0),.45,.8); }
+      if (schritt===5) [0,2,4].forEach(function(s,j){ spiele('vibraphon',stufe2midi('vibraphon',s),j*.22,1); });
     }
     p.loop();
   }
-  p.draw=function(){
-    var ctx=p.drawingContext, W=g.W(), H=g.H(), f=Math.min(1,(p.millis()-t0)/700), e=1-Math.pow(1-f,3), schmal=W<600;
-    p.clear(); // transparent: Hintergrund der Seite scheint durch
-    var cx= schmal? W*.46 : W*.44, cy=H/2-(schmal?30:26), R0=kreisRadius(16,1), s=Math.min(schmal?1.35:1.9, (Math.min(W*.3,H*.36))/R0);
-    var kats=[schritt>=1, schritt>=2, schritt>=2], hal=schritt>=3;
-    function wachs(i){ return (schritt===1&&i===0)||(schritt===2&&i>0) ? e : 1; }
-    // Einzelne Kategorien mit Wachstum zeichnen
-    var bcs=BC.map(function(b,i){ return kats[i]? b : [0,0,0,0]; });
-    ctx.save();
-    if (schritt<=2){ var sk=bcs.map(function(b,i){return b;}); zeichneKreis(ctx,cx,cy,sk,s*(schritt===1?e:1),{haelften:false,schraffur:3,punkt:false}); }
-    else { ctx.globalAlpha=1; zeichneKreis(ctx,cx,cy,BC,s,{haelften:false,schraffur:3,punkt:false}); ctx.globalAlpha=schritt===3?e:1; zeichneKreis(ctx,cx,cy,BC,s,{kats:[true,true,true],haelften:true,schraffur:3,punkt:false}); }
-    ctx.restore();
-    if (schritt===2){ ctx.save(); ctx.globalAlpha=1-e; ctx.restore(); }
-    // Mittelpunkt
-    ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(cx,cy,4.5,0,Math.PI*2); ctx.fill();
-    var R=groessterRadius(BC,s);
-    // F-Werte
-    if (schritt>=4){ zeichneFwertPunkte(ctx,cx,cy,R+2,PUNKTE,e,Math.min(1.5,s*.8)); }
-    // Legende rechts
-    var ax=cx+R+(schmal?18:40), lx=ax+ (schmal?14:22);
-    ctx.save(); ctx.strokeStyle=F.tinte; ctx.fillStyle=F.tinte; ctx.lineWidth=1; ctx.setLineDash([3,4]);
-    ctx.beginPath(); ctx.moveTo(cx+6,cy); ctx.lineTo(ax,cy); ctx.stroke(); ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(ax,cy-5); ctx.lineTo(ax+8,cy); ctx.lineTo(ax,cy+5); ctx.fill(); ctx.restore();
-    var gT=schmal?12:13.5;
-    if (!schmal) text(ctx,'Ortsbeschriftung',lx,cy,{g:gT,w:600});
-    else text(ctx,'Ort',lx,cy,{g:gT,w:600});
-    if (schritt>=3){
-      ctx.save(); ctx.globalAlpha=schritt===3?e:1; ctx.strokeStyle=F.tinte; ctx.fillStyle=F.tinte; ctx.setLineDash([3,4]);
-      var vy=R*.62;
-      ctx.beginPath(); ctx.moveTo(ax,cy-12); ctx.lineTo(ax,cy-vy); ctx.moveTo(ax,cy+12); ctx.lineTo(ax,cy+vy); ctx.stroke(); ctx.setLineDash([]);
-      ctx.beginPath(); ctx.moveTo(ax-5,cy-vy+8); ctx.lineTo(ax,cy-vy); ctx.lineTo(ax+5,cy-vy+8); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(ax-5,cy+vy-8); ctx.lineTo(ax,cy+vy); ctx.lineTo(ax+5,cy+vy-8); ctx.fill();
-      if (!schmal){ text(ctx,'Anteil positiver Gefühle',lx,cy-vy+4,{g:gT,w:600}); text(ctx,'Anteil negativer Gefühle',lx,cy+vy-4,{g:gT,w:600}); }
-      else { text(ctx,'positiv',lx,cy-vy+4,{g:gT,w:600}); text(ctx,'negativ',lx,cy+vy-4,{g:gT,w:600}); }
-      ctx.restore();
-    }
-    if (schritt>=4){
-      ctx.save(); ctx.globalAlpha=e; var rb=R+ (schmal?34:48);
-      ctx.strokeStyle=F.orange; ctx.lineWidth=1.2;
-      ctx.beginPath(); ctx.arc(cx,cy,rb,Math.PI*.5+.25,Math.PI*1.5-.25); ctx.stroke();
-      [[-140,'Positive','Wahrnehmung'],[140,'Negative','Wahrnehmung'],[35,'Neutrale','Wahrnehmung']].forEach(function(q){
-        var w=q[0]*Math.PI/180, x=cx+Math.cos(w)*rb, y=cy+Math.sin(w)*rb;
-        ctx.save(); ctx.globalCompositeOperation='destination-out'; ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill(); ctx.restore();
-        ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.stroke();
-        var rechts=q[0]===35, tx=rechts? x+12 : x-12, gg=schmal?11.5:13; schrift(ctx,gg,600); var tw=ctx.measureText(q[2]).width;
-        if (!rechts && tx-tw<4) tx=tw+4; if (rechts && tx+tw>W-4) tx=W-4-tw;
-        var dy=(rechts?14:0)+(!rechts&&schmal?(q[0]<0?-18:18):0);
-        text(ctx,q[1],tx,y-8+dy,{g:gg,w:600,c:F.orange,a:rechts?'left':'right'});
-        text(ctx,q[2],tx,y+8+dy,{g:gg,w:600,c:F.orange,a:rechts?'left':'right'});
-      });
-      ctx.restore();
-    }
-    // Legende Kategorien unten links
-    var ly=H-(schmal?64:62);
-    KAT.forEach(function(k,i){
-      var y=ly+i*22, sichtbar=kats[i]; ctx.globalAlpha=sichtbar?1:.3;
-      ctx.save(); ctx.beginPath(); ctx.rect(8,y-7,14,14); ctx.clip(); ctx.strokeStyle=rgba(k.farbe,.7); ctx.lineWidth=1.6; for (var yy=y-7;yy<y+7;yy+=3){ ctx.beginPath(); ctx.moveTo(8,yy); ctx.lineTo(22,yy); ctx.stroke(); } ctx.restore();
-      ctx.fillStyle=rgba(k.farbe); ctx.fillRect(26,y-7,14,14);
-      text(ctx,k.name,48,y,{g:12.5,w:600}); schrift(ctx,12.5,600); var tw=ctx.measureText(k.name).width;
-      text(ctx,k.instrName,48+tw+6,y,{g:12.5,w:300,c:F.tinte2}); ctx.globalAlpha=1;
+  function spieleZeile(z){
+    audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
+    if (z.art==='kat'){ var ins=KAT[z.i].instr; [0,7,-7].forEach(function(s,j){ spiele(ins,stufe2midi(ins,s),j*.45,.9); }); }
+    else spiele('vibraphon',stufe2midi('vibraphon',[0,2,4][z.i]),0,1);
+  }
+  // Bänder einer Aufbaustufe: die ersten k Kategorien; was noch nicht erklärt ist, bleibt Schraffur
+  function bandFuer(k,val){
+    return BC.map(function(b,i){
+      if (i>=Math.max(1,k)) return [0,0,0,0];
+      var neg=val.indexOf('neg')>=0?b[0]:0, pos=val.indexOf('pos')>=0?b[1]:0;
+      return [neg,pos,0,summe(b)-neg-pos];
     });
-    if (f>=1) p.noLoop();
+  }
+  function strich(ctx,farbe,al,breite,fn){ if (al<=.002) return; ctx.save(); ctx.globalAlpha=al; ctx.strokeStyle=rgba(farbe); ctx.lineWidth=breite||.9; ctx.setLineDash([3,4]); ctx.beginPath(); fn(); ctx.stroke(); ctx.restore(); }
+  function lautsprecher(ctx,x,y,al){
+    var h=13; ctx.save(); ctx.globalAlpha=al; ctx.fillStyle=rgba(LT); ctx.strokeStyle=rgba(LT); ctx.lineWidth=1.2;
+    ctx.fillRect(x,y+h*.34,h*.3,h*.32);
+    ctx.beginPath(); ctx.moveTo(x+h*.3,y+h*.34); ctx.lineTo(x+h*.56,y+h*.1); ctx.lineTo(x+h*.56,y+h*.9); ctx.lineTo(x+h*.3,y+h*.66); ctx.closePath(); ctx.fill();
+    [[.26,.31],[.46,.51]].forEach(function(q){ ctx.beginPath(); ctx.ellipse(x+h*.56,y+h/2,h*q[0],h*q[1],0,-Math.PI/3,Math.PI/3); ctx.stroke(); });
+    ctx.restore();
+  }
+  p.draw=function(){
+    var ctx=p.drawingContext, W=g.W(), H=g.H(), jetzt=p.millis()-t0, schmal=W<600;
+    var f=Math.min(1,jetzt/700), e=1-Math.pow(1-f,3), f2=Math.min(1,Math.max(0,(jetzt-450)/700)), e2=1-Math.pow(1-f2,3);
+    p.clear(); treffer=[];
+    function A(st,ee){ var v0=vorher>=st?1:0, v1=schritt>=st?1:0; return v0+(v1-v0)*(ee==null?e:ee); }
+    var aGr=A(1), aPos=A(2), aNeg=A(3), aMit=A(4), aHell=A(4,e2), aWp=A(5), aWn=A(6), aWu=A(7);
+    var G=schmal?12:13, TZ=schmal?15:17, KT=schmal?36:90, TA=schmal?34:60, ECKE=schmal?24:46, BA=schmal?18:30, RR=schmal?5.5:7;
+    function breite(t,w){ schrift(ctx,G,w||600); return ctx.measureText(t).width; }
+    function wahrZeilen(b){ return schmal? WAHR[b].split(' ') : [WAHR[b]]; }
+    var linksT=schmal?['positiv','negativ']:['Anteil positiver Gefühle','Anteil negativer Gefühle'];
+    var leftW=Math.max.apply(null, linksT.concat(wahrZeilen('pos'),wahrZeilen('neg')).map(function(t){return breite(t);}));
+    var kgW=Math.max.apply(null, KG.map(function(t,i){ return breite(t,i<3?600:300); }));
+    var rightW=Math.max.apply(null, [breite('ORTSBESCHRIFTUNG'), schmal?0:kgW].concat(wahrZeilen('neutral').map(function(t){return breite(t);})));
+    var L=KT+10+leftW+6, Rr=TA+rightW+6;
+    // Legendenblöcke: nebeneinander, auf dem Handy untereinander
+    var katZ=KAT.map(function(k,i){ return {art:'kat',i:i,text:[k.name+' ('+k.instrName+')'],farbe:k.farbe,a:[aPos,aMit,aHell][i]}; });
+    var fwZ=FWERT.map(function(fw,i){ var t=i===1?['Die Emotion beeinflusst','die Raumwahrnehmung (Vibraphon)']:[fw.name+' (Vibraphon)']; return {art:'fw',i:i,text:t,d:fw.d,a:aWp}; });
+    function blockBreite(titel,zeilen,spalte){ return Math.max(breite(titel), 21+spalte+Math.max.apply(null, zeilen.map(function(z){ return Math.max.apply(null,z.text.map(function(t){return breite(t);})); }))); }
+    var bK=blockBreite('GEFÜHLSKATEGORIEN',katZ,64), bF=blockBreite('KÖRPER UND RAUM',fwZ,26), blK, blF, unten;
+    if (!schmal && bK+40+bF<=W){ var bx=(W-(bK+40+bF))/2; blF={x:bx+bK+40,y:H-104}; blK={x:bx,y:H-104}; unten=H-128; }
+    else { var sx=Math.max(0,(W-Math.max(bK,bF))/2); blF={x:sx,y:H-104}; blK={x:sx,y:H-104-96}; unten=H-104-96-24; }
+    var oben=schmal? 8+KG.length*TZ+6 : 8;
+    // Kreisradius: so gross, wie Breite und Höhe es zulassen
+    var a=Math.min(150,(W-L-Rr)/2), cyMin, cyMax;
+    function grenzen(){ cyMin=Math.max(oben+ECKE+a, schmal?0:6+3*TZ+.866*(a+BA)); cyMax=unten-Math.max(a, .866*(a+BA)+RR+(schmal?TZ:8)); }
+    grenzen(); while (a>28 && cyMin>cyMax){ a-=2; grenzen(); }
+    var cy=(cyMin+cyMax)/2, cx=L+a+Math.max(0,(W-L-Rr-2*a)/2), s=a/kreisRadius(16,1);
+    var rechts=cx+a+TA, klammer=cx-a-KT, linksX=klammer-10;
+    function txt(t,x,y,al,o){ o=o||{}; if (al<=.002) return; text(ctx,t,x,y,{g:G,w:o.w||600,c:rgba(o.farbe||LT,al*(o.dim||1)),a:o.a}); }
+
+    // Titel (nur breit)
+    if (!schmal){
+      var ty=cy-.866*(a+BA)-3*TZ, tx0=Math.max(0, linksX-breite(WAHR.pos));
+      txt('TOPOGRAFIE DER GEFÜHLE',tx0,ty,1); txt('Legende',tx0,ty+TZ,1,{w:400,dim:.55});
+    }
+    // Kreis: Aufbaustufen überblenden wie zeichneDemoKreisgrafik
+    if (aGr>.002) [[0,[],1-aPos],[1,['pos'],aPos*(1-aNeg)],[1,['pos','neg'],aNeg*(1-aMit)],[2,['pos','neg'],aMit*(1-aHell)],[3,['pos','neg'],aHell]].forEach(function(st){
+      if (st[2]>.002) zeichneKreis(ctx,cx,cy,bandFuer(st[0],st[1]),s*aGr,{alpha:st[2],schraffur:3,punkt:false});
+    });
+    ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2); ctx.fill();
+    // Ortsbeschriftung
+    strich(ctx,LT,1,.9,function(){ ctx.moveTo(cx+6,cy); ctx.lineTo(rechts-4,cy); });
+    txt('ORTSBESCHRIFTUNG',rechts,cy,1);
+    // Kreisgrösse: Knick über dem Scheitel
+    var ecke=cy-a-ECKE;
+    if (!schmal){
+      strich(ctx,LT,aGr,.9,function(){ ctx.moveTo(cx,cy-a); ctx.lineTo(cx,ecke); ctx.lineTo(rechts-8,ecke); });
+      KG.forEach(function(t,i){ txt(t,rechts,ecke+i*TZ,aGr,{w:i<3?600:300}); });
+    } else {
+      var kx=Math.max(4,Math.min(cx-kgW/2,W-kgW-4));
+      strich(ctx,LT,aGr,.9,function(){ ctx.moveTo(cx,cy-a); ctx.lineTo(cx,ecke); });
+      KG.forEach(function(t,i){ txt(t,kx,ecke-6-(KG.length-i-.5)*TZ,aGr,{w:i<3?600:300}); });
+    }
+    // Valenzklammern links
+    strich(ctx,LT,Math.max(aPos,aNeg),.9,function(){ ctx.moveTo(klammer,cy); ctx.lineTo(cx,cy); });
+    strich(ctx,LT,aPos,.9,function(){ ctx.moveTo(cx,cy-a); ctx.lineTo(klammer,cy-a); ctx.lineTo(klammer,cy); });
+    strich(ctx,LT,aNeg,.9,function(){ ctx.moveTo(cx,cy+a); ctx.lineTo(klammer,cy+a); ctx.lineTo(klammer,cy); });
+    txt(linksT[0],linksX,cy-a/2,aPos,{a:'right'});
+    txt(linksT[1],linksX,cy+a/2,aNeg,{a:'right'});
+    // Wahrnehmungsbogen: je Valenzgruppe ein Abschnitt mit offenem Ring
+    [['pos',aWp],['neg',aWn],['neutral',aWu]].forEach(function(q){
+      var b=q[0], al=q[1]; if (al<=.002) return;
+      var w=WINKEL[b], r=a+BA, rx=cx+Math.cos(w)*r, ry=cy+Math.sin(w)*r;
+      strich(ctx,OR,al,.9,function(){ ctx.arc(cx,cy,r,w-SPANNE/2,w+SPANNE/2); });
+      ctx.save(); ctx.globalAlpha=al; ctx.strokeStyle=rgba(OR); ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(rx,ry,RR,0,Math.PI*2); ctx.stroke(); ctx.restore();
+      var zl=wahrZeilen(b), links=b!=='neutral', ly=links? ry : cy+TZ*(zl.length+1)/2+2, y0=ly-(zl.length-1)*TZ/2;
+      strich(ctx,OR,al,.8,function(){ ctx.moveTo(links?rx-RR-2:rx+RR+2,ry); ctx.lineTo(links?linksX+4:rechts-4,ly); });
+      zl.forEach(function(t,i){ txt(t,links?linksX:rechts,y0+i*TZ,al,{farbe:OR,a:links?'right':'left'}); });
+    });
+    // Legendenblöcke
+    function block(bl,titel,zeilen,aTitel,spalte){
+      txt(titel,bl.x,bl.y,aTitel);
+      var lauf=bl.y+26, feldX=bl.x+21;
+      zeilen.forEach(function(z){
+        var zy=lauf; lauf+=22+(z.text.length-1)*TZ; if (z.a<=.002) return;
+        lautsprecher(ctx,bl.x,zy-6.5,z.a);
+        ctx.save(); ctx.globalAlpha=z.a;
+        if (z.art==='kat'){
+          var my=zy-7.5;
+          ctx.save(); ctx.beginPath(); ctx.rect(feldX,my,15,15); ctx.clip(); ctx.strokeStyle=rgba(z.farbe,.55); ctx.lineWidth=1.8;
+          for (var yy=Math.ceil(my/3)*3; yy<=my+15; yy+=3){ ctx.beginPath(); ctx.moveTo(feldX,yy); ctx.lineTo(feldX+15,yy); ctx.stroke(); } ctx.restore();
+          ctx.fillStyle=rgba(z.farbe); ctx.fillRect(feldX+19,my,15,7.5); ctx.fillRect(feldX+38,my+7.5,15,7.5);
+        } else { ctx.fillStyle=rgba(OR); ctx.beginPath(); ctx.arc(feldX+7.5,zy,z.d/2,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+        z.text.forEach(function(t,j){ txt(t,feldX+spalte,zy+j*TZ,z.a); });
+        if (z.a>.5) treffer.push({z:z,x0:bl.x-4,x1:bl.x+21+spalte+breite(z.text[0])+4,y0:zy-11,y1:zy+11});
+      });
+    }
+    block(blK,'GEFÜHLSKATEGORIEN',katZ,aPos,64);
+    block(blF,'KÖRPER UND RAUM',fwZ,aWp,26);
+    if (f>=1 && f2>=1) p.noLoop();
   };
+  function trifft(){ if (!imCanvas(p)) return null; var t=null; treffer.forEach(function(h){ if (p.mouseX>=h.x0&&p.mouseX<=h.x1&&p.mouseY>=h.y0&&p.mouseY<=h.y1) t=h.z; }); return t; }
+  p.mouseMoved=function(){ p.cursor(trifft()?'pointer':'default'); };
+  p.mousePressed=function(){ var z=trifft(); if (z) spieleZeile(z); };
   var altRemove=p.remove; p.remove=function(){ clearInterval(auto); altRemove(); };
 };
 
