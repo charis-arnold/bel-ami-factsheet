@@ -12,19 +12,26 @@ daten = (hier / 'daten.json').read_text(encoding='utf-8')
 # Meldet im iframe die Höhe an die einbettende Seite (WordPress passt das iframe an).
 # Gemessen wird die Höhe des <html>-Elements selbst: scrollHeight ist nie kleiner als das
 # iframe, das iframe könnte damit nur wachsen (z. B. nach dem Schliessen eines Aufklappers).
+# Die Elternseite kann die Höhe mit {type:'iframe-hoehe-anfrage'} jederzeit neu anfordern
+# (falls ihr Listener erst nach den ersten Meldungen läuft, z. B. wegen «JS verzögern»).
+# Die Kontrolle im Sekundentakt sendet nur bei einer Änderung.
 HOEHE = """<script>
 (function(){
   if (window.self === window.top) return;
   var html = document.documentElement, letzte = 0;
   html.classList.add('im-iframe');
-  function melde(){
+  function melde(immer){
     var h = Math.ceil(html.getBoundingClientRect().height);
-    if (h === letzte) return;
+    if (h === letzte && immer !== true) return;
     letzte = h;
     window.parent.postMessage({ type: 'iframe-hoehe', height: h }, '*');
   }
   window.addEventListener('load', melde);
+  window.addEventListener('message', function(e){
+    if (e.source === window.parent && e.data && e.data.type === 'iframe-hoehe-anfrage') melde(true);
+  });
   new ResizeObserver(melde).observe(html);
+  setInterval(melde, 1000);
 })();
 </script>"""
 

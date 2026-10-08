@@ -1311,13 +1311,17 @@ schriftenBereit(function(){});
   if (window.self === window.top) return;
   var html = document.documentElement, letzte = 0;
   html.classList.add('im-iframe');
-  function melde(){
+  function melde(immer){
     var h = Math.ceil(html.getBoundingClientRect().height);
-    if (h === letzte) return;
+    if (h === letzte && immer !== true) return;
     letzte = h;
     window.parent.postMessage({ type: 'iframe-hoehe', height: h }, '*');
   }
   window.addEventListener('load', melde);
+  window.addEventListener('message', function(e){
+    if (e.source === window.parent && e.data && e.data.type === 'iframe-hoehe-anfrage') melde(true);
+  });
   new ResizeObserver(melde).observe(html);
+  setInterval(melde, 1000);
 })();
 </script></body></html>
