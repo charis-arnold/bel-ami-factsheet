@@ -10,7 +10,23 @@ WP_PFAD = 'https://www.charisarnold.ch/wp-content/uploads/2026/09/'
 quelle = (hier / 'tdg-umsetzung.html').read_text(encoding='utf-8')
 daten = (hier / 'daten.json').read_text(encoding='utf-8')
 # Meldet im iframe die Höhe an die einbettende Seite (WordPress passt das iframe an).
-HOEHE = """<script>(function(){if(window.parent===window)return;document.documentElement.style.overflowY="hidden";var l=0;function m(){var el=document.getElementById('tdg-prozess');if(!el)return;var h=Math.ceil(el.getBoundingClientRect().bottom+window.scrollY);if(h!==l){l=h;window.parent.postMessage({tdgHoehe:h},'*');}}new ResizeObserver(m).observe(document.getElementById('tdg-prozess'));window.addEventListener('load',m);setInterval(m,1000);})();</script>"""
+# Gemessen wird die Höhe des <html>-Elements selbst: scrollHeight ist nie kleiner als das
+# iframe, das iframe könnte damit nur wachsen (z. B. nach dem Schliessen eines Aufklappers).
+HOEHE = """<script>
+(function(){
+  if (window.self === window.top) return;
+  var html = document.documentElement, letzte = 0;
+  html.classList.add('im-iframe');
+  function melde(){
+    var h = Math.ceil(html.getBoundingClientRect().height);
+    if (h === letzte) return;
+    letzte = h;
+    window.parent.postMessage({ type: 'iframe-hoehe', height: h }, '*');
+  }
+  window.addEventListener('load', melde);
+  new ResizeObserver(melde).observe(html);
+})();
+</script>"""
 
 def baue(bild, klang):
     return quelle.replace('__DATEN__', daten).replace('__BILDPFAD__', bild).replace('__KLANGPFAD__', klang)
@@ -18,7 +34,8 @@ def baue(bild, klang):
 seite = ('<!doctype html><html lang="de"><head><meta charset="utf-8">'
          '<meta name="viewport" content="width=device-width,initial-scale=1">'
          '<title>Umsetzungsprozess – Topografie der Gefühle</title>'
-         '<style>body{margin:0;background:#fff}</style></head><body>'
+         '<style>html,body{margin:0}body{background:#fff}'
+         'html.im-iframe,html.im-iframe body{overflow:hidden}</style></head><body>'
          + baue('bilder/', 'klaenge/') + HOEHE + '</body></html>')
 (ziel / 'vorschau.html').write_text(seite, encoding='utf-8')
 (ziel / 'index.html').write_text(seite, encoding='utf-8')  # für GitHub Pages / iframe
