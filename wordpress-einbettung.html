@@ -5,14 +5,14 @@
 ====================================================================== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Source+Sans+3:wght@300;400;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400..700&family=Source+Sans+3:wght@300;400;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap" rel="stylesheet">
 
 <div id="tdg-prozess" data-bildpfad="https://www.charisarnold.ch/wp-content/uploads/2026/09/" data-klangpfad="https://www.charisarnold.ch/wp-content/uploads/2026/09/">
 <style>
 #tdg-prozess{
   --grund:#f0f2ef; --papier:#fbfbf9; --tinte:#221f1f; --tinte2:#5b5f5c; --linie:#8a928a;
   --gold:#ba9e00; --rose:#bc938e; --navy:#333f5b; --oliv:#62551f; --orange:#c1511d; --petrol:#394e56;
-  --serif:'Source Serif 4',Georgia,serif; --sans:'Source Sans 3','Helvetica Neue',Arial,sans-serif;
+  --serif:'Source Serif 4',Georgia,serif; --sans:'Arimo',Arial,sans-serif;
   font-family:var(--sans); color:var(--tinte); background:var(--grund);
   max-width:1120px; margin:0 auto; padding:clamp(20px,4vw,48px) clamp(16px,4vw,48px) 28px;
   box-sizing:border-box; line-height:1.5; font-size:16px; -webkit-font-smoothing:antialiased; position:relative;
@@ -161,7 +161,8 @@ var FWERT = [ // Punktgrösse wie FWERT_PUNKT_DURCHMESSER
   {name:'Die Emotion beeinflusst die Raumwahrnehmung', d:7.5, klang:'Vibraphon (Terz)', stufe:3},
   {name:'Der Raum löst die Emotion aus', d:5, klang:'Vibraphon (Quinte)', stufe:7}
 ];
-var SANS = "'Source Sans 3','Helvetica Neue',Arial,sans-serif";
+var SANS = "'Arimo',Arial,sans-serif";
+var SOURCE_SANS = "'Source Sans 3','Helvetica Neue',Arial,sans-serif"; // nur für das Schriftmuster im Aufklapper «Schrift»
 var SERIF = "'Source Serif 4',Georgia,serif";
 function rgba(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+(a==null?1:a)+')'; }
 function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]; }
@@ -356,7 +357,7 @@ function bildCover(p, ctx, img, x, y, w, h){
   var s=Math.max(w/img.width,h/img.height), iw=img.width*s, ih=img.height*s;
   p.image(img, x+(w-iw)/2, y+(h-ih)/2, iw, ih);
 }
-function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) Promise.all([document.fonts.ready, document.fonts.load("600 20px 'Source Serif 4'").catch(function(){})]).then(fn); }
+function schriftenBereit(fn){ if (document.fonts && document.fonts.ready) Promise.all([document.fonts.ready, document.fonts.load("600 20px 'Source Serif 4'").catch(function(){}), document.fonts.load("600 20px 'Arimo'").catch(function(){})]).then(fn); }
 
 /* ======================================================================
    1) NETZ – Zeitzeugen → Umsetzung → Synthese
@@ -1053,7 +1054,7 @@ MODULE.form=function(p){
 /* ---- Schrift ---- */
 MODULE.schrift=function(p){
   var el=p._userNode, g, groesse=40, wahl=0;
-  var STILE=[{f:SERIF,w:600,n:'Source Serif 4 Semibold'},{f:SERIF,w:300,n:'Source Serif 4 Light'},{f:SANS,w:600,n:'Source Sans 3 Semibold'},{f:SANS,w:300,n:'Source Sans 3 Light'}];
+  var STILE=[{f:SERIF,w:600,n:'Source Serif 4 Semibold'},{f:SERIF,w:300,n:'Source Serif 4 Light'},{f:SOURCE_SANS,w:600,n:'Source Sans 3 Semibold'},{f:SOURCE_SANS,w:300,n:'Source Sans 3 Light'}];
   p.setup=function(){
     setze('tdg-modultitel','Schrift');
     g=modulGrund(p,el,function(w){ var gr=Math.min(96,w/7); return Math.round(24+gr*2.45+12+30+80); });
