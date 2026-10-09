@@ -103,8 +103,8 @@
   <div class="tdg-hell" id="tdg-hell" aria-hidden="true"></div>
   <header class="tdg-intro">
     <h2>Umsetzungsprozess</h2>
-    <p class="formel">Mensch + Daten + Schauplatz / Kontext<br>= Human Data</p>
-    <p class="lead">Guy de Maupassants «Bel-Ami» spielt in einer Stadt, die gerade neu entsteht. Jede gestalterische Entscheidung dieses Projekts – Daten, Farben, Karte, Form, Schrift und Bild – hat ein Vorbild im Paris jener Jahre. Alles läuft in der Datenvisualisierung zusammen: ein Kreis für jeden Ort zeigt, wie sich dieser anfühlt.</p>
+    <p class="formel">Mensch + Daten + Schauplatz + Kontext<br>= Human Data</p>
+    <p class="lead">Guy de Maupassants «Bel-Ami» spielt in einer Stadt, die gerade neu entsteht. Jede gestalterische Entscheidung des Projekts «Topografie der Gefühle» – Daten, Farben, Karte, Form, Schrift und Bild – hat ein Vorbild im Paris der zweiten Hälfte des 19. Jahrhunderts.</p>
     <p class="hinweis">Tippe auf die Elemente und erfahre mehr.</p>
   </header>
   <div class="tdg-netz" id="tdg-netz" aria-label="Netz der Verbindungen zwischen Zeitgenossen und Gestaltungselementen">
@@ -313,7 +313,7 @@ var KETTEN = [
     modulBild:{datei:'cha_bel-ami-05.jpg', alt:'Web-App: Karte mit geöffnetem Fotomarker, historische Aufnahme der Place de l’Opéra'} }
 ];
 var SYNTHESE = { id:'kreis', feld:'Synthese', kurz:'Kreis', titel:'Daten Farbe Form Klang', sub:'Anzahl Gefühlsäusserungen an einem Ort', modul:'kreis',
-  text:'Hier laufen alle Fäden zusammen: Maupassants Text liefert die Zahlen, Pissarros Farben unterscheiden die Kategorien, die Tonart der «Danse macabre» lässt sie klingen, und die Formsprache von Eisen und Glas fasst sie zusammen. Pro Ort ein Kreis – er wächst mit jedem geäusserten Gefühl.' };
+  text:'Hier laufen alle Fäden zusammen: Maupassants Text liefert die Zahlen, Pissarros Farben unterscheiden die Kategorien, die Tonart der «Danse macabre» von Camille Saint-Saëns lässt sie klingen, und die Formsprache von Eisen und Glas fasst sie zusammen. Pro Ort ein Kreis – er wächst mit jedem geäusserten Gefühl.' };
 var MENSCH = { id:'mensch', feld:'Mensch', kurz:'Mensch',
   personen:[{bild:'maupassant', name:'Guy de Maupassant', voll:'Henry René Albert Guy de Maupassant', jahre:'1850 – 1893', rolle:'Schriftsteller und Journalist', bildQuelle:'https://de.wikipedia.org/wiki/Guy_de_Maupassant#/media/Datei:Maupassant_par_Nadar.jpg', ohneFeld:true}],
   titel:'Protagonist und Zeitzeuge', netzTitel:'Mensch', netzSub:'Guy de Maupassant', sub:'',
@@ -428,7 +428,7 @@ new p5(function(p){
   p.setup=function(){
     W=breiteVon(el); var c=p.createCanvas(W,H); c.parent(el); p.frameRate(30); layout();
     c.elt.addEventListener('click', function(){}); // iOS: Antippen löst nur auf Elementen mit eigenem Click-Listener ein click aus
-    // Normalzustand: «Daten Visualisation» ist bereits ausgeklappt
+    // Normalzustand: «Datenvisualisation» ist bereits ausgeklappt
     waehle('kreis', synth); lueckeAb=synth.zu; zustand.ruhig=true; // Linien im Normalzustand nicht aktiviert
     beiGroesse(el,function(w){ W=w; layout(); });
     schriftenBereit(function(){ p.redraw(); });
@@ -470,13 +470,13 @@ new p5(function(p){
       // ab «Umsetzung» heller Grund: kommt von #tdg-hell hinter der Zeichenfläche (bis zum Rand)
       text(ctx,'Kontext',16,kontextY-6,{g:gT,w:600});
       text(ctx,'Paris 1885 · Zeitgenossen',16,kontextY+20,{g:13,w:300,c:F.tinte2});
-      text(ctx,'Daten Visualisation',16,synth.y,{g:gT,w:600});
+      text(ctx,'Datenvisualisation',16,synth.y,{g:gT,w:600});
     } else {
       text(ctx,'Kontext',16,kontextY,{g:22,w:600});
-      text(ctx,'Daten',16,synth.y-14,{g:W<370?19:22,w:600});
-      text(ctx,'Visualisation',16,synth.y+12,{g:W<370?19:22,w:600});
+      text(ctx,'Daten-',16,synth.y-14,{g:W<370?19:22,w:600});
+      text(ctx,'visualisation',16,synth.y+12,{g:W<370?19:22,w:600});
     }
-    // Analyse → Daten Visualisation (eigene Spalte rechts)
+    // Analyse → Datenvisualisation (eigene Spalte rechts)
     if (!schmal) (function(){ var e=elementKnoten(KETTEN[0]), an=kante('literatur');
       ctx.save(); strichel(ctx,an,an?F.gold:'rgba(34,31,31,.3)',an?1.4:1); ctx.beginPath();
       ctx.moveTo(e.x,e.y+e.r+40); ctx.lineTo(e.x,synth.y); ctx.lineTo(synth.x+synth.r+18,synth.y);
@@ -692,7 +692,7 @@ function zeigeDetail(id){
       per.appendChild(d);
     });
   } // Synthese (Kreis): linke Spalte bleibt leer
-  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Daten Visualisation')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
+  ueb.innerHTML='<div class="pfeil">'+(k.personen||k.links?(k.pfeil||k.feld)+' →':'Datenvisualisation')+'</div><h3>'+k.titel+'</h3>'+(k.sub?'<div class="sub">'+k.sub+'</div>':'')+'<p class="text">'+k.text+'</p>';
   richtePersonenAus();
   document.querySelector('#tdg-prozess .tdg-modulkopf').hidden=false;
   ['tdg-modulvor','tdg-steuerung','tdg-legende','tdg-quelle','tdg-modulinfo'].forEach(function(x){ var e=document.getElementById(x); e.innerHTML=''; e.hidden=false; });
