@@ -1150,7 +1150,7 @@ MODULE.kreis=function(p){
     // ohne Modulkopf: Titel steht schon rechts oben, der Stufentext steht über der Grafik
     document.querySelector('#tdg-prozess .tdg-modulkopf').hidden=true;
     document.getElementById('tdg-legende').hidden=true;
-    g=modulGrund(p,el,function(w){return w<600?640:540;});
+    g=modulGrund(p,el,function(w){return w<600?640:600;});
     // Zurück · Play · Weiter, mittig – Play wie der Knopf der Web-App
     ZEICHEN={zurueck:'<svg viewBox="0 0 16 16"><rect x="2" y="3" width="2" height="10"/><path d="M14 3v10L5 8z"/></svg>',
       weiter:'<svg viewBox="0 0 16 16"><path d="M2 3v10l9-5z"/><rect x="12" y="3" width="2" height="10"/></svg>',
@@ -1167,14 +1167,16 @@ MODULE.kreis=function(p){
     setze('tdg-quelle','Beispielort mit erfundenen Werten, aufgebaut wie die Legende der Web-App. Tippe auf eine Zeile der Legende, um ihren Klang zu hören.');
     geh(0,true);
   };
+  // Text der Stufe: breit in der Grafik unter «Legende», schmal über der Grafik
+  var warSchmal=null;
+  function setzeVor(){ warSchmal=g.W()<600; setze('tdg-modulvor', warSchmal?'<p class="tdg-modulvor-text">'+SCHRITTE[schritt].l+'</p>':''); }
   function zeigePlay(laeuft){ bPlay.innerHTML=ZEICHEN[laeuft?'pause':'play']; bPlay.setAttribute('aria-label',laeuft?'Anhalten':'Alles abspielen'); bPlay.title=laeuft?'Anhalten':'Alles abspielen'; }
   function halt(){ clearInterval(auto); auto=null; zeigePlay(false); }
   function geh(n,still){
     vorher=still?Math.max(0,Math.min(SCHRITTE.length-1,n)):schritt;
     schritt=Math.max(0,Math.min(SCHRITTE.length-1,n)); t0=p.millis();
     bZurueck.disabled=schritt===0; bWeiter.disabled=schritt===SCHRITTE.length-1;
-    // Text der Stufe über der Grafik statt einer Schrittanzeige
-    setze('tdg-modulvor','<p class="tdg-modulvor-text">'+SCHRITTE[schritt].l+'</p>');
+    setzeVor();
     if (!still && schritt>vorher){
       audioStart(); vorladen(['marimba','harfe','klavier','vibraphon']);
       if (schritt===1) [0,1,2,3,4].forEach(function(s,j){ spiele('marimba',stufe2midi('marimba',s),j*.14,.8); });
@@ -1208,6 +1210,7 @@ MODULE.kreis=function(p){
   }
   p.draw=function(){
     var ctx=p.drawingContext, W=g.W(), H=g.H(), jetzt=p.millis()-t0, schmal=W<600;
+    if (schmal!==warSchmal) setzeVor();
     var f=Math.min(1,jetzt/700), e=1-Math.pow(1-f,3), f2=Math.min(1,Math.max(0,(jetzt-450)/700)), e2=1-Math.pow(1-f2,3);
     p.clear(); treffer=[];
     function A(st,ee){ var v0=vorher>=st?1:0, v1=schritt>=st?1:0; return v0+(v1-v0)*(ee==null?e:ee); }
@@ -1229,17 +1232,28 @@ MODULE.kreis=function(p){
     else { var sx=Math.max(0,(W-Math.max(bK,bF))/2); blF={x:sx,y:H-104}; blK={x:sx,y:H-104-96}; unten=H-104-96-24; }
     var oben=schmal? 8+KG.length*TZ+6 : 8;
     // Kreisradius: so gross, wie Breite und Höhe es zulassen
-    var a=Math.min(150,(W-L-Rr)/2), cyMin, cyMax;
-    function grenzen(){ cyMin=Math.max(oben+ECKE+a, schmal?0:6+3*TZ+.866*(a+BA)); cyMax=unten-Math.max(a, .866*(a+BA)+RR+(schmal?TZ:8)); }
-    grenzen(); while (a>28 && cyMin>cyMax){ a-=2; grenzen(); }
-    var cy=(cyMin+cyMax)/2, cx=L+a+Math.max(0,(W-L-Rr-2*a)/2), s=a/kreisRadius(16,1);
-    var rechts=cx+a+TA, klammer=cx-a-KT, linksX=klammer-10;
+    // breit: Platz für Titel, «Legende» und nZ Zeilen Stufentext über dem Kreis
+    var nZ=3, a, cyMin, cyMax, cy, cx, s, rechts, klammer, linksX, tx0, stufeZ=[];
+    function grenzen(){ cyMin=Math.max(oben+ECKE+a, schmal?0:12+(3+nZ)*TZ+.866*(a+BA)); cyMax=unten-Math.max(a, .866*(a+BA)+RR+(schmal?TZ:8)); }
+    for (var lauf=0; lauf<3; lauf++){
+      a=Math.min(150,(W-L-Rr)/2); grenzen(); while (a>28 && cyMin>cyMax){ a-=2; grenzen(); }
+      cy=(cyMin+cyMax)/2; cx=L+a+Math.max(0,(W-L-Rr-2*a)/2); s=a/kreisRadius(16,1);
+      rechts=cx+a+TA; klammer=cx-a-KT; linksX=klammer-10;
+      if (schmal) break;
+      tx0=Math.max(0, linksX-breite(WAHR.pos));
+      // Umbruch links vom Knick der Kreisgrösse; Zeilenzahl nach dem längsten Stufentext, damit der Kreis nicht springt
+      schrift(ctx,G,400); var bw=Math.min(380,cx-14-tx0);
+      var n=Math.max.apply(null, SCHRITTE.map(function(st){ return umbruch(ctx,st.l,bw).length; }));
+      stufeZ=umbruch(ctx,SCHRITTE[schritt].l,bw);
+      if (n<=nZ) break; nZ=n;
+    }
     function txt(t,x,y,al,o){ o=o||{}; if (al<=.002) return; text(ctx,t,x,y,{g:G,w:o.w||600,c:rgba(o.farbe||LT,al*(o.dim||1)),a:o.a}); }
 
     // Titel (nur breit)
     if (!schmal){
-      var ty=cy-.866*(a+BA)-3*TZ, tx0=Math.max(0, linksX-breite(WAHR.pos));
+      var ty=cy-.866*(a+BA)-(3+nZ)*TZ-6;
       txt('TOPOGRAFIE DER GEFÜHLE',tx0,ty,1); txt('Legende',tx0,ty+TZ,1,{w:400,dim:.55});
+      stufeZ.forEach(function(t,i){ txt(t,tx0,ty+(2+i)*TZ+6,e,{w:400}); });
     }
     // Kreis: Aufbaustufen überblenden wie zeichneDemoKreisgrafik
     if (aGr>.002) [[0,[],1-aPos],[1,['pos'],aPos*(1-aNeg)],[1,['pos','neg'],aNeg*(1-aMit)],[2,['pos','neg'],aMit*(1-aHell)],[3,['pos','neg'],aHell]].forEach(function(st){
